@@ -37,7 +37,7 @@ scripts\windows\pm-agent-config.bat --help
 git clone https://github.com/ivan-madjarov/pm-agent-cfg.git
 cd pm-agent-cfg
 # Test shell scripts
-bash scripts/linux/build.sh
+sudo bash scripts/linux/pm-agent-config.sh --help
 ```
 
 #### Making Changes
@@ -93,19 +93,21 @@ bash scripts/linux/build.sh
 - Test PowerShell execution policies
 - Verify error handling and rollback scenarios
 - Test with different DCAgent versions if available
+- Use `--dry-run` for safe testing
 
 **Linux Testing (when applicable):**
 - Test on Ubuntu, RHEL/CentOS, and Debian
 - Verify root/sudo privilege handling
-- Test configuration file modifications
+- Test JSON file modifications safely (use test VMs)
 - Validate service interactions
-- Test package manager compatibility
+- Test with different UEMS Agent versions if available
 - Verify error handling and rollback scenarios
+- Use `--dry-run` for safe testing
 
 **Cross-Platform Testing:**
 - Ensure documentation is accurate for all platforms
 - Validate build scripts work correctly
-- Test configuration templates
+- Test script help and menu functions
 - Verify consistent behavior where applicable
 
 ### Pull Request Process
@@ -173,21 +175,20 @@ Examples:
 1. Update `pm-agent-config.bat` with new functionality
 2. Update PowerShell version if needed (`pm-agent-config.ps1`)
 3. Add appropriate registry validation
-4. Update Windows documentation (`src/windows/README.md`)
+4. Update Windows documentation (`docs/windows-guide.md`)
 5. Test with various Windows versions and DCAgent configurations
 
 **For Linux Features (future):**
-1. Create/update shell scripts in `scripts/linux/`
-2. Add configuration file handling
+1. Update shell script (`scripts/linux/pm-agent-config.sh`)
+2. Add JSON configuration handling
 3. Implement service interaction logic
-4. Update Linux documentation
+4. Update Linux documentation (`docs/linux-guide.md`)
 5. Test across multiple distributions
 
 **For Cross-Platform Features:**
 1. Update main README.md
-2. Update configuration templates in `config/`
+2. Update troubleshooting guides
 3. Consider deployment implications
-4. Update troubleshooting guides
 
 ### Documentation Standards
 - Include examples for all new features

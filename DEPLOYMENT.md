@@ -2,20 +2,34 @@
 
 ## 🚀 **Quick Deployment**
 
-### For Single Machine
-1. **Download** or copy `pm-agent-config.bat` 
+### Windows - Single Machine
+1. **Download** the script: `scripts/windows/pm-agent-config.bat`
 2. **Right-click** → "Run as administrator"
 3. **Choose mode**:
-   - Command-line: `pm-agent-config.bat --mode low`
+   - Command-line: `pm-agent-config.bat --mode high`
    - Interactive: `pm-agent-config.bat --menu`
 
-### For Multiple Machines
+### Linux - Single Machine
+1. **Download** the script: `scripts/linux/pm-agent-config.sh`
+2. **Make executable**: `chmod +x pm-agent-config.sh`
+3. **Run with sudo**: `sudo ./pm-agent-config.sh --mode high`
+
+### Windows - Multiple Machines
 ```batch
 REM Copy to network share
-copy pm-agent-config.bat \\server\share\tools\
+copy scripts\windows\pm-agent-config.bat \\server\share\tools\
 
 REM Run on target machines
-\\server\share\tools\pm-agent-config.bat --mode low --verbose
+\\server\share\tools\pm-agent-config.bat --mode high --verbose
+```
+
+### Linux - Multiple Machines
+```bash
+# Copy to target machines
+for server in server1 server2 server3; do
+    scp scripts/linux/pm-agent-config.sh root@$server:/tmp/
+    ssh root@$server "chmod +x /tmp/pm-agent-config.sh && /tmp/pm-agent-config.sh --mode high"
+done
 ```
 
 ### For Enterprise (Group Policy)

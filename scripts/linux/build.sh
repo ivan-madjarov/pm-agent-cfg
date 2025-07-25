@@ -6,17 +6,17 @@ set -e
 echo "Building PM+ Agent for Linux..."
 
 # Create build directory
-mkdir -p dist/linux
+mkdir -p ../../dist/linux
 
-# Build common components
-python3 -m py_compile src/common/*.py
+# Make scripts executable
+chmod +x pm-agent-config.sh
 
-# Build Linux-specific components  
-python3 -m py_compile src/linux/*.py
-
-# Copy configuration files
-cp -r config/linux/* dist/linux/
-cp -r config/common/* dist/linux/
+# Copy scripts to build directory
+cp pm-agent-config.sh ../../dist/linux/
 
 echo "Linux build completed successfully!"
+echo "Main script: ../../dist/linux/pm-agent-config.sh"
+echo ""
+echo "Usage:"
+echo "  sudo ../../dist/linux/pm-agent-config.sh --help"
 

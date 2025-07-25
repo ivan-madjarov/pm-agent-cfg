@@ -34,10 +34,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Test Linux Scripts
+    - name: Test Linux Shell Script Syntax
       run: |
         # Test shell script syntax
-        bash -n scripts/linux/build.sh
+        bash -n scripts/linux/pm-agent-config.sh
+    
+    - name: Test Linux Shell Script Help
+      run: |
+        # Test help functionality (without sudo)
+        bash scripts/linux/pm-agent-config.sh --help
 
   security-scan:
     runs-on: ubuntu-latest
@@ -71,9 +76,11 @@ jobs:
         test -f CONTRIBUTING.md
         test -f LICENSE
         test -f SECURITY.md
+        test -f DEPLOYMENT.md
         
-        # Check Windows documentation
-        test -f src/windows/README.md
+        # Check platform documentation
+        test -f docs/windows-guide.md
+        test -f docs/linux-guide.md
         
         # Validate markdown syntax
         find . -name "*.md" -exec echo "Checking {}" \; -exec head -1 {} \;
@@ -84,14 +91,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Validate configuration files
+    - name: Validate script files
       run: |
-        # Check config file syntax
-        test -f config/common/agent.conf
-        test -f config/windows/agent.conf
-        test -f config/linux/agent.conf
+        # Test script executability and syntax
+        test -f scripts/linux/pm-agent-config.sh
+        test -f scripts/windows/pm-agent-config.bat
+        test -f scripts/windows/pm-agent-config.ps1
+        test -f scripts/linux/build.sh
+        test -f scripts/windows/build-exe.ps1
         
-        # Basic validation that config files aren't empty
-        [ -s config/common/agent.conf ]
-        [ -s config/windows/agent.conf ]
-        [ -s config/linux/agent.conf]
+        # Test Linux script syntax
+        bash -n scripts/linux/pm-agent-config.sh
+        bash -n scripts/linux/build.sh
