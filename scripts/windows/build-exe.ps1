@@ -35,10 +35,10 @@ function Build-Executable {
     try {
         # Build the executable with ps2exe
         Invoke-ps2exe -inputFile $scriptPath -outputFile $outputPath `
-            -title "PM Agent Configuration Tool" `
-            -description "PM Agent Registry Configuration Tool for Windows" `
+            -title "PM+ Agent Configuration Tool" `
+            -description "PM+ Agent Registry Configuration Tool for Windows" `
             -company "Mitel Networks" `
-            -product "PM Agent Config" `
+            -product "PM+ Agent Config" `
             -copyright "© 2025 Mitel Networks" `
             -version "1.0.0.0" `
             -iconFile $null `
@@ -82,7 +82,7 @@ function Test-Ps2exe {
 }
 
 # Main execution
-Write-Host "PM Agent Configuration Tool - Build Script" -ForegroundColor Cyan
+Write-Host "PM+ Agent Configuration Tool - Build Script" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 

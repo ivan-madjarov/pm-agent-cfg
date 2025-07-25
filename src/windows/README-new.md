@@ -4,7 +4,7 @@
 
 ## 🎯 **The Solution**
 
-A single, comprehensive tool that configures PM Agent registry settings with **no external dependencies**. Choose your preferred interface:
+A single, comprehensive tool that configures PM+ Agent registry settings with **no external dependencies**. Choose your preferred interface:
 
 ### ✅ **Primary Tool: Standalone Batch Script**
 **File**: `scripts/windows/pm-agent-config.bat`

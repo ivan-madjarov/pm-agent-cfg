@@ -1,5 +1,5 @@
 @echo off
-REM PM Agent Registry Configuration Tool - Standalone Version
+REM PM+ Agent Registry Configuration Tool - Standalone Version
 REM No Python required - Pure Windows batch script
 REM Configures DesktopCentral DCAgent registry settings with performance options
 
@@ -147,13 +147,13 @@ REM ============================================================================
 
 :show_header
     echo ================================================================
-    echo PM Agent Registry Configuration Tool - Standalone Version
+    echo PM+ Agent Registry Configuration Tool - Standalone Version
     echo ================================================================
     echo.
     exit /b 0
 
 :show_help
-    echo PM Agent Registry Configuration Tool for Windows
+    echo PM+ Agent Registry Configuration Tool for Windows
     echo.
     echo DESCRIPTION:
     echo     Configures DesktopCentral DCAgent registry settings with performance options.
@@ -192,7 +192,7 @@ REM ============================================================================
     exit /b 0
 
 :show_current_settings
-    echo Current PM Agent Registry Settings:
+    echo Current PM+ Agent Registry Settings:
     echo ===================================
     echo.
     
@@ -248,7 +248,7 @@ REM ============================================================================
         exit /b 1
     )
     
-    echo Configuring PM Agent for %MODE_NAME% performance mode...
+    echo Configuring PM+ Agent for %MODE_NAME% performance mode...
     echo Agent Resource Utilization Limit: %MODE_DESC%
     echo CPU Usage Limit: %CPU_VALUE%%%
     echo Patch Scan Timeout: %TIMEOUT% seconds

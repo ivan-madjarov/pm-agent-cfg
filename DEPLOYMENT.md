@@ -1,4 +1,4 @@
-# PM Agent Configuration - Deployment Guide
+# PM+ Agent Configuration - Deployment Guide
 
 ## 🚀 **Quick Deployment**
 
@@ -29,7 +29,7 @@ REM Run on target machines
 
 ```batch
 @echo off
-echo Checking PM Agent Configuration...
+echo Checking PM+ Agent Configuration...
 pm-agent-config.bat --status
 echo.
 echo Restarting DCAgent service...

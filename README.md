@@ -1,4 +1,4 @@
-# PM Agent Configuration
+# PM+ Agent Configuration
 
 Cross-platform agent configuration management system supporting both Linux and Windows environments.
 

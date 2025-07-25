@@ -1,4 +1,4 @@
-# PM Agent Registry Configuration Tool - Compilable PowerShell Version
+# PM+ Agent Registry Configuration Tool - Compilable PowerShell Version
 # Can be compiled to EXE using ps2exe or similar tools
 
 param(
@@ -50,7 +50,7 @@ function Write-Verbose-Log {
 
 function Show-Help {
     Write-Host @"
-PM Agent Registry Configuration Tool for Windows
+PM+ Agent Registry Configuration Tool for Windows
 
 DESCRIPTION:
     Configures DesktopCentral DCAgent registry settings with performance options.
@@ -156,7 +156,7 @@ function Get-CurrentSettings {
 
 function Show-CurrentSettings {
     Write-Host ""
-    Write-Host "Current PM Agent Registry Settings:" -ForegroundColor Cyan
+    Write-Host "Current PM+ Agent Registry Settings:" -ForegroundColor Cyan
     Write-Host "===================================" -ForegroundColor Cyan
     Write-Host ""
     
@@ -203,7 +203,7 @@ function Set-PerformanceMode {
     $config = $PERFORMANCE_SETTINGS[$PerformanceMode]
     
     Write-Host ""
-    Write-Host "Configuring PM Agent for $($config.description)..." -ForegroundColor Yellow
+    Write-Host "Configuring PM+ Agent for $($config.description)..." -ForegroundColor Yellow
     Write-Host "Agent Resource Utilization Limit: $PerformanceMode performance"
     Write-Host "CPU Usage Limit: $($config.cpu)%"
     Write-Host "Patch Scan Timeout: $($config.timeout) seconds"
@@ -250,7 +250,7 @@ function Set-PerformanceMode {
 # Main execution logic
 try {
     Write-Host ""
-    Write-Host "PM Agent Registry Configuration Tool" -ForegroundColor Cyan
+    Write-Host "PM+ Agent Registry Configuration Tool" -ForegroundColor Cyan
     Write-Host "=====================================" -ForegroundColor Cyan
     
     # Show help if requested

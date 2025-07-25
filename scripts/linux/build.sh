@@ -3,7 +3,7 @@
 
 set -e
 
-echo "Building PM Agent for Linux..."
+echo "Building PM+ Agent for Linux..."
 
 # Create build directory
 mkdir -p dist/linux
