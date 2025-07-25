@@ -5,13 +5,17 @@ Cross-platform agent configuration management system supporting both Linux and W
 ## Current Features
 
 ### Windows Registry Configuration Tool ✅
-Complete solution for configuring DesktopCentral DCAgent registry settings with performance options:
-- **Performance Modes**: Low (15% CPU) and High (30% CPU) resource utilization
-- **Multiple Interfaces**: Interactive menu, PowerShell script, and Python command-line tool
-- **Registry Settings**: Configures patch scan timeout and thread CPU usage limits
-- **Administrator Checks**: Ensures proper permissions before making changes
+**Zero-dependency solution** for configuring DesktopCentral DCAgent registry settings:
+- 🚀 **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
+- 🎮 **Multiple Interfaces** - command-line AND interactive menu in one tool
+- ⚙️ **Performance Modes** - Low (15% CPU) and High (30% CPU) resource utilization
+- 🔒 **Built-in Security** - administrator privilege checking and validation
+- 📊 **Status Display** - view current registry configurations
+- 📦 **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
 
-See [Windows Configuration Guide](src/windows/README.md) for detailed usage instructions.
+**Bonus**: Optional PowerShell-to-EXE compilation for professional deployment packages.
+
+See [Windows Configuration Guide](src/windows/README.md) for complete usage instructions.
 
 ## Project Structure
 
@@ -49,33 +53,39 @@ pm-agent-cfg/
 ## Getting Started
 
 ### Windows Registry Configuration (Available Now)
-1. **Open Command Prompt or PowerShell as Administrator**
-2. **Navigate to the project directory**
-3. **Choose your preferred method**:
+**One tool, multiple ways to use it:**
 
-#### Option 1: Interactive Menu (Easiest)
+#### Option 1: Command-Line (IT Professionals)
 ```batch
 cd scripts\windows
-configure-agent-menu.bat
+pm-agent-config.bat --mode high    # 30% CPU limit
+pm-agent-config.bat --mode low     # 15% CPU limit
+pm-agent-config.bat --status       # Show current settings
 ```
 
-#### Option 2: PowerShell Script (Recommended)
-```powershell
+#### Option 2: Interactive Menu (End Users)
+```batch
 cd scripts\windows
-.\configure-agent.ps1 -Mode high    # or -Mode low
+pm-agent-config.bat --menu
+# Follow the numbered menu prompts
 ```
 
-#### Option 3: Python Script (Advanced)
-```bash
-cd src\windows
-python registry_config.py --mode high    # or --mode low
-```
+#### Option 3: Double-Click (Simplest)
+Just double-click `pm-agent-config.bat` to launch the interactive menu.
 
-### Performance Mode Options
+### Performance Modes
 - **Low Performance**: 15% CPU usage limit (ideal for production servers)
 - **High Performance**: 30% CPU usage limit (ideal for workstations)
 
-See platform-specific documentation:
+### Requirements
+- ✅ Windows 7+ (any edition)
+- ✅ Administrator privileges
+- ✅ DesktopCentral DCAgent installed
+- ✅ **That's it!** No Python, PowerShell modules, or other dependencies
+
+**Advanced**: Optional EXE compilation available for professional deployment packages.
+
+See detailed documentation:
 - [Windows Registry Configuration](src/windows/README.md) ✅ **Available**
 - [Linux Setup](docs/linux-setup.md) *Coming Soon*
 

@@ -24,6 +24,7 @@ REM ============================================================================
 set "MODE="
 set "SHOW_STATUS="
 set "SHOW_HELP="
+set "SHOW_MENU="
 set "VERBOSE="
 
 :parse_args
@@ -70,6 +71,16 @@ if /i "%~1"=="-v" (
     shift
     goto :parse_args
 )
+if /i "%~1"=="--menu" (
+    set "SHOW_MENU=1"
+    shift
+    goto :parse_args
+)
+if /i "%~1"=="-i" (
+    set "SHOW_MENU=1"
+    shift
+    goto :parse_args
+)
 REM Unknown argument
 echo ERROR: Unknown argument: %~1
 echo Use --help for usage information.
@@ -95,6 +106,11 @@ REM Process commands
 if defined SHOW_STATUS (
     call :show_current_settings
     exit /b 0
+)
+
+if defined SHOW_MENU (
+    call :show_interactive_menu
+    exit /b %errorLevel%
 )
 
 if defined MODE (
@@ -152,6 +168,7 @@ REM ============================================================================
     echo                              high = 30%% CPU usage, 200s timeout
     echo.
     echo     --status, -s             Display current registry settings
+    echo     --menu, -i               Show interactive menu
     echo     --help, -h               Show this help message
     echo     --verbose, -v            Enable verbose output
     echo.
@@ -159,6 +176,7 @@ REM ============================================================================
     echo     %~nx0 --mode high        Configure for high performance
     echo     %~nx0 --mode low         Configure for low performance  
     echo     %~nx0 --status           Show current settings
+    echo     %~nx0 --menu             Show interactive menu
     echo.
     echo REQUIREMENTS:
     echo     - Administrator privileges
@@ -286,5 +304,45 @@ REM ============================================================================
         echo Please check the error messages above.
         exit /b 1
     )
+
+:show_interactive_menu
+    echo Interactive Menu Mode
+    echo =====================
+    echo.
+    echo Select Performance Mode:
+    echo.
+    echo 1. Low Performance Mode  (CPU Usage: 15%%, Scan Timeout: 200s)
+    echo 2. High Performance Mode (CPU Usage: 30%%, Scan Timeout: 200s)
+    echo 3. Show Current Settings
+    echo 4. Exit
+    echo.
+
+    :menu_loop
+    set /p choice="Enter your choice (1-4): "
+    
+    if "%choice%"=="1" (
+        echo.
+        call :configure_mode "low"
+        goto :menu_end
+    ) else if "%choice%"=="2" (
+        echo.
+        call :configure_mode "high" 
+        goto :menu_end
+    ) else if "%choice%"=="3" (
+        echo.
+        call :show_current_settings
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="4" (
+        echo Exiting...
+        exit /b 0
+    ) else (
+        echo Invalid choice. Please enter 1, 2, 3, or 4.
+        echo.
+        goto :menu_loop
+    )
+    
+    :menu_end
+    exit /b %errorLevel%
 
 REM End of script

@@ -1,244 +1,192 @@
-# Windows PM Agent Registry Configuration Tool
+# Windows Registry Configuration Tool
 
-This tool configures DesktopCentral DCAgent registry settings with selectable performance options.
+**Zero-dependency solution for configuring DesktopCentral DCAgent registry settings.**
 
-## 🚀 **NEW: Standalone Versions Available!**
+## 🎯 **The Solution**
 
-**No Python Required!** Choose from multiple deployment options:
+A single, comprehensive tool that configures PM Agent registry settings with **no external dependencies**. Choose your preferred interface:
 
-### ✅ **Recommended: Pure Batch Script**
-- **Zero dependencies** - runs on any Windows machine
-- **Single file deployment** - just copy and run
-- **Full command-line interface** with help and status
-- **File**: `scripts/windows/pm-agent-config.bat`
+### ✅ **Primary Tool: Standalone Batch Script**
+**File**: `scripts/windows/pm-agent-config.bat`
 
-### ✅ **Alternative: Compiled Executable**  
-- **Standalone EXE file** - no runtime dependencies
-- **Professional appearance** with version info
-- **Requires Administrator** privileges (built-in UAC prompt)
-- **Build from**: `scripts/windows/pm-agent-config.ps1`
+**Why This is Perfect:**
+- 🚀 **Zero Dependencies** - works on any Windows machine (7 through 11)
+- 📦 **Single File** - just copy and run (10KB)
+- 🎮 **Multiple Interfaces** - command-line AND interactive menu
+- 🔒 **Built-in Security** - administrator privilege checking
+- 📊 **Status Display** - shows current configuration
+- 🔧 **Professional Help** - comprehensive documentation
 
-## Features
+## 🚀 **Quick Start**
 
-- **Performance Mode Selection**: Choose between low (15% CPU) and high (30% CPU) performance modes
-- **Registry Configuration**: Automatically configures both patch scan timeout and CPU usage limits
-- **Multiple Interfaces**: Command-line, PowerShell, and interactive menu options
-- **Administrator Check**: Ensures proper permissions before making changes
-- **Current Settings Display**: View existing registry configurations
-
-## Registry Settings Configured
-
-### Patch Scan Timeout
-- **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent\Patch`
-- **Value**: `Patch_scan_timeout` (DWORD)
-- **Data**: `200` (seconds)
-
-### Thread Max CPU Usage
-- **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent`
-- **Value**: `THRDMAXCPUUSAGE_2C` (DWORD)
-- **Data**: 
-  - Low Performance: `15` (15% CPU usage)
-  - High Performance: `30` (30% CPU usage)
-
-## Usage Options
-
-### 🎯 **Option 1: Standalone Batch Script (RECOMMENDED)**
-
-**Zero dependencies - works on any Windows machine!**
-
+### Command-Line Usage (IT Professionals)
 ```batch
-# Navigate to the scripts directory
-cd scripts\windows
-
-# Configure for high performance
+# Configure for high performance (30% CPU)
 pm-agent-config.bat --mode high
 
-# Configure for low performance
+# Configure for low performance (15% CPU)  
 pm-agent-config.bat --mode low
 
 # Show current settings
 pm-agent-config.bat --status
 
-# Show help
-pm-agent-config.bat --help
+# Interactive menu
+pm-agent-config.bat --menu
 ```
 
-**Features:**
-- ✅ No Python, PowerShell, or other dependencies
-- ✅ Single file deployment (just copy the .bat file)
-- ✅ Full command-line interface
-- ✅ Works on Windows 7+ through Windows 11
-- ✅ Verbose mode available with `--verbose`
-
-### 🎯 **Option 2: Compiled Executable**
-
-**Professional standalone EXE with UAC integration:**
-
+### Interactive Menu (End Users)
 ```batch
-# First, build the executable (one-time setup)
-cd scripts\windows
-powershell -ExecutionPolicy Bypass .\build-exe.ps1
+# Run the interactive menu
+pm-agent-config.bat --menu
 
-# Then use the compiled EXE
+# Follow the on-screen prompts:
+# 1. Low Performance Mode  (15% CPU, 200s timeout)
+# 2. High Performance Mode (30% CPU, 200s timeout)
+# 3. Show Current Settings
+# 4. Exit
+```
+
+### Double-Click Usage
+Simply double-click `pm-agent-config.bat` to launch the interactive menu.
+
+## ⚙️ **What It Configures**
+
+### Registry Settings Modified
+
+#### Patch Scan Timeout
+- **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent\Patch`
+- **Value**: `Patch_scan_timeout` (DWORD)
+- **Data**: `200` seconds (both modes)
+
+#### CPU Usage Limit  
+- **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent`
+- **Value**: `THRDMAXCPUUSAGE_2C` (DWORD)
+- **Data**: 
+  - **Low Performance**: `15` (15% CPU)
+  - **High Performance**: `30` (30% CPU)
+
+### Performance Modes
+
+| Mode | CPU Limit | Use Case | When to Use |
+|------|-----------|----------|-------------|
+| **Low** | 15% | Production servers | Minimal system impact, background operation |
+| **High** | 30% | Workstations | Faster processing, acceptable CPU usage |
+
+## 🔧 **Advanced Options**
+
+### ✅ **Option 2: Compiled Executable (Optional)**
+
+For organizations requiring a professional executable:
+
+**File**: `scripts/windows/pm-agent-config.ps1` (source)  
+**Build**: `scripts/windows/build-exe.ps1` (compiler)
+
+```powershell
+# Build the EXE (one-time setup)
+.\build-exe.ps1
+
+# Use the compiled executable
 pm-agent-config.exe -Mode high
-pm-agent-config.exe -Mode low
 pm-agent-config.exe -Status
 ```
 
-**Build Requirements:**
-- PowerShell 5.1+ (for building only)
-- `ps2exe` module: `Install-Module ps2exe`
+**Features:**
+- Professional EXE with version info
+- UAC integration for administrator privileges
+- Standalone deployment (~1-2MB)
+- Identical functionality to batch script
 
-**Runtime Requirements:**
-- ✅ None! Fully standalone EXE
+## 📋 **Requirements**
 
-### 🔧 **Option 3: Interactive Menu (Simple)**
-**For users who prefer point-and-click:**
+### All Options
+- ✅ **Windows 7+** (including Windows 10, 11, Server editions)
+- ✅ **Administrator privileges** (for registry modification)
+- ✅ **DesktopCentral DCAgent** installed
 
+### Batch Script (Primary)
+- ✅ **No additional requirements** - uses built-in Windows commands
+
+### Compiled EXE (Optional)
+- **Build Requirements**: PowerShell 5.1+, `ps2exe` module
+- **Runtime Requirements**: None (fully standalone)
+
+## 🚀 **Deployment Guide**
+
+### Simple Deployment (Recommended)
+1. **Copy** `pm-agent-config.bat` to target machines
+2. **Run as Administrator** or use right-click "Run as administrator"
+3. **Choose mode** using `--mode high` or `--mode low`
+
+### Enterprise Deployment
 ```batch
-# Double-click or run from command prompt
-configure-agent-menu.bat
+# Automated deployment script
+pm-agent-config.bat --mode low --verbose
+
+# Restart DCAgent service
+net stop DCAgent
+net start DCAgent
 ```
 
-### 🔧 **Option 4: PowerShell Script (IT Admins)**
-```powershell
-# Configure for high performance
-.\configure-agent.ps1 -Mode high
+### Group Policy Deployment
+1. Copy `pm-agent-config.bat` to a network share
+2. Create GPO with startup script:
+   ```batch
+   \\server\share\pm-agent-config.bat --mode low
+   ```
 
-# Configure for low performance
-.\configure-agent.ps1 -Mode low
+## 🔍 **Troubleshooting**
 
-# Show current settings
-.\configure-agent.ps1 -Status
+### Common Issues
 
-# Show help
-.\configure-agent.ps1 -Help
-```
+#### "Administrator privileges required"
+**Solution**: Run as Administrator
+- Right-click Command Prompt → "Run as administrator"
+- Or right-click the batch file → "Run as administrator"
 
-### 🔧 **Option 5: Python Script (Advanced - Requires Python)**
-```bash
-# Configure for high performance
-python registry_config.py --mode high
+#### "Registry key not found"
+**Cause**: DesktopCentral DCAgent not installed or wrong version
+**Solution**: Verify DCAgent installation and version
 
-# Configure for low performance
-python registry_config.py --mode low
-
-# Show current settings
-python registry_config.py --status
-
-# Verbose output
-python registry_config.py --mode high --verbose
-```
-
-## Performance Modes
-
-| Mode | CPU Usage Limit | Patch Scan Timeout | Use Case |
-|------|----------------|-------------------|----------|
-| **Low** | 15% | 200 seconds | Production servers, minimal impact |
-| **High** | 30% | 200 seconds | Workstations, faster processing |
-
-## Requirements
-
-### All Methods
-- **Administrator privileges** (required for registry modification)
-- **DesktopCentral DCAgent** installed
-
-### PowerShell Script
-- **PowerShell 5.1+** (included with Windows 10/Server 2016+)
-
-### Python Script
-- **Python 3.6+** installed and in PATH
-- **winreg module** (included with Python on Windows)
-
-## Installation & Setup
-
-1. **Download/Clone** the repository
-2. **Navigate** to the `scripts/windows/` directory
-3. **Run as Administrator**:
-   - For interactive use: Double-click `configure-agent-menu.bat`
-   - For PowerShell: Open PowerShell as Admin, run `.\configure-agent.ps1`
-   - For Python: Open Command Prompt as Admin, run `python ../../src/windows/registry_config.py`
-
-## Service Restart
-
-After configuration changes, you may need to restart the DCAgent service:
-
-### Using PowerShell
-```powershell
-Restart-Service 'DCAgent' -Force
-```
-
-### Using Command Prompt
+#### Settings not taking effect
+**Solution**: Restart DCAgent service
 ```batch
 net stop DCAgent
 net start DCAgent
 ```
 
-### Using Services GUI
-1. Press `Win + R`, type `services.msc`
-2. Find "DCAgent" service
-3. Right-click → Restart
+### Verification
+```batch
+# Check current configuration
+pm-agent-config.bat --status
 
-## Troubleshooting
-
-### "Access Denied" Error
-- Ensure you're running as Administrator
-- Check if DCAgent service is running and accessible
-
-### "Registry Key Not Found"
-- Verify DesktopCentral DCAgent is installed
-- Check if the software is the correct version (WOW6432Node indicates 32-bit on 64-bit Windows)
-
-### Python Not Found
-- Install Python 3.6+ from python.org
-- Add Python to system PATH during installation
-- Verify with `python --version` in Command Prompt
-
-### PowerShell Execution Policy
-If PowerShell script won't run:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+# Verify registry directly
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent" /v "THRDMAXCPUUSAGE_2C"
 ```
 
-## Files Structure
+## 📁 **File Organization**
 
 ```
 scripts/windows/
-├── configure-agent.ps1           # PowerShell script with full features
-├── configure-agent-menu.bat      # Simple interactive menu
-└── README.md                     # This documentation
+├── pm-agent-config.bat         # 🎯 Primary tool (use this!)
+├── pm-agent-config.ps1         # Source for EXE compilation
+└── build-exe.ps1              # EXE build script
 
 src/windows/
-└── registry_config.py            # Python implementation
+├── README.md                   # This documentation
+└── (no Python files!)         # ✅ Python dependency removed
+
+config/windows/
+└── agent.conf                 # Configuration reference
 ```
 
-## Examples
+## 🎯 **Summary**
 
-### Quick Configuration
-```batch
-# Run the menu version for simple setup
-configure-agent-menu.bat
-# Select option 1 (Low) or 2 (High)
-```
+**Use `pm-agent-config.bat` for everything!**
 
-### Automated Deployment
-```powershell
-# Configure multiple machines for low performance
-.\configure-agent.ps1 -Mode low
+- ✅ **Zero dependencies** - works everywhere
+- ✅ **Command-line AND menu** - fits all users
+- ✅ **Professional features** - status, help, verbose logging
+- ✅ **Single file deployment** - copy and run
+- ✅ **Comprehensive solution** - no need for multiple tools
 
-# Restart service
-Restart-Service 'DCAgent' -Force
-```
-
-### Check Current Configuration
-```powershell
-# Display current settings
-.\configure-agent.ps1 -Status
-```
-
-## Security Notes
-
-- **Administrator rights required**: All tools require elevated privileges to modify registry
-- **Service impact**: Changes may require DCAgent service restart
-- **Backup recommended**: Consider backing up registry keys before modification
-- **Testing**: Test configuration changes in a non-production environment first
+This replaces all previous Windows tools with one superior solution.
