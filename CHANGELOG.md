@@ -118,7 +118,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For support, please:
-1. Check the [troubleshooting guide](src/windows/README.md#troubleshooting)
+1. Check the [troubleshooting guide](docs/windows-guide.md#troubleshooting) or [Linux guide](docs/linux-guide.md#troubleshooting)
 2. Search existing [issues](https://github.com/ivan-madjarov/pm-agent-cfg/issues)
 3. Create a new issue using the appropriate template
 

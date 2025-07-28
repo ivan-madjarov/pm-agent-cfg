@@ -170,13 +170,6 @@ scripts/windows/
 ├── pm-agent-config.bat         # 🎯 Primary tool (use this!)
 ├── pm-agent-config.ps1         # Source for EXE compilation
 └── build-exe.ps1              # EXE build script
-
-src/windows/
-├── README.md                   # This documentation
-└── (no Python files!)         # ✅ Python dependency removed
-
-config/windows/
-└── agent.conf                 # Configuration reference
 ```
 
 ## 🎯 **Summary**

@@ -88,8 +88,8 @@ If applicable, add screenshots or sample output to help explain your changes.
 
 ## Documentation Updates
 - [ ] README.md updated (if needed)
-- [ ] Windows documentation updated (src/windows/README.md)
-- [ ] Linux documentation updated (if applicable)
+- [ ] Windows documentation updated (docs/windows-guide.md)
+- [ ] Linux documentation updated (docs/linux-guide.md)
 - [ ] Configuration examples updated
 - [ ] Troubleshooting guide updated
 - [ ] Deployment guide updated

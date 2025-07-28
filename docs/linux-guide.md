@@ -12,7 +12,8 @@ A comprehensive shell script that manages PM+ Agent CPU throttling settings thro
 - **Multiple interfaces** - command-line AND interactive menu modes
 - **Performance modes** - Low (15%), Medium (20%), High (30%), Ultra (40%) CPU limits
 - **Built-in safety** - automatic backup before changes, rollback support
-- **Service integration** - automatic service restart to apply changes
+- **Service integration** - automatic service restart to apply changes with smart restart options
+- **Service management** - --restart and --no-restart flags for automated deployments
 - **Comprehensive validation** - checks for UEMS agent installation and privileges
 
 ## 🚀 **Quick Start**
@@ -21,8 +22,10 @@ A comprehensive shell script that manages PM+ Agent CPU throttling settings thro
 ```bash
 sudo ./pm-agent-config.sh --mode high    # 30% CPU limit
 sudo ./pm-agent-config.sh --mode low     # 15% CPU limit  
-sudo ./pm-agent-config.sh --status       # Show current settings
+sudo ./pm-agent-config.sh --status       # Show current settings and service status
 sudo ./pm-agent-config.sh --backup       # Create configuration backup
+sudo ./pm-agent-config.sh --mode high --restart     # Configure and restart service
+sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart prompt
 ```
 
 ### Interactive Menu (End Users)
@@ -83,7 +86,7 @@ sudo ./pm-agent-config.sh --mode high     # 30% CPU limit
 sudo ./pm-agent-config.sh --mode ultra    # 40% CPU limit
 
 # Status and information
-sudo ./pm-agent-config.sh --status        # Show current configuration
+sudo ./pm-agent-config.sh --status        # Show current configuration and service status
 sudo ./pm-agent-config.sh --help          # Show help information
 
 # Backup and restore
@@ -93,6 +96,10 @@ sudo ./pm-agent-config.sh --restore       # Restore from backup
 # Interactive mode
 sudo ./pm-agent-config.sh --menu          # Interactive menu
 sudo ./pm-agent-config.sh                 # Default to menu mode
+
+# Service management
+sudo ./pm-agent-config.sh --mode high --restart     # Configure and force restart
+sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart
 ```
 
 ### Advanced Options
@@ -103,8 +110,12 @@ sudo ./pm-agent-config.sh --dry-run --mode high
 # Verbose output (detailed logging)
 sudo ./pm-agent-config.sh --verbose --mode low
 
+# Service management options
+sudo ./pm-agent-config.sh --mode high --restart      # Force restart after config
+sudo ./pm-agent-config.sh --mode low --no-restart    # Skip restart prompt
+
 # Combined options
-sudo ./pm-agent-config.sh --verbose --dry-run --mode medium
+sudo ./pm-agent-config.sh --verbose --dry-run --mode medium --no-restart
 ```
 
 ## 📊 **Interactive Menu**
@@ -125,13 +136,14 @@ Performance Modes:
   4) Ultra Performance (40% CPU limit)
 
 Other Options:
-  5) Show Current Settings
+  5) Show Current Settings and Service Status
   6) Create Backup
   7) Restore from Backup
-  8) Help
-  9) Exit
+  8) Restart PM+ Agent Service
+  9) Help
+  10) Exit
 
-Enter your choice (1-9):
+Enter your choice (1-10):
 ```
 
 ## 🔒 **Security & Safety**
@@ -189,11 +201,13 @@ ls -la /usr/local/manageengine/uems_agent/
 #### "No known UEMS Agent services found"
 ```bash
 # Check service status manually
+systemctl status dcservice
 systemctl status uems_agent
 systemctl status dcagent
 systemctl status manageengine-uems-agent
 
 # Manual restart if needed
+sudo systemctl restart dcservice  # Primary service
 sudo systemctl restart [service_name]
 ```
 
@@ -215,12 +229,14 @@ sudo ./pm-agent-config.sh --status
 jq . /usr/local/manageengine/uems_agent/data/PerformanceSettings.json
 
 # Check service status
+systemctl status dcservice
 systemctl status uems_agent
 ```
 
 ### Log Analysis
 ```bash
 # Check system logs for agent activity
+journalctl -u dcservice -f
 journalctl -u uems_agent -f
 
 # Check agent logs (if available)

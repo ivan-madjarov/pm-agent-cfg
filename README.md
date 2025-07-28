@@ -10,8 +10,9 @@ Cross-platform agent configuration management system supporting both Linux and W
 - 🎮 **Multiple Interfaces** - command-line AND interactive menu in one tool
 - ⚙️ **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - 🔒 **Built-in Security** - administrator privilege checking and validation
-- 📊 **Status Display** - view current registry configurations
-- 📦 **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
+- 📊 **Status Display** - view current registry configurations and service status
+- � **Service Management** - automatic agent service restart with --restart/--no-restart options
+- �📦 **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
 
 **Bonus**: Optional PowerShell-to-EXE compilation for professional deployment packages.
 
@@ -21,9 +22,9 @@ Cross-platform agent configuration management system supporting both Linux and W
 - 🎮 **Multiple Interfaces** - command-line AND interactive menu modes
 - ⚙️ **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - 🔒 **Built-in Security** - root privilege checking and automatic backups
-- 📊 **Status Display** - view current JSON configurations with pretty printing
+- 📊 **Status Display** - view current JSON configurations and service status
+- 🔄 **Service Management** - intelligent service restart with --restart/--no-restart options
 - 📦 **Single File Deployment** - copy `pm-agent-config.sh` and run
-- 🔄 **Service Integration** - automatic UEMS agent service restart
 
 See platform-specific guides:
 - [Windows Configuration Guide](docs/windows-guide.md) ✅ **Available**
