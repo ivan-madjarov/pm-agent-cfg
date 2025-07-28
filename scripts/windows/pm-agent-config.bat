@@ -18,6 +18,9 @@ set "LOW_CPU=15"
 set "HIGH_CPU=30" 
 set "TIMEOUT=200"
 
+REM Service settings
+set "SERVICE_NAME=ManageEngine UEMS - Agent"
+
 REM ============================================================================
 REM Command Line Argument Processing
 REM ============================================================================
@@ -26,6 +29,8 @@ set "SHOW_STATUS="
 set "SHOW_HELP="
 set "SHOW_MENU="
 set "VERBOSE="
+set "RESTART_SERVICE="
+set "NO_RESTART="
 
 :parse_args
 if "%~1"=="" goto :args_done
@@ -78,6 +83,16 @@ if /i "%~1"=="--menu" (
 )
 if /i "%~1"=="-i" (
     set "SHOW_MENU=1"
+    shift
+    goto :parse_args
+)
+if /i "%~1"=="--restart" (
+    set "RESTART_SERVICE=1"
+    shift
+    goto :parse_args
+)
+if /i "%~1"=="--no-restart" (
+    set "NO_RESTART=1"
     shift
     goto :parse_args
 )
@@ -167,16 +182,19 @@ REM ============================================================================
     echo                              low  = 15%% CPU usage, 200s timeout
     echo                              high = 30%% CPU usage, 200s timeout
     echo.
-    echo     --status, -s             Display current registry settings
+    echo     --status, -s             Display current registry settings and service status
     echo     --menu, -i               Show interactive menu
+    echo     --restart                Force service restart after configuration
+    echo     --no-restart             Skip service restart prompt
     echo     --help, -h               Show this help message
     echo     --verbose, -v            Enable verbose output
     echo.
     echo EXAMPLES:
     echo     %~nx0 --mode high        Configure for high performance
-    echo     %~nx0 --mode low         Configure for low performance  
-    echo     %~nx0 --status           Show current settings
+    echo     %~nx0 --mode low --restart  Configure and restart service 
+    echo     %~nx0 --status           Show current settings and service status
     echo     %~nx0 --menu             Show interactive menu
+    echo     %~nx0 --mode high --no-restart  Configure without restart prompt
     echo.
     echo REQUIREMENTS:
     echo     - Administrator privileges
@@ -227,6 +245,22 @@ REM ============================================================================
         )
     ) else (
         echo Current Performance Mode: UNKNOWN
+    )
+    
+    echo.
+    echo PM+ Agent Service Status:
+    echo ========================
+    call :check_service_status
+    if %errorLevel% equ 0 (
+        if "!SERVICE_STATE!"=="RUNNING" (
+            echo Service Status: ✓ RUNNING
+        ) else if "!SERVICE_STATE!"=="STOPPED" (
+            echo Service Status: ✗ STOPPED
+        ) else (
+            echo Service Status: !SERVICE_STATE!
+        )
+    ) else (
+        echo Service Status: ✗ NOT FOUND or ACCESS DENIED
     )
     
     exit /b 0
@@ -286,14 +320,15 @@ REM ============================================================================
         echo ✓ Configuration applied successfully!
         echo ═══════════════════════════════════════
         echo.
-        echo IMPORTANT: You may need to restart the DCAgent service
-        echo for changes to take effect:
-        echo.
-        echo   net stop DCAgent
-        echo   net start DCAgent
-        echo.
-        echo Or use PowerShell:
-        echo   Restart-Service 'DCAgent' -Force
+        
+        REM Handle service restart
+        if defined RESTART_SERVICE (
+            call :restart_agent_service
+        ) else if not defined NO_RESTART (
+            call :prompt_service_restart
+        ) else (
+            echo Service restart skipped (--no-restart specified)
+        )
         exit /b 0
     ) else (
         echo ═══════════════════════════════════════
@@ -313,12 +348,13 @@ REM ============================================================================
     echo.
     echo 1. Low Performance Mode  (CPU Usage: 15%%, Scan Timeout: 200s)
     echo 2. High Performance Mode (CPU Usage: 30%%, Scan Timeout: 200s)
-    echo 3. Show Current Settings
-    echo 4. Exit
+    echo 3. Show Current Settings and Service Status
+    echo 4. Restart PM+ Agent Service
+    echo 5. Exit
     echo.
 
     :menu_loop
-    set /p choice="Enter your choice (1-4): "
+    set /p choice="Enter your choice (1-5): "
     
     if "%choice%"=="1" (
         echo.
@@ -334,15 +370,103 @@ REM ============================================================================
         echo.
         goto :menu_loop
     ) else if "%choice%"=="4" (
+        echo.
+        call :restart_agent_service
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="5" (
         echo Exiting...
         exit /b 0
     ) else (
-        echo Invalid choice. Please enter 1, 2, 3, or 4.
+        echo Invalid choice. Please enter 1, 2, 3, 4, or 5.
         echo.
         goto :menu_loop
     )
     
     :menu_end
     exit /b %errorLevel%
+
+REM ============================================================================
+REM Service Management Functions
+REM ============================================================================
+
+:check_service_status
+    if defined VERBOSE echo [VERBOSE] Checking service status: %SERVICE_NAME%
+    sc query "%SERVICE_NAME%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        for /f "tokens=3" %%a in ('sc query "%SERVICE_NAME%" ^| findstr "STATE"') do (
+            set "SERVICE_STATE=%%a"
+        )
+        if defined VERBOSE echo [VERBOSE] Service state: !SERVICE_STATE!
+        exit /b 0
+    ) else (
+        if defined VERBOSE echo [VERBOSE] Service not found or not accessible
+        exit /b 1
+    )
+
+:restart_agent_service
+    echo Restarting PM+ Agent service to apply changes...
+    echo.
+    
+    call :check_service_status
+    if %errorLevel% neq 0 (
+        echo WARNING: Service "%SERVICE_NAME%" not found or not accessible
+        echo Please restart the agent service manually
+        exit /b 1
+    )
+    
+    echo Stopping service: %SERVICE_NAME%
+    if defined VERBOSE echo [VERBOSE] Executing: net stop "%SERVICE_NAME%"
+    net stop "%SERVICE_NAME%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo ✓ Service stopped successfully
+    ) else (
+        echo ✗ Failed to stop service (error code: %errorLevel%)
+        echo Please stop the service manually
+        exit /b 1
+    )
+    
+    echo Waiting for service to stop completely...
+    timeout /t 3 /nobreak >nul 2>&1
+    
+    echo Starting service: %SERVICE_NAME%
+    if defined VERBOSE echo [VERBOSE] Executing: net start "%SERVICE_NAME%"
+    net start "%SERVICE_NAME%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo ✓ Service started successfully
+        echo.
+        echo ✓ PM+ Agent service restarted - configuration changes are now active
+    ) else (
+        echo ✗ Failed to start service (error code: %errorLevel%)
+        echo Please start the service manually
+        exit /b 1
+    )
+    exit /b 0
+
+:prompt_service_restart
+    echo IMPORTANT: Service restart required for changes to take effect
+    echo.
+    
+    call :check_service_status
+    if %errorLevel% neq 0 (
+        echo WARNING: Service "%SERVICE_NAME%" not found or not accessible
+        echo Please restart the agent service manually
+        exit /b 0
+    )
+    
+    echo Current service status: !SERVICE_STATE!
+    echo.
+    set /p restart_choice="Restart PM+ Agent service now? (y/N): "
+    
+    if /i "!restart_choice!"=="y" (
+        echo.
+        call :restart_agent_service
+    ) else (
+        echo.
+        echo Service restart skipped. To apply changes, restart manually:
+        echo   net stop "%SERVICE_NAME%"
+        echo   net start "%SERVICE_NAME%"
+    )
+    exit /b 0
 
 REM End of script

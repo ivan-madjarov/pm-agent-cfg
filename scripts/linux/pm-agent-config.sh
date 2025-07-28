@@ -36,6 +36,8 @@ readonly NC='\033[0m' # No Color
 # Global flags
 VERBOSE=false
 DRY_RUN=false
+RESTART_SERVICE=false
+NO_RESTART=false
 
 # Logging functions
 log_info() {
@@ -97,6 +99,8 @@ OPTIONS:
     --restore          Restore from backup
     --menu             Interactive menu mode
     --dry-run          Show what would be changed without applying
+    --restart          Force service restart after configuration
+    --no-restart       Skip service restart prompt
     --verbose          Enable verbose output
     --help             Show this help message
 
@@ -108,10 +112,11 @@ PERFORMANCE MODES:
 
 EXAMPLES:
     sudo $SCRIPT_NAME --mode high
+    sudo $SCRIPT_NAME --mode low --restart
     sudo $SCRIPT_NAME --status
     sudo $SCRIPT_NAME --menu
     sudo $SCRIPT_NAME --backup
-    sudo $SCRIPT_NAME --dry-run --mode low
+    sudo $SCRIPT_NAME --dry-run --mode low --no-restart
 
 REQUIREMENTS:
     - Root/sudo privileges
@@ -163,7 +168,13 @@ restore_backup() {
     else
         cp "$BACKUP_FILE" "$CONFIG_FILE"
         log_success "Configuration restored from backup"
-        restart_agent_services
+        if [[ "$RESTART_SERVICE" == "true" ]]; then
+            restart_agent_services
+        elif [[ "$NO_RESTART" == "false" ]]; then
+            prompt_service_restart
+        else
+            log_info "Service restart skipped (--no-restart specified)"
+        fi
     fi
 }
 
@@ -194,6 +205,32 @@ show_current_settings() {
         echo ""
         log_info "File size: $(du -h "$CONFIG_FILE" | cut -f1)"
         log_info "Last modified: $(stat -c %y "$CONFIG_FILE")"
+        
+        # Show service status
+        echo ""
+        echo "PM+ Agent Service Status:"
+        echo "========================"
+        local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
+        local found_service=false
+        
+        for service in "${services[@]}"; do
+            if systemctl list-unit-files --no-legend --no-pager | grep -q "^$service.service"; then
+                local status=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
+                if [[ "$status" == "active" ]]; then
+                    echo "Service Status ($service): ✓ RUNNING"
+                elif [[ "$status" == "inactive" ]]; then
+                    echo "Service Status ($service): ✗ STOPPED"
+                else
+                    echo "Service Status ($service): $status"
+                fi
+                found_service=true
+                break
+            fi
+        done
+        
+        if [[ "$found_service" == "false" ]]; then
+            echo "Service Status: ✗ NO KNOWN SERVICES FOUND"
+        fi
     else
         log_warning "No performance configuration file found"
         log_info "Expected location: $CONFIG_FILE"
@@ -251,7 +288,13 @@ set_performance_mode() {
         fi
         
         # Restart services to apply changes
-        restart_agent_services
+        if [[ "$RESTART_SERVICE" == "true" ]]; then
+            restart_agent_services
+        elif [[ "$NO_RESTART" == "false" ]]; then
+            prompt_service_restart
+        else
+            log_info "Service restart skipped (--no-restart specified)"
+        fi
     else
         log_error "Failed to write configuration file"
         exit 1
@@ -262,7 +305,7 @@ set_performance_mode() {
 restart_agent_services() {
     log_info "Restarting UEMS Agent services to apply changes..."
     
-    local services=("uems_agent" "dcagent" "manageengine-uems-agent")
+    local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
     local restarted=false
     
     for service in "${services[@]}"; do
@@ -287,6 +330,45 @@ restart_agent_services() {
     fi
 }
 
+# Prompt user for service restart
+prompt_service_restart() {
+    echo ""
+    log_info "IMPORTANT: Service restart required for changes to take effect"
+    
+    local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
+    local active_service=""
+    
+    # Find active service
+    for service in "${services[@]}"; do
+        if systemctl is-active --quiet "$service" 2>/dev/null; then
+            active_service="$service"
+            break
+        fi
+    done
+    
+    if [[ -n "$active_service" ]]; then
+        log_info "Found active service: $active_service"
+        echo ""
+        read -p "Restart PM+ Agent service now? [y/N]: " -n 1 -r
+        echo ""
+        
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            log_info "Restarting service: $active_service"
+            systemctl restart "$active_service" && {
+                log_success "Service restarted successfully - configuration changes are now active"
+            } || {
+                log_error "Failed to restart service"
+            }
+        else
+            log_info "Service restart skipped. To apply changes manually:"
+            log_info "  sudo systemctl restart $active_service"
+        fi
+    else
+        log_warning "No active UEMS Agent services found"
+        log_info "Please restart the agent service manually"
+    fi
+}
+
 # Interactive menu
 show_menu() {
     while true; do
@@ -301,13 +383,14 @@ show_menu() {
         echo "  4) Ultra Performance (40% CPU limit)"
         echo ""
         echo "Other Options:"
-        echo "  5) Show Current Settings"
+        echo "  5) Show Current Settings and Service Status"
         echo "  6) Create Backup"
         echo "  7) Restore from Backup"
-        echo "  8) Help"
-        echo "  9) Exit"
+        echo "  8) Restart PM+ Agent Service"
+        echo "  9) Help"
+        echo "  10) Exit"
         echo ""
-        read -p "Enter your choice (1-9): " choice
+        read -p "Enter your choice (1-10): " choice
         
         case $choice in
             1) set_performance_mode "low"; read -p "Press Enter to continue..."; ;;
@@ -317,9 +400,10 @@ show_menu() {
             5) show_current_settings; read -p "Press Enter to continue..."; ;;
             6) create_backup; read -p "Press Enter to continue..."; ;;
             7) restore_backup; read -p "Press Enter to continue..."; ;;
-            8) show_help; read -p "Press Enter to continue..."; ;;
-            9) log_info "Exiting..."; exit 0; ;;
-            *) log_error "Invalid choice. Please select 1-9."; sleep 2; ;;
+            8) restart_agent_services; read -p "Press Enter to continue..."; ;;
+            9) show_help; read -p "Press Enter to continue..."; ;;
+            10) log_info "Exiting..."; exit 0; ;;
+            *) log_error "Invalid choice. Please select 1-10."; sleep 2; ;;
         esac
     done
 }
@@ -351,6 +435,12 @@ parse_arguments() {
                 ;;
             --dry-run)
                 DRY_RUN=true
+                ;;
+            --restart)
+                RESTART_SERVICE=true
+                ;;
+            --no-restart)
+                NO_RESTART=true
                 ;;
             --verbose)
                 VERBOSE=true
