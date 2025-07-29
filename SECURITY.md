@@ -1,8 +1,13 @@
 # Security Policy
 
+**Mitel Networks Corporation - Internal Project**
+
+## Important Notice
+This security policy applies to Mitel's proprietary PM+ Agent Configuration tool. This software is for internal use by authorized Mitel personnel and designated partners only.
+
 ## Supported Versions
 
-We actively support and provide security updates for the following versions:
+Mitel actively supports and provides security updates for the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,13 +16,14 @@ We actively support and provide security updates for the following versions:
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in the PM+ Agent Configuration tool, please report it responsibly:
+If you discover a security vulnerability in the PM+ Agent Configuration tool, please report it through Mitel's internal security channels:
 
-### Private Disclosure
+### Internal Disclosure Process
 
-1. **Do NOT** create a public GitHub issue for security vulnerabilities
-2. **Email** the maintainers directly at: [security contact email]
-3. **Include** the following information:
+1. **Do NOT** create public issues or external reports for security vulnerabilities
+2. **Contact** Mitel Security Team directly at: security@mitel.com
+3. **Use** Mitel's internal vulnerability reporting system if available
+4. **Include** the following information:
    - Description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact assessment
@@ -26,21 +32,24 @@ If you discover a security vulnerability in the PM+ Agent Configuration tool, pl
 
 ### Response Timeline
 
-- **Initial Response**: Within 48 hours of report
-- **Assessment**: Within 5 business days
+- **Initial Response**: Within 24 hours of report (Mitel business hours)
+- **Assessment**: Within 3 business days
 - **Fix Development**: Timeline depends on severity and complexity
-- **Public Disclosure**: After fix is released (coordinated disclosure)
+- **Internal Notification**: Immediate for critical vulnerabilities
+- **Documentation**: Security incident logged in Mitel's internal systems
 
-### Security Best Practices
+### Security Best Practices for Mitel Environments
 
-When using this tool:
+When deploying this tool in Mitel infrastructure:
 
-1. **Run with Administrator/Root privileges only when necessary**
-2. **Validate registry/configuration changes** before applying
-3. **Test in non-production environments first**
-4. **Keep tool updated** to the latest version
-5. **Secure script storage** - protect batch/shell scripts from unauthorized modification
-6. **Audit configuration changes** - log and review what changes are made
+1. **Follow Mitel security policies** and procedures for internal tools
+2. **Run with Administrator/Root privileges only when necessary**
+3. **Validate registry/configuration changes** before applying in production
+4. **Test in Mitel development environments first**
+5. **Keep tool updated** to the latest approved version
+6. **Secure script storage** - protect batch/shell scripts from unauthorized modification
+7. **Audit configuration changes** - log and review what changes are made
+8. **Use Mitel-approved deployment methods** only
 
 ### Vulnerability Severity Classification
 

@@ -2,10 +2,17 @@
 
 All notable changes to the PM+ Agent Configuration tool will be documented in this file.
 
+**Mitel Networks Corporation - Internal Project**
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Updated license to Mitel proprietary
+- Enhanced documentation for internal Mitel use
+- Updated repository references for internal distribution
+
 ### Added
 - Comprehensive CI/CD workflow with Windows and Linux testing
 - Security policy with vulnerability reporting procedures

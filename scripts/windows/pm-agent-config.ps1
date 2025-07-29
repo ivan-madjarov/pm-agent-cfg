@@ -1,4 +1,6 @@
 # PM+ Agent Registry Configuration Tool - Compilable PowerShell Version
+# Copyright (c) 2024-2025 Mitel Networks Corporation - Proprietary Software
+# Authorized for use by Mitel personnel and designated partners only
 # Can be compiled to EXE using ps2exe or similar tools
 
 param(

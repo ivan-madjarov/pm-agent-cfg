@@ -1,5 +1,7 @@
 @echo off
 REM PM+ Agent Registry Configuration Tool - Standalone Version
+REM Copyright (c) 2024-2025 Mitel Networks Corporation - Proprietary Software
+REM Authorized for use by Mitel personnel and designated partners only
 REM No Python required - Pure Windows batch script
 REM Configures DesktopCentral DCAgent registry settings with performance options
 

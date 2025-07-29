@@ -1,21 +1,28 @@
-MIT License
+PROPRIETARY SOFTWARE LICENSE
 
-Copyright (c) 2024 Ivan Madjarov
+Copyright (c) 2024-2025 Mitel Networks Corporation
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and associated documentation files (the "Software") are proprietary
+to Mitel Networks Corporation and are protected by copyright, trade secret, and
+other intellectual property laws.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+RESTRICTED RIGHTS: This Software is licensed, not sold. You may not use, copy,
+modify, merge, publish, distribute, sublicense, sell, or transfer copies of the
+Software, or permit any third party to do so, except as expressly permitted
+under this license.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+AUTHORIZED USE: This Software is provided solely for use by authorized Mitel
+personnel and designated partners for internal business purposes related to
+Mitel products and services. Any use outside of this scope is strictly prohibited.
+
+NO WARRANTY: THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+MITEL DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+AND NON-INFRINGEMENT.
+
+LIMITATION OF LIABILITY: IN NO EVENT SHALL MITEL BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+For questions regarding this license, contact: legal@mitel.com

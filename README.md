@@ -1,6 +1,8 @@
 # PM+ Agent Configuration
 
-Cross-platform agent configuration management system supporting both Linux and Windows environments.
+**Mitel Networks Corporation - Internal Tool**
+
+Cross-platform agent configuration management system supporting both Linux and Windows environments for Mitel's PM+ (Performance Monitoring Plus) infrastructure.
 
 ## Current Features
 
@@ -47,7 +49,7 @@ pm-agent-cfg/
 ├── CONTRIBUTING.md        # Development guidelines
 ├── DEPLOYMENT.md          # Deployment instructions
 ├── SECURITY.md            # Security policy
-├── LICENSE                # MIT license
+├── LICENSE                # Mitel proprietary license
 └── README.md              # This file
 ```
 
@@ -158,6 +160,9 @@ See detailed platform documentation:
 - Linux: `./scripts/linux/build.sh` (creates executable and copies to dist/)
 - Windows: `.\scripts\windows\build-exe.ps1` (optional - compiles PowerShell to EXE)
 
+### Internal Usage Guidelines
+**IMPORTANT**: This tool is proprietary to Mitel Networks Corporation and is intended for internal use only by authorized Mitel personnel and designated partners.
+
 ### Usage Testing
 - Linux: Test with `sudo ./scripts/linux/pm-agent-config.sh --help`
 - Windows: Test with `.\scripts\windows\pm-agent-config.bat --help`
@@ -166,6 +171,8 @@ See detailed platform documentation:
 The scripts are self-contained and require no external dependencies beyond the target platform's built-in shell capabilities.
 
 ## Deployment
+
+**IMPORTANT**: This is proprietary Mitel software. Only deploy within authorized Mitel infrastructure and follow all Mitel security policies and procedures.
 
 ### Single Server Deployment
 Copy the appropriate script to your target system and run:

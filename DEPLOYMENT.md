@@ -1,6 +1,10 @@
 # PM+ Agent Configuration - Deployment Guide
 
-## 🚀 **Quick Deployment**
+**Mitel Networks Corporation - Internal Tool**
+
+**IMPORTANT**: This tool is proprietary to Mitel Networks Corporation and is intended for deployment within Mitel infrastructure only. Authorized Mitel personnel and designated partners should follow these deployment procedures.
+
+## 🚀 **Internal Deployment Procedures**
 
 ### Windows - Single Machine
 1. **Download** the script: `scripts/windows/pm-agent-config.bat`
@@ -32,11 +36,11 @@ for server in server1 server2 server3; do
 done
 ```
 
-### For Enterprise (Group Policy)
-1. **Copy** `pm-agent-config.bat` to SYSVOL
+### For Mitel Enterprise (Group Policy)
+1. **Copy** `pm-agent-config.bat` to Mitel's internal SYSVOL
 2. **Create GPO** with Computer Startup Script:
    ```batch
-   \\domain.com\sysvol\domain.com\scripts\pm-agent-config.bat --mode low
+   \\mitel.domain\sysvol\mitel.domain\scripts\pm-agent-config.bat --mode low
    ```
 
 ## 📋 **Verification Script**

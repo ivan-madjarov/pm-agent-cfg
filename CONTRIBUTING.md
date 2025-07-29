@@ -1,6 +1,11 @@
 # Contributing to PM+ Agent Configuration
 
-Thank you for your interest in contributing to the PM+ Agent Configuration tool! This document provides guidelines for contributing to this cross-platform project.
+**Mitel Networks Corporation - Internal Project**
+
+Thank you for your interest in contributing to the PM+ Agent Configuration tool! This document provides guidelines for Mitel personnel and authorized partners contributing to this internal project.
+
+## Important Notice
+This is proprietary software owned by Mitel Networks Corporation. Contributions are limited to authorized Mitel employees and designated partners only. All contributions become the property of Mitel Networks Corporation.
 
 ## How to Contribute
 
@@ -26,7 +31,7 @@ Thank you for your interest in contributing to the PM+ Agent Configuration tool!
 
 **For Windows Development:**
 ```batch
-git clone https://github.com/ivan-madjarov/pm-agent-cfg.git
+git clone <internal-mitel-repository-url>
 cd pm-agent-cfg
 # Test the batch script
 scripts\windows\pm-agent-config.bat --help
@@ -34,20 +39,21 @@ scripts\windows\pm-agent-config.bat --help
 
 **For Linux Development:**
 ```bash
-git clone https://github.com/ivan-madjarov/pm-agent-cfg.git
+git clone <internal-mitel-repository-url>
 cd pm-agent-cfg
 # Test shell scripts
 sudo bash scripts/linux/pm-agent-config.sh --help
 ```
 
 #### Making Changes
-1. Fork the repository
+1. Fork the internal repository (or create a feature branch if you have direct access)
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
 4. Test your changes thoroughly on target platforms
 5. Update documentation if needed
 6. Commit your changes with conventional commit messages
 7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Create a Pull Request for internal review
 8. Open a Pull Request using the provided template
 
 #### Code Style and Standards

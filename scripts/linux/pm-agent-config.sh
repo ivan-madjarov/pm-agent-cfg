@@ -1,5 +1,7 @@
 #!/bin/bash
 # PM+ Agent Configuration Tool - Linux Version
+# Copyright (c) 2024-2025 Mitel Networks Corporation - Proprietary Software
+# Authorized for use by Mitel personnel and designated partners only
 # Configures DesktopCentral UEMS Agent performance settings via JSON configuration
 
 set -e
