@@ -4,33 +4,40 @@
 
 Cross-platform agent configuration management system supporting both Linux and Windows environments for Mitel's PM+ (Performance Monitoring Plus) infrastructure.
 
+> **[!] CRITICAL REQUIREMENT [!]**  
+> **ALL CONFIGURATION SCRIPTS MUST BE EXECUTED WITH ELEVATED PRIVILEGES**
+> - **Windows**: Run as Administrator (right-click → "Run as administrator")
+> - **Linux**: Execute with sudo or root privileges
+> 
+> **These tools modify system registry/configuration files and will fail without proper elevation!**
+
 ## Current Features
 
-### Windows Registry Configuration Tool ✅
+### Windows Registry Configuration Tool [READY]
 **Zero-dependency solution** for configuring DesktopCentral DCAgent registry settings:
-- 🚀 **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
-- 🎮 **Multiple Interfaces** - command-line AND interactive menu in one tool
-- ⚙️ **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
-- 🔒 **Built-in Security** - administrator privilege checking and validation
-- 📊 **Status Display** - view current registry configurations and service status
-- � **Service Management** - automatic agent service restart with --restart/--no-restart options
-- �📦 **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
+- **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
+- **Multiple Interfaces** - command-line AND interactive menu in one tool
+- **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
+- **Built-in Security** - administrator privilege checking and validation
+- **Status Display** - view current registry configurations and service status
+- **Service Management** - automatic agent service restart with --restart/--no-restart options
+- **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
 
 **Bonus**: Optional PowerShell-to-EXE compilation for professional deployment packages.
 
-### Linux JSON Configuration Tool ✅
+### Linux JSON Configuration Tool [READY]
 **Zero-dependency solution** for configuring DesktopCentral UEMS Agent performance settings:
-- 🚀 **Shell Script** - pure bash with no external dependencies
-- 🎮 **Multiple Interfaces** - command-line AND interactive menu modes
-- ⚙️ **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
-- 🔒 **Built-in Security** - root privilege checking and automatic backups
-- 📊 **Status Display** - view current JSON configurations and service status
-- 🔄 **Service Management** - intelligent service restart with --restart/--no-restart options
-- 📦 **Single File Deployment** - copy `pm-agent-config.sh` and run
+- **Shell Script** - pure bash with no external dependencies
+- **Multiple Interfaces** - command-line AND interactive menu modes
+- **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
+- **Built-in Security** - root privilege checking and automatic backups
+- **Status Display** - view current JSON configurations and service status
+- **Service Management** - intelligent service restart with --restart/--no-restart options
+- **Single File Deployment** - copy `pm-agent-config.sh` and run
 
 See platform-specific guides:
-- [Windows Configuration Guide](docs/windows-guide.md) ✅ **Available**
-- [Linux Configuration Guide](docs/linux-guide.md) ✅ **Available**
+- [Windows Configuration Guide](docs/windows-guide.md) **Available**
+- [Linux Configuration Guide](docs/linux-guide.md) **Available**
 
 ## Project Structure
 
@@ -78,11 +85,17 @@ Both implementations provide identical user experiences while using platform-app
 
 ## Getting Started
 
-### Windows Registry Configuration ✅
+> **[KEY] ADMINISTRATIVE PRIVILEGES REQUIRED [KEY]**  
+> All commands below must be executed with elevated privileges:
+> - **Windows**: Open Command Prompt as Administrator
+> - **Linux**: Use sudo or run as root
+
+### Windows Registry Configuration [READY]
 **One tool, multiple ways to use it:**
 
 #### Option 1: Command-Line (IT Professionals)
 ```batch
+# IMPORTANT: Run Command Prompt as Administrator first!
 cd scripts\windows
 pm-agent-config.bat --mode high    # 30% CPU limit
 pm-agent-config.bat --mode low     # 15% CPU limit
@@ -91,19 +104,21 @@ pm-agent-config.bat --status       # Show current settings
 
 #### Option 2: Interactive Menu (End Users)
 ```batch
+# IMPORTANT: Run Command Prompt as Administrator first!
 cd scripts\windows
 pm-agent-config.bat --menu
 # Follow the numbered menu prompts
 ```
 
 #### Option 3: Double-Click (Simplest)
-Just double-click `pm-agent-config.bat` to launch the interactive menu.
+**IMPORTANT**: Right-click `pm-agent-config.bat` → "Run as administrator" to launch the interactive menu.
 
-### Linux JSON Configuration ✅
+### Linux JSON Configuration [READY]
 **Comprehensive shell script with multiple interfaces:**
 
 #### Option 1: Command-Line (IT Professionals)
 ```bash
+# IMPORTANT: Use sudo or run as root!
 cd scripts/linux
 sudo ./pm-agent-config.sh --mode high    # 30% CPU limit
 sudo ./pm-agent-config.sh --mode low     # 15% CPU limit
@@ -112,6 +127,7 @@ sudo ./pm-agent-config.sh --status       # Show current settings
 
 #### Option 2: Interactive Menu (End Users)
 ```bash
+# IMPORTANT: Use sudo or run as root!
 cd scripts/linux
 sudo ./pm-agent-config.sh --menu
 # Follow the numbered menu prompts
@@ -119,6 +135,7 @@ sudo ./pm-agent-config.sh --menu
 
 #### Option 3: Default Behavior
 ```bash
+# IMPORTANT: Use sudo or run as root!
 sudo ./pm-agent-config.sh
 # Launches interactive menu by default
 ```
@@ -131,17 +148,20 @@ sudo ./pm-agent-config.sh
 
 ### Requirements
 
+> **[!] ELEVATION REQUIRED [!]**  
+> **BOTH PLATFORMS REQUIRE ELEVATED PRIVILEGES - NON-NEGOTIABLE!**
+
 #### Windows
-- ✅ Windows 7+ (any edition)
-- ✅ Administrator privileges
-- ✅ DesktopCentral DCAgent installed
-- ✅ **That's it!** No Python, PowerShell modules, or other dependencies
+- [OK] Windows 7+ (any edition)
+- **[CRITICAL]**: Administrator privileges (Run as Administrator)
+- [OK] DesktopCentral DCAgent installed
+- [OK] **That's it!** No Python, PowerShell modules, or other dependencies
 
 #### Linux
-- ✅ Linux (CentOS, Ubuntu, RHEL, Debian)
-- ✅ Root/sudo privileges
-- ✅ DesktopCentral UEMS Agent installed
-- ✅ **That's it!** No external dependencies (pure bash)
+- [OK] Linux (CentOS, Ubuntu, RHEL, Debian)
+- **[CRITICAL]**: Root/sudo privileges (must run with sudo)
+- [OK] DesktopCentral UEMS Agent installed
+- [OK] **That's it!** No external dependencies (pure bash)
 
 **Advanced**: Optional EXE compilation available for Windows professional deployment packages.
 
@@ -165,7 +185,7 @@ See detailed platform documentation:
 
 ### Usage Testing
 - Linux: Test with `sudo ./scripts/linux/pm-agent-config.sh --help`
-- Windows: Test with `.\scripts\windows\pm-agent-config.bat --help`
+- Windows: **Run Command Prompt as Administrator**, then test with `.\scripts\windows\pm-agent-config.bat --help`
 - Both platforms: Use `--dry-run` flag to preview changes without applying them
 
 The scripts are self-contained and require no external dependencies beyond the target platform's built-in shell capabilities.
@@ -174,12 +194,19 @@ The scripts are self-contained and require no external dependencies beyond the t
 
 **IMPORTANT**: This is proprietary Mitel software. Only deploy within authorized Mitel infrastructure and follow all Mitel security policies and procedures.
 
+> **[!] DEPLOYMENT CRITICAL REQUIREMENT [!]**  
+> **ALL DEPLOYMENTS MUST ENSURE ELEVATED PRIVILEGE EXECUTION**
+> - Windows: Ensure scripts run "As Administrator"
+> - Linux: Ensure scripts run with sudo/root privileges
+> - **Deployment will fail without proper elevation!**
+
 ### Single Server Deployment
-Copy the appropriate script to your target system and run:
+Copy the appropriate script to your target system and run with proper privileges:
 
 #### Windows
 ```batch
 # Copy pm-agent-config.bat to target Windows server
+# CRITICAL: Open Command Prompt as Administrator
 # Run with administrator privileges
 pm-agent-config.bat --mode high
 ```
@@ -187,7 +214,7 @@ pm-agent-config.bat --mode high
 #### Linux  
 ```bash
 # Copy pm-agent-config.sh to target Linux server
-# Run with sudo privileges
+# CRITICAL: Run with sudo privileges
 sudo ./pm-agent-config.sh --mode high
 ```
 

@@ -177,7 +177,7 @@ REM ============================================================================
     echo     No Python installation required - pure Windows batch script.
     echo.
     echo USAGE:
-    echo     %~nx0 [OPTIONS]
+    echo     pm-agent-config.bat [OPTIONS]
     echo.
     echo OPTIONS:
     echo     --mode, -m ^<low^|high^>    Set performance mode
@@ -192,11 +192,11 @@ REM ============================================================================
     echo     --verbose, -v            Enable verbose output
     echo.
     echo EXAMPLES:
-    echo     %~nx0 --mode high        Configure for high performance
-    echo     %~nx0 --mode low --restart  Configure and restart service 
-    echo     %~nx0 --status           Show current settings and service status
-    echo     %~nx0 --menu             Show interactive menu
-    echo     %~nx0 --mode high --no-restart  Configure without restart prompt
+    echo     pm-agent-config.bat --mode high        Configure for high performance
+    echo     pm-agent-config.bat --mode low --restart  Configure and restart service 
+    echo     pm-agent-config.bat --status           Show current settings and service status
+    echo     pm-agent-config.bat --menu             Show interactive menu
+    echo     pm-agent-config.bat --mode high --no-restart  Configure without restart prompt
     echo.
     echo REQUIREMENTS:
     echo     - Administrator privileges
@@ -204,10 +204,10 @@ REM ============================================================================
     echo.
     echo REGISTRY KEYS MODIFIED:
     echo     %PATCH_KEY%
-    echo     └── %PATCH_TIMEOUT_VALUE% (DWORD)
+    echo     +-- %PATCH_TIMEOUT_VALUE% (DWORD)
     echo.
     echo     %AGENT_KEY%
-    echo     └── %CPU_USAGE_VALUE% (DWORD)
+    echo     +-- %CPU_USAGE_VALUE% (DWORD)
     echo.
     exit /b 0
 
@@ -255,14 +255,14 @@ REM ============================================================================
     call :check_service_status
     if %errorLevel% equ 0 (
         if "!SERVICE_STATE!"=="RUNNING" (
-            echo Service Status: ✓ RUNNING
+            echo Service Status: [OK] RUNNING
         ) else if "!SERVICE_STATE!"=="STOPPED" (
-            echo Service Status: ✗ STOPPED
+            echo Service Status: [X] STOPPED
         ) else (
             echo Service Status: !SERVICE_STATE!
         )
     ) else (
-        echo Service Status: ✗ NOT FOUND or ACCESS DENIED
+        echo Service Status: [X] NOT FOUND or ACCESS DENIED
     )
     
     exit /b 0
@@ -297,10 +297,10 @@ REM ============================================================================
     if defined VERBOSE echo [VERBOSE] Setting patch scan timeout to %TIMEOUT%...
     reg add "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" /t REG_DWORD /d %TIMEOUT% /f >nul 2>&1
     if %errorLevel% equ 0 (
-        echo ✓ Patch scan timeout configured successfully
+        echo [OK] Patch scan timeout configured successfully
         set /a SUCCESS_COUNT+=1
     ) else (
-        echo ✗ Failed to configure patch scan timeout
+        echo [X] Failed to configure patch scan timeout
         if defined VERBOSE echo [VERBOSE] Registry error code: %errorLevel%
     )
     
@@ -308,19 +308,19 @@ REM ============================================================================
     if defined VERBOSE echo [VERBOSE] Setting CPU usage limit to %CPU_VALUE%%%...
     reg add "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" /t REG_DWORD /d %CPU_VALUE% /f >nul 2>&1
     if %errorLevel% equ 0 (
-        echo ✓ CPU usage limit configured successfully
+        echo [OK] CPU usage limit configured successfully
         set /a SUCCESS_COUNT+=1
     ) else (
-        echo ✗ Failed to configure CPU usage limit
+        echo [X] Failed to configure CPU usage limit
         if defined VERBOSE echo [VERBOSE] Registry error code: %errorLevel%
     )
     
     echo.
     
     if %SUCCESS_COUNT% equ %TOTAL_SETTINGS% (
-        echo ═══════════════════════════════════════
-        echo ✓ Configuration applied successfully!
-        echo ═══════════════════════════════════════
+        echo ========================================
+        echo [OK] Configuration applied successfully!
+        echo ========================================
         echo.
         
         REM Handle service restart
@@ -333,9 +333,9 @@ REM ============================================================================
         )
         exit /b 0
     ) else (
-        echo ═══════════════════════════════════════
-        echo ✗ Configuration partially failed
-        echo ═══════════════════════════════════════
+        echo ========================================
+        echo X Configuration partially failed
+        echo ========================================
         echo.
         echo Applied %SUCCESS_COUNT% of %TOTAL_SETTINGS% settings successfully.
         echo Please check the error messages above.
@@ -421,9 +421,9 @@ REM ============================================================================
     if defined VERBOSE echo [VERBOSE] Executing: net stop "%SERVICE_NAME%"
     net stop "%SERVICE_NAME%" >nul 2>&1
     if %errorLevel% equ 0 (
-        echo ✓ Service stopped successfully
+        echo [OK] Service stopped successfully
     ) else (
-        echo ✗ Failed to stop service (error code: %errorLevel%)
+        echo [X] Failed to stop service (error code: %errorLevel%)
         echo Please stop the service manually
         exit /b 1
     )
@@ -435,11 +435,11 @@ REM ============================================================================
     if defined VERBOSE echo [VERBOSE] Executing: net start "%SERVICE_NAME%"
     net start "%SERVICE_NAME%" >nul 2>&1
     if %errorLevel% equ 0 (
-        echo ✓ Service started successfully
+        echo [OK] Service started successfully
         echo.
-        echo ✓ PM+ Agent service restarted - configuration changes are now active
+        echo [OK] PM+ Agent service restarted - configuration changes are now active
     ) else (
-        echo ✗ Failed to start service (error code: %errorLevel%)
+        echo [X] Failed to start service (error code: %errorLevel%)
         echo Please start the service manually
         exit /b 1
     )

@@ -2,7 +2,15 @@
 
 **Zero-dependency solution** for configuring DesktopCentral UEMS Agent performance settings via JSON configuration.
 
-## 🎯 **The Solution**
+> **[!] CRITICAL REQUIREMENT [!]**  
+> **THIS TOOL MUST BE RUN WITH SUDO OR ROOT PRIVILEGES**
+> 
+> **How to run with proper privileges:**
+> - Use `sudo ./pm-agent-config.sh` for all commands
+> - OR run as root user directly
+> - **The tool will FAIL without root/sudo privileges!**
+
+## **The Solution**
 
 A comprehensive shell script that manages PM+ Agent CPU throttling settings through the `PerformanceSettings.json` file with **no external dependencies**. Choose your preferred interface:
 
@@ -16,10 +24,15 @@ A comprehensive shell script that manages PM+ Agent CPU throttling settings thro
 - **Service management** - --restart and --no-restart flags for automated deployments
 - **Comprehensive validation** - checks for UEMS agent installation and privileges
 
-## 🚀 **Quick Start**
+## **Quick Start**
+
+> **[!] ROOT/SUDO PRIVILEGES REQUIRED [!]**  
+> **ALL commands below require root or sudo privileges!**
+> **The tool will fail without proper elevation.**
 
 ### Command-Line Usage (IT Professionals)
 ```bash
+# IMPORTANT: Use sudo for all commands!
 sudo ./pm-agent-config.sh --mode high    # 30% CPU limit
 sudo ./pm-agent-config.sh --mode low     # 15% CPU limit  
 sudo ./pm-agent-config.sh --status       # Show current settings and service status
@@ -30,6 +43,7 @@ sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart 
 
 ### Interactive Menu (End Users)
 ```bash
+# IMPORTANT: Use sudo!
 sudo ./pm-agent-config.sh --menu
 # Follow the numbered menu prompts
 ```
@@ -315,7 +329,7 @@ Both platforms provide identical functionality with platform-appropriate impleme
 ## 📚 **Additional Resources**
 
 - [Main Project Documentation](../../README.md)
-- [Windows Configuration Guide](../windows/README.md)
+- [Windows Configuration Guide](windows-guide.md)
 - [Contributing Guidelines](../../CONTRIBUTING.md)
 - [Security Policy](../../SECURITY.md)
 

@@ -17,6 +17,7 @@ cp pm-agent-config.sh ../../dist/linux/
 echo "Linux build completed successfully!"
 echo "Main script: ../../dist/linux/pm-agent-config.sh"
 echo ""
+echo "IMPORTANT: This script requires sudo privileges!"
 echo "Usage:"
 echo "  sudo ../../dist/linux/pm-agent-config.sh --help"
 

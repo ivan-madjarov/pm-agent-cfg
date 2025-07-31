@@ -4,11 +4,18 @@
 
 **IMPORTANT**: This tool is proprietary to Mitel Networks Corporation and is intended for deployment within Mitel infrastructure only. Authorized Mitel personnel and designated partners should follow these deployment procedures.
 
-## 🚀 **Internal Deployment Procedures**
+> **[!] CRITICAL DEPLOYMENT REQUIREMENT [!]**  
+> **ALL DEPLOYMENTS MUST RUN WITH ELEVATED PRIVILEGES**
+> - **Windows**: Must run "As Administrator" 
+> - **Linux**: Must run with sudo or root privileges
+> - **Scripts will FAIL without proper elevation!**
+> - **No exceptions - elevation is mandatory for all operations!**
+
+## **Internal Deployment Procedures**
 
 ### Windows - Single Machine
 1. **Download** the script: `scripts/windows/pm-agent-config.bat`
-2. **Right-click** → "Run as administrator"
+2. **CRITICAL**: Right-click Command Prompt → "Run as administrator"
 3. **Choose mode**:
    - Command-line: `pm-agent-config.bat --mode high`
    - Interactive: `pm-agent-config.bat --menu`
@@ -16,7 +23,7 @@
 ### Linux - Single Machine
 1. **Download** the script: `scripts/linux/pm-agent-config.sh`
 2. **Make executable**: `chmod +x pm-agent-config.sh`
-3. **Run with sudo**: `sudo ./pm-agent-config.sh --mode high`
+3. **CRITICAL**: Run with sudo: `sudo ./pm-agent-config.sh --mode high`
 
 ### Windows - Multiple Machines
 ```batch

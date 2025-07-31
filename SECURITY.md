@@ -42,14 +42,21 @@ If you discover a security vulnerability in the PM+ Agent Configuration tool, pl
 
 When deploying this tool in Mitel infrastructure:
 
+> **[LOCK] PRIVILEGE SECURITY NOTICE [LOCK]**  
+> **These tools REQUIRE elevated privileges by design:**
+> - **Windows**: Administrator privileges (registry modification requirement)
+> - **Linux**: Root/sudo privileges (system file modification requirement)
+> - **This is NOT a security flaw - it's required functionality!**
+
 1. **Follow Mitel security policies** and procedures for internal tools
-2. **Run with Administrator/Root privileges only when necessary**
+2. **UNDERSTAND privilege requirements** - Administrator/Root privileges are mandatory
 3. **Validate registry/configuration changes** before applying in production
 4. **Test in Mitel development environments first**
 5. **Keep tool updated** to the latest approved version
 6. **Secure script storage** - protect batch/shell scripts from unauthorized modification
 7. **Audit configuration changes** - log and review what changes are made
 8. **Use Mitel-approved deployment methods** only
+9. **Ensure only authorized personnel** have access to run these tools
 
 ### Vulnerability Severity Classification
 

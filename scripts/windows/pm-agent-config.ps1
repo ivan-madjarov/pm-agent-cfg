@@ -81,10 +81,10 @@ REQUIREMENTS:
 
 REGISTRY KEYS MODIFIED:
     $PATCH_KEY
-    └── $PATCH_TIMEOUT_VALUE (DWORD)
+    +-- $PATCH_TIMEOUT_VALUE (DWORD)
     
     $AGENT_KEY
-    └── $CPU_USAGE_VALUE (DWORD)
+    +-- $CPU_USAGE_VALUE (DWORD)
 "@
 }
 
@@ -115,11 +115,11 @@ function Set-RegistryValue {
         
         # Set the value
         Set-ItemProperty -Path $psKeyPath -Name $ValueName -Value $ValueData -Type DWord
-        Write-Log "✓ Successfully set $ValueName = $ValueData"
+        Write-Log "[OK] Successfully set $ValueName = $ValueData"
         return $true
     }
     catch {
-        Write-Log "✗ Failed to set $ValueName`: $($_.Exception.Message)" "ERROR"
+        Write-Log "[X] Failed to set $ValueName`: $($_.Exception.Message)" "ERROR"
         return $false
     }
 }
@@ -227,9 +227,9 @@ function Set-PerformanceMode {
     Write-Host ""
     
     if ($successCount -eq $totalSettings) {
-        Write-Host "═══════════════════════════════════════" -ForegroundColor Green
-        Write-Host "✓ Configuration applied successfully!" -ForegroundColor Green
-        Write-Host "═══════════════════════════════════════" -ForegroundColor Green
+        Write-Host "========================================" -ForegroundColor Green
+        Write-Host "[OK] Configuration applied successfully!" -ForegroundColor Green
+        Write-Host "========================================" -ForegroundColor Green
         Write-Host ""
         Write-Host "IMPORTANT: You may need to restart the DCAgent service" -ForegroundColor Yellow
         Write-Host "for changes to take effect:" -ForegroundColor Yellow
@@ -239,9 +239,9 @@ function Set-PerformanceMode {
         return $true
     }
     else {
-        Write-Host "═══════════════════════════════════════" -ForegroundColor Red
-        Write-Host "✗ Configuration partially failed" -ForegroundColor Red
-        Write-Host "═══════════════════════════════════════" -ForegroundColor Red
+        Write-Host "=======================================" -ForegroundColor Red
+        Write-Host "[X] Configuration partially failed" -ForegroundColor Red
+        Write-Host "=======================================" -ForegroundColor Red
         Write-Host ""
         Write-Host "Applied $successCount of $totalSettings settings successfully." -ForegroundColor Yellow
         Write-Host "Please check the error messages above." -ForegroundColor Yellow

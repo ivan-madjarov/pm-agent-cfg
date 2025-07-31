@@ -10,11 +10,11 @@ function Install-Ps2exe {
     Write-Host "Installing ps2exe module..." -ForegroundColor Yellow
     try {
         Install-Module -Name ps2exe -Force -Scope CurrentUser
-        Write-Host "✓ ps2exe installed successfully" -ForegroundColor Green
+        Write-Host "[OK] ps2exe installed successfully" -ForegroundColor Green
         return $true
     }
     catch {
-        Write-Host "✗ Failed to install ps2exe: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "[X] Failed to install ps2exe: $($_.Exception.Message)" -ForegroundColor Red
         return $false
     }
 }
@@ -24,7 +24,7 @@ function Build-Executable {
     $outputPath = Join-Path $PSScriptRoot "pm-agent-config.exe"
     
     if (-not (Test-Path $scriptPath)) {
-        Write-Host "✗ Source script not found: $scriptPath" -ForegroundColor Red
+        Write-Host "[X] Source script not found: $scriptPath" -ForegroundColor Red
         return $false
     }
     
@@ -53,7 +53,7 @@ function Build-Executable {
             $fileSizeMB = [math]::Round($fileSize / 1MB, 2)
             
             Write-Host ""
-            Write-Host "✓ Executable built successfully!" -ForegroundColor Green
+            Write-Host "[OK] Executable built successfully!" -ForegroundColor Green
             Write-Host "File: $outputPath"
             Write-Host "Size: $fileSizeMB MB"
             Write-Host ""
@@ -61,12 +61,12 @@ function Build-Executable {
             return $true
         }
         else {
-            Write-Host "✗ Build failed - output file not created" -ForegroundColor Red
+            Write-Host "[X] Build failed - output file not created" -ForegroundColor Red
             return $false
         }
     }
     catch {
-        Write-Host "✗ Build failed: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "[X] Build failed: $($_.Exception.Message)" -ForegroundColor Red
         return $false
     }
 }

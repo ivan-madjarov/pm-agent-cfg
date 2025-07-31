@@ -2,7 +2,15 @@
 
 **Zero-dependency solution for configuring DesktopCentral DCAgent registry settings.**
 
-## 🎯 **The Solution**
+> **[!] CRITICAL REQUIREMENT [!]**  
+> **THIS TOOL MUST BE RUN AS ADMINISTRATOR**
+> 
+> **How to run as Administrator:**
+> 1. Right-click Command Prompt → "Run as administrator"
+> 2. OR Right-click the `.bat` file → "Run as administrator"
+> 3. **The tool will FAIL without Administrator privileges!**
+
+## **The Solution**
 
 A single, comprehensive tool that configures PM+ Agent registry settings with **no external dependencies**. Choose your preferred interface:
 
@@ -17,10 +25,15 @@ A single, comprehensive tool that configures PM+ Agent registry settings with **
 - 📊 **Status Display** - shows current configuration
 - 🔧 **Professional Help** - comprehensive documentation
 
-## 🚀 **Quick Start**
+## **Quick Start**
+
+> **[!] ADMINISTRATOR PRIVILEGES REQUIRED [!]**  
+> **ALL commands below require Administrator privileges!**
+> **Open Command Prompt as Administrator before running any commands.**
 
 ### Command-Line Usage (IT Professionals)
 ```batch
+# IMPORTANT: Run Command Prompt as Administrator first!
 # Configure for high performance (30% CPU)
 pm-agent-config.bat --mode high
 
@@ -36,6 +49,7 @@ pm-agent-config.bat --menu
 
 ### Interactive Menu (End Users)
 ```batch
+# IMPORTANT: Run Command Prompt as Administrator first!
 # Run the interactive menu
 pm-agent-config.bat --menu
 

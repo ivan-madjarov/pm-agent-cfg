@@ -219,9 +219,9 @@ show_current_settings() {
             if systemctl list-unit-files --no-legend --no-pager | grep -q "^$service.service"; then
                 local status=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
                 if [[ "$status" == "active" ]]; then
-                    echo "Service Status ($service): ✓ RUNNING"
+                    echo "Service Status ($service): [OK] RUNNING"
                 elif [[ "$status" == "inactive" ]]; then
-                    echo "Service Status ($service): ✗ STOPPED"
+                    echo "Service Status ($service): [X] STOPPED"
                 else
                     echo "Service Status ($service): $status"
                 fi
@@ -231,7 +231,7 @@ show_current_settings() {
         done
         
         if [[ "$found_service" == "false" ]]; then
-            echo "Service Status: ✗ NO KNOWN SERVICES FOUND"
+            echo "Service Status: [X] NO KNOWN SERVICES FOUND"
         fi
     else
         log_warning "No performance configuration file found"
