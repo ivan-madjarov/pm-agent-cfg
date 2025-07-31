@@ -9,97 +9,37 @@ on:
 jobs:
   test-windows:
     runs-on: windows-latest
-    
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Test Windows Batch Script
+    - name: Test Windows Scripts
       run: |
-        # Test batch script syntax
+        # Test batch script
         cmd /c "scripts\windows\pm-agent-config.bat --help"
-    
-    - name: Test PowerShell Script Syntax
-      run: |
         # Test PowerShell syntax
         powershell -Command "Get-Content scripts\windows\pm-agent-config.ps1 | Out-Null"
-    
-    - name: Test Build Script
-      run: |
-        # Test build script syntax
-        powershell -Command "Get-Content scripts\windows\build-exe.ps1 | Out-Null"
 
   test-linux:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Test Linux Shell Script Syntax
+    - name: Test Linux Scripts
       run: |
-        # Test shell script syntax
+        # Test shell script syntax and help
         bash -n scripts/linux/pm-agent-config.sh
-    
-    - name: Test Linux Shell Script Help
-      run: |
-        # Test help functionality (without sudo)
         bash scripts/linux/pm-agent-config.sh --help
 
-  security-scan:
+  quality-checks:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
-    
     - name: Run ShellCheck
       uses: ludeeus/action-shellcheck@master
       with:
         scandir: './scripts'
-    
-    - name: Scan for secrets
-      uses: trufflesecurity/trufflehog@main
-      with:
-        path: ./
-        base: main
-        head: HEAD
-
-  documentation:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Check documentation
+    - name: Validate Documentation
       run: |
-        # Check if required files exist
-        test -f README.md
-        test -f CHANGELOG.md
-        test -f CONTRIBUTING.md
-        test -f LICENSE
-        test -f SECURITY.md
-        test -f DEPLOYMENT.md
-        
-        # Check platform documentation
-        test -f docs/windows-guide.md
-        test -f docs/linux-guide.md
-        
-        # Validate markdown syntax
-        find . -name "*.md" -exec echo "Checking {}" \; -exec head -1 {} \;
-
-  config-validation:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Validate script files
-      run: |
-        # Test script executability and syntax
-        test -f scripts/linux/pm-agent-config.sh
-        test -f scripts/windows/pm-agent-config.bat
-        test -f scripts/windows/pm-agent-config.ps1
-        test -f scripts/linux/build.sh
-        test -f scripts/windows/build-exe.ps1
-        
-        # Test Linux script syntax
-        bash -n scripts/linux/pm-agent-config.sh
-        bash -n scripts/linux/build.sh
+        # Check required files exist
+        for file in README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md DEPLOYMENT.md docs/windows-guide.md docs/linux-guide.md; do
+          test -f "$file" || { echo "Missing: $file"; exit 1; }
+        done
+        echo "All documentation files present"

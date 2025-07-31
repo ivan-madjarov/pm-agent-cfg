@@ -33,10 +33,12 @@ A comprehensive shell script that manages PM+ Agent CPU throttling settings thro
 ### Command-Line Usage (IT Professionals)
 ```bash
 # IMPORTANT: Use sudo for all commands!
-sudo ./pm-agent-config.sh --mode high    # 30% CPU limit
-sudo ./pm-agent-config.sh --mode low     # 15% CPU limit  
-sudo ./pm-agent-config.sh --status       # Show current settings and service status
-sudo ./pm-agent-config.sh --backup       # Create configuration backup
+sudo ./pm-agent-config.sh --mode low      # 15% CPU limit
+sudo ./pm-agent-config.sh --mode medium   # 20% CPU limit
+sudo ./pm-agent-config.sh --mode high     # 30% CPU limit
+sudo ./pm-agent-config.sh --mode ultra    # 40% CPU limit
+sudo ./pm-agent-config.sh --status        # Show current settings and service status
+sudo ./pm-agent-config.sh --backup        # Create configuration backup
 sudo ./pm-agent-config.sh --mode high --restart     # Configure and restart service
 sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart prompt
 ```

@@ -97,9 +97,11 @@ Both implementations provide identical user experiences while using platform-app
 ```batch
 # IMPORTANT: Run Command Prompt as Administrator first!
 cd scripts\windows
-pm-agent-config.bat --mode high    # 30% CPU limit
-pm-agent-config.bat --mode low     # 15% CPU limit
-pm-agent-config.bat --status       # Show current settings
+pm-agent-config.bat --mode high     # 30% CPU limit
+pm-agent-config.bat --mode medium   # 20% CPU limit  
+pm-agent-config.bat --mode low      # 15% CPU limit
+pm-agent-config.bat --mode ultra    # 40% CPU limit
+pm-agent-config.bat --status        # Show current settings
 ```
 
 #### Option 2: Interactive Menu (End Users)
@@ -120,9 +122,11 @@ pm-agent-config.bat --menu
 ```bash
 # IMPORTANT: Use sudo or run as root!
 cd scripts/linux
-sudo ./pm-agent-config.sh --mode high    # 30% CPU limit
-sudo ./pm-agent-config.sh --mode low     # 15% CPU limit
-sudo ./pm-agent-config.sh --status       # Show current settings
+sudo ./pm-agent-config.sh --mode high     # 30% CPU limit
+sudo ./pm-agent-config.sh --mode medium   # 20% CPU limit
+sudo ./pm-agent-config.sh --mode low      # 15% CPU limit
+sudo ./pm-agent-config.sh --mode ultra    # 40% CPU limit
+sudo ./pm-agent-config.sh --status        # Show current settings
 ```
 
 #### Option 2: Interactive Menu (End Users)

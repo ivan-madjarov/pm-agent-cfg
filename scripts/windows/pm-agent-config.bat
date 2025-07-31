@@ -17,7 +17,9 @@ set "CPU_USAGE_VALUE=THRDMAXCPUUSAGE_2C"
 
 REM Performance mode settings
 set "LOW_CPU=15"
-set "HIGH_CPU=30" 
+set "MEDIUM_CPU=20"
+set "HIGH_CPU=30"
+set "ULTRA_CPU=40"
 set "TIMEOUT=200"
 
 REM Service settings
@@ -139,6 +141,11 @@ REM No arguments provided, show help
 goto :show_help
 
 REM ============================================================================
+REM End of main execution - functions follow
+REM ============================================================================
+goto :eof
+
+REM ============================================================================
 REM Function Definitions
 REM ============================================================================
 
@@ -180,9 +187,11 @@ REM ============================================================================
     echo     pm-agent-config.bat [OPTIONS]
     echo.
     echo OPTIONS:
-    echo     --mode, -m ^<low^|high^>    Set performance mode
-    echo                              low  = 15%% CPU usage, 200s timeout
-    echo                              high = 30%% CPU usage, 200s timeout
+    echo     --mode, -m ^<low^|medium^|high^|ultra^>    Set performance mode
+    echo                              low    = 15%% CPU usage, 200s timeout
+    echo                              medium = 20%% CPU usage, 200s timeout
+    echo                              high   = 30%% CPU usage, 200s timeout
+    echo                              ultra  = 40%% CPU usage, 200s timeout
     echo.
     echo     --status, -s             Display current registry settings and service status
     echo     --menu, -i               Show interactive menu
@@ -194,9 +203,9 @@ REM ============================================================================
     echo EXAMPLES:
     echo     pm-agent-config.bat --mode high        Configure for high performance
     echo     pm-agent-config.bat --mode low --restart  Configure and restart service 
+    echo     pm-agent-config.bat --mode ultra       Configure for maximum performance
     echo     pm-agent-config.bat --status           Show current settings and service status
     echo     pm-agent-config.bat --menu             Show interactive menu
-    echo     pm-agent-config.bat --mode high --no-restart  Configure without restart prompt
     echo.
     echo REQUIREMENTS:
     echo     - Administrator privileges
@@ -240,8 +249,12 @@ REM ============================================================================
     if defined CURRENT_CPU (
         if "!CURRENT_CPU!"=="%LOW_CPU%" (
             echo Current Performance Mode: LOW ^(15%% CPU^)
+        ) else if "!CURRENT_CPU!"=="%MEDIUM_CPU%" (
+            echo Current Performance Mode: MEDIUM ^(20%% CPU^)
         ) else if "!CURRENT_CPU!"=="%HIGH_CPU%" (
             echo Current Performance Mode: HIGH ^(30%% CPU^)
+        ) else if "!CURRENT_CPU!"=="%ULTRA_CPU%" (
+            echo Current Performance Mode: ULTRA ^(40%% CPU^)
         ) else (
             echo Current Performance Mode: CUSTOM ^(!CURRENT_CPU!%% CPU^)
         )
@@ -274,13 +287,21 @@ REM ============================================================================
         set "CPU_VALUE=%LOW_CPU%"
         set "MODE_NAME=LOW"
         set "MODE_DESC=low performance"
+    ) else if /i "%PERF_MODE%"=="medium" (
+        set "CPU_VALUE=%MEDIUM_CPU%"
+        set "MODE_NAME=MEDIUM"
+        set "MODE_DESC=medium performance"
     ) else if /i "%PERF_MODE%"=="high" (
         set "CPU_VALUE=%HIGH_CPU%"
         set "MODE_NAME=HIGH" 
         set "MODE_DESC=high performance"
+    ) else if /i "%PERF_MODE%"=="ultra" (
+        set "CPU_VALUE=%ULTRA_CPU%"
+        set "MODE_NAME=ULTRA"
+        set "MODE_DESC=ultra performance"
     ) else (
         echo ERROR: Invalid performance mode: %PERF_MODE%
-        echo Valid options: low, high
+        echo Valid options: low, medium, high, ultra
         exit /b 1
     )
     
@@ -348,15 +369,17 @@ REM ============================================================================
     echo.
     echo Select Performance Mode:
     echo.
-    echo 1. Low Performance Mode  (CPU Usage: 15%%, Scan Timeout: 200s)
-    echo 2. High Performance Mode (CPU Usage: 30%%, Scan Timeout: 200s)
-    echo 3. Show Current Settings and Service Status
-    echo 4. Restart PM+ Agent Service
-    echo 5. Exit
+    echo 1. Low Performance Mode    (CPU Usage: 15%%, Scan Timeout: 200s)
+    echo 2. Medium Performance Mode (CPU Usage: 20%%, Scan Timeout: 200s)
+    echo 3. High Performance Mode   (CPU Usage: 30%%, Scan Timeout: 200s)
+    echo 4. Ultra Performance Mode  (CPU Usage: 40%%, Scan Timeout: 200s)
+    echo 5. Show Current Settings and Service Status
+    echo 6. Restart PM+ Agent Service
+    echo 7. Exit
     echo.
 
     :menu_loop
-    set /p choice="Enter your choice (1-5): "
+    set /p choice="Enter your choice (1-7): "
     
     if "%choice%"=="1" (
         echo.
@@ -364,23 +387,31 @@ REM ============================================================================
         goto :menu_end
     ) else if "%choice%"=="2" (
         echo.
-        call :configure_mode "high" 
+        call :configure_mode "medium"
         goto :menu_end
     ) else if "%choice%"=="3" (
+        echo.
+        call :configure_mode "high" 
+        goto :menu_end
+    ) else if "%choice%"=="4" (
+        echo.
+        call :configure_mode "ultra"
+        goto :menu_end
+    ) else if "%choice%"=="5" (
         echo.
         call :show_current_settings
         echo.
         goto :menu_loop
-    ) else if "%choice%"=="4" (
+    ) else if "%choice%"=="6" (
         echo.
         call :restart_agent_service
         echo.
         goto :menu_loop
-    ) else if "%choice%"=="5" (
+    ) else if "%choice%"=="7" (
         echo Exiting...
         exit /b 0
     ) else (
-        echo Invalid choice. Please enter 1, 2, 3, 4, or 5.
+        echo Invalid choice. Please enter 1, 2, 3, 4, 5, 6, or 7.
         echo.
         goto :menu_loop
     )

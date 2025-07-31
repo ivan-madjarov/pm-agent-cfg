@@ -49,55 +49,50 @@ sudo bash scripts/linux/pm-agent-config.sh --help
 1. Fork the internal repository (or create a feature branch if you have direct access)
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Test your changes thoroughly on target platforms
+4. Test thoroughly on target platforms
 5. Update documentation if needed
-6. Commit your changes with conventional commit messages
+6. Commit with conventional commit messages
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Create a Pull Request for internal review
-8. Open a Pull Request using the provided template
 
 #### Code Style and Standards
 
 **Windows Batch Scripts:**
 - Use meaningful variable names with quotes: `set "VARIABLE_NAME=value"`
 - Include error handling for all operations
-- Provide verbose mode support where applicable
 - Use consistent indentation (2 spaces)
-- Add comments for complex logic
 - Test with both Command Prompt and PowerShell
 
 **PowerShell Scripts:**
 - Follow PowerShell best practices
 - Use approved verbs for function names
-- Include parameter validation
-- Implement proper error handling
-- Support common parameters (-Verbose, -WhatIf where applicable)
-- Use consistent formatting and indentation
+- Include parameter validation and error handling
+- Use consistent formatting
 
 **Shell Scripts (Linux):**
 - Follow POSIX standards where possible
-- Use shellcheck for validation
 - Include proper error handling (`set -e`)
 - Use meaningful variable names
-- Add comments for complex operations
 - Test on multiple distributions
 
 **Documentation:**
 - Use clear, concise language
 - Include examples for all features
-- Update both general and platform-specific documentation
 - Follow markdown best practices
-- Include troubleshooting information
 
 #### Testing Requirements
 
 **Windows Testing:**
-- Test on Windows 10 and Windows Server (latest versions)
+- Test on Windows 10 and Windows Server
 - Verify Administrator privilege checking
 - Test registry modifications safely (use test VMs)
-- Validate both command-line and interactive menu modes
-- Test PowerShell execution policies
-- Verify error handling and rollback scenarios
+- Validate both command-line and interactive modes
+
+**Linux Testing:**
+- Test on major distributions (Ubuntu, CentOS, RHEL)
+- Verify sudo privilege requirements
+- Test JSON configuration handling
+- Validate service restart functionality
 - Test with different DCAgent versions if available
 - Use `--dry-run` for safe testing
 
@@ -156,76 +151,30 @@ sudo bash scripts/linux/pm-agent-config.sh --help
 ### Registry and Configuration Safety
 - Always backup before making changes
 - Implement atomic operations where possible
-- Provide rollback mechanisms
 - Validate configuration before applying
 - Test in non-production environments first
 
 ### Commit Messages
 Use conventional commit format:
 - `feat:` for new features
-- `fix:` for bug fixes
+- `fix:` for bug fixes  
 - `docs:` for documentation changes
 - `refactor:` for code refactoring
-- `test:` for test additions
 - `security:` for security improvements
-- `perf:` for performance improvements
 
 Examples:
 - `feat(windows): add registry backup before modifications`
 - `fix(linux): resolve permission issue with config files`
 - `docs: update deployment guide for enterprise scenarios`
 
-### Adding New Features
-
-**For Windows Features:**
-1. Update `pm-agent-config.bat` with new functionality
-2. Update PowerShell version if needed (`pm-agent-config.ps1`)
-3. Add appropriate registry validation
-4. Update Windows documentation (`docs/windows-guide.md`)
-5. Test with various Windows versions and DCAgent configurations
-
-**For Linux Features (future):**
-1. Update shell script (`scripts/linux/pm-agent-config.sh`)
-2. Add JSON configuration handling
-3. Implement service interaction logic
-4. Update Linux documentation (`docs/linux-guide.md`)
-5. Test across multiple distributions
-
-**For Cross-Platform Features:**
-1. Update main README.md
-2. Update troubleshooting guides
-3. Consider deployment implications
-
 ### Documentation Standards
 - Include examples for all new features
 - Document required privileges and permissions
 - Provide troubleshooting information
-- Update deployment guides for enterprise scenarios
 - Include security considerations
-- Maintain version compatibility information
-
-## Code of Conduct
-
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Help others learn and grow
-- Maintain professional communication
-- Respect different deployment environments and use cases
-- Consider the impact of changes on enterprise users
-
-## Release Process
-
-1. **Version Planning**: Features are planned for specific releases
-2. **Testing Phase**: Comprehensive testing on target platforms
-3. **Documentation Review**: All documentation updated and reviewed
-4. **Security Review**: Security implications assessed
-5. **Release Preparation**: CHANGELOG updated, version tags applied
-6. **Deployment Testing**: Test in various deployment scenarios
 
 ## Questions?
 
-Feel free to open an issue for questions about contributing or reach out to the maintainers. We're here to help!
-
-For security-related questions, please see our [Security Policy](SECURITY.md).
+Feel free to open an issue for questions about contributing. For security-related questions, see our [Security Policy](SECURITY.md).
 
 Thank you for contributing to the PM+ Agent Configuration tool!

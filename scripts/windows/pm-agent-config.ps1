@@ -5,14 +5,14 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [ValidateSet("low", "high")]
+    [ValidateSet("low", "medium", "high", "ultra")]
     [string]$Mode,
     
     [Parameter(Mandatory=$false)]
     [switch]$Status,
     
     [Parameter(Mandatory=$false)]
-    [switch]$Verbose,
+    [switch]$VerboseOutput,
     
     [Parameter(Mandatory=$false)]
     [switch]$Help
@@ -30,10 +30,20 @@ $PERFORMANCE_SETTINGS = @{
         "timeout" = 200
         "description" = "Low Performance Mode (15% CPU, 200s timeout)"
     }
+    "medium" = @{
+        "cpu" = 20
+        "timeout" = 200
+        "description" = "Medium Performance Mode (20% CPU, 200s timeout)"
+    }
     "high" = @{
         "cpu" = 30
         "timeout" = 200
         "description" = "High Performance Mode (30% CPU, 200s timeout)"
+    }
+    "ultra" = @{
+        "cpu" = 40
+        "timeout" = 200
+        "description" = "Ultra Performance Mode (40% CPU, 200s timeout)"
     }
 }
 
@@ -45,7 +55,7 @@ function Write-Log {
 
 function Write-Verbose-Log {
     param([string]$Message)
-    if ($Verbose) {
+    if ($VerboseOutput) {
         Write-Log $Message "VERBOSE"
     }
 }
@@ -62,18 +72,22 @@ USAGE:
     pm-agent-config.exe [OPTIONS]
 
 PARAMETERS:
-    -Mode <low|high>    Agent Resource Utilization Limit
-                        low  = 15% CPU usage, 200s timeout
-                        high = 30% CPU usage, 200s timeout
+    -Mode <low|medium|high|ultra>   Agent Resource Utilization Limit
+                        low    = 15% CPU usage, 200s timeout
+                        medium = 20% CPU usage, 200s timeout
+                        high   = 30% CPU usage, 200s timeout
+                        ultra  = 40% CPU usage, 200s timeout
     
     -Status             Display current registry settings
-    -Verbose            Enable verbose output
+    -VerboseOutput      Enable verbose output
     -Help               Show this help message
 
 EXAMPLES:
-    pm-agent-config.exe -Mode high       # Configure for high performance
-    pm-agent-config.exe -Mode low        # Configure for low performance
-    pm-agent-config.exe -Status          # Show current settings
+    pm-agent-config.exe -Mode low         # Configure for low performance
+    pm-agent-config.exe -Mode medium      # Configure for medium performance
+    pm-agent-config.exe -Mode high        # Configure for high performance
+    pm-agent-config.exe -Mode ultra       # Configure for ultra performance
+    pm-agent-config.exe -Status           # Show current settings
 
 REQUIREMENTS:
     - Administrator privileges
@@ -185,8 +199,14 @@ function Show-CurrentSettings {
         if ($cpu -eq 15) {
             Write-Host "Current Performance Mode: LOW (15% CPU)" -ForegroundColor Green
         }
+        elseif ($cpu -eq 20) {
+            Write-Host "Current Performance Mode: MEDIUM (20% CPU)" -ForegroundColor Blue
+        }
         elseif ($cpu -eq 30) {
             Write-Host "Current Performance Mode: HIGH (30% CPU)" -ForegroundColor Yellow
+        }
+        elseif ($cpu -eq 40) {
+            Write-Host "Current Performance Mode: ULTRA (40% CPU)" -ForegroundColor Red
         }
         else {
             Write-Host "Current Performance Mode: CUSTOM ($cpu% CPU)" -ForegroundColor Magenta

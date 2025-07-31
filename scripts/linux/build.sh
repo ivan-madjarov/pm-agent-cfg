@@ -1,23 +1,24 @@
 #!/bin/bash
-# Linux build script
+# PM+ Agent Configuration - Linux Build Script
+# Copyright (c) 2024-2025 Mitel Networks Corporation
 
 set -e
 
-echo "Building PM+ Agent for Linux..."
+echo "Building PM+ Agent Configuration for Linux..."
 
 # Create build directory
-mkdir -p ../../dist/linux
+BUILD_DIR="../../dist/linux"
+mkdir -p "$BUILD_DIR"
 
-# Make scripts executable
+# Make script executable
 chmod +x pm-agent-config.sh
 
-# Copy scripts to build directory
-cp pm-agent-config.sh ../../dist/linux/
+# Copy main script
+cp pm-agent-config.sh "$BUILD_DIR/"
 
-echo "Linux build completed successfully!"
-echo "Main script: ../../dist/linux/pm-agent-config.sh"
+echo "[OK] Linux build completed successfully!"
+echo "Output: $BUILD_DIR/pm-agent-config.sh"
 echo ""
-echo "IMPORTANT: This script requires sudo privileges!"
-echo "Usage:"
-echo "  sudo ../../dist/linux/pm-agent-config.sh --help"
+echo "CRITICAL: This script requires sudo privileges!"
+echo "Usage: sudo $BUILD_DIR/pm-agent-config.sh --help"
 

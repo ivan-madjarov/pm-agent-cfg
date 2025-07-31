@@ -17,13 +17,13 @@
 1. **Download** the script: `scripts/windows/pm-agent-config.bat`
 2. **CRITICAL**: Right-click Command Prompt → "Run as administrator"
 3. **Choose mode**:
-   - Command-line: `pm-agent-config.bat --mode high`
+   - Command-line: `pm-agent-config.bat --mode low|medium|high|ultra`
    - Interactive: `pm-agent-config.bat --menu`
 
 ### Linux - Single Machine
 1. **Download** the script: `scripts/linux/pm-agent-config.sh`
 2. **Make executable**: `chmod +x pm-agent-config.sh`
-3. **CRITICAL**: Run with sudo: `sudo ./pm-agent-config.sh --mode high`
+3. **CRITICAL**: Run with sudo: `sudo ./pm-agent-config.sh --mode low|medium|high|ultra`
 
 ### Windows - Multiple Machines
 ```batch
@@ -67,7 +67,9 @@ echo Done!
 
 - **Test first** in non-production environment
 - **Use low mode** for production servers (15% CPU)
+- **Use medium mode** for balanced environments (20% CPU)
 - **Use high mode** for workstations (30% CPU)
+- **Use ultra mode** for testing or temporary high-throughput needs (40% CPU)
 - **Restart DCAgent service** after configuration changes
 - **Verify settings** with `--status` option
 

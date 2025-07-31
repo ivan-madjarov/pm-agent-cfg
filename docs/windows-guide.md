@@ -37,8 +37,14 @@ A single, comprehensive tool that configures PM+ Agent registry settings with **
 # Configure for high performance (30% CPU)
 pm-agent-config.bat --mode high
 
+# Configure for medium performance (20% CPU)
+pm-agent-config.bat --mode medium
+
 # Configure for low performance (15% CPU)  
 pm-agent-config.bat --mode low
+
+# Configure for ultra performance (40% CPU)
+pm-agent-config.bat --mode ultra
 
 # Show current settings
 pm-agent-config.bat --status
@@ -54,10 +60,13 @@ pm-agent-config.bat --menu
 pm-agent-config.bat --menu
 
 # Follow the on-screen prompts:
-# 1. Low Performance Mode  (15% CPU, 200s timeout)
-# 2. High Performance Mode (30% CPU, 200s timeout)
-# 3. Show Current Settings
-# 4. Exit
+# 1. Low Performance Mode    (15% CPU, 200s timeout)
+# 2. Medium Performance Mode (20% CPU, 200s timeout)
+# 3. High Performance Mode   (30% CPU, 200s timeout)
+# 4. Ultra Performance Mode  (40% CPU, 200s timeout)
+# 5. Show Current Settings and Service Status
+# 6. Restart PM+ Agent Service
+# 7. Exit
 ```
 
 ### Double-Click Usage
@@ -84,7 +93,9 @@ Simply double-click `pm-agent-config.bat` to launch the interactive menu.
 | Mode | CPU Limit | Use Case | When to Use |
 |------|-----------|----------|-------------|
 | **Low** | 15% | Production servers | Minimal system impact, background operation |
+| **Medium** | 20% | Mixed workloads | Balanced performance for general use |
 | **High** | 30% | Workstations | Faster processing, acceptable CPU usage |
+| **Ultra** | 40% | High-performance needs | Maximum throughput, use with caution |
 
 ## 🔧 **Advanced Options**
 

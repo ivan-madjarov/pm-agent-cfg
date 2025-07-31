@@ -8,7 +8,6 @@ set -e
 
 # Configuration constants
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_VERSION="1.0.0"
 readonly CONFIG_DIR="/usr/local/manageengine/uems_agent/data"
 readonly CONFIG_FILE="$CONFIG_DIR/PerformanceSettings.json"
 readonly BACKUP_FILE="$CONFIG_DIR/PerformanceSettings.json.backup"

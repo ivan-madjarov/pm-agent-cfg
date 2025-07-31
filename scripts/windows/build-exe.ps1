@@ -1,4 +1,5 @@
-# Build Script - Compile PowerShell to EXE
+# PM+ Agent Configuration - Windows Build Script
+# Copyright (c) 2024-2025 Mitel Networks Corporation
 # Requires ps2exe module: Install-Module ps2exe
 
 param(
@@ -73,7 +74,7 @@ function Build-Executable {
 
 function Test-Ps2exe {
     try {
-        Get-Module -Name ps2exe -ListAvailable | Out-Null
+        Get-Command Invoke-ps2exe -ErrorAction Stop | Out-Null
         return $true
     }
     catch {
@@ -109,8 +110,7 @@ if (Build-Executable) {
     Write-Host "Build completed successfully!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Usage examples:" -ForegroundColor Yellow
-    Write-Host "  pm-agent-config.exe -Mode high" -ForegroundColor Cyan
-    Write-Host "  pm-agent-config.exe -Mode low" -ForegroundColor Cyan
+    Write-Host "  pm-agent-config.exe -Mode low|medium|high|ultra" -ForegroundColor Cyan
     Write-Host "  pm-agent-config.exe -Status" -ForegroundColor Cyan
 } else {
     Write-Host "Build failed!" -ForegroundColor Red

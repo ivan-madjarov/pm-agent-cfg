@@ -106,40 +106,15 @@ The PM+ Agent Configuration tool includes several security considerations:
 - Compiled EXE files should be digitally signed for enterprise deployment
 - PowerShell execution policy considerations
 
-### Linux (Future)
-- Configuration file modifications require appropriate sudo/root access
+### Linux
+- Configuration file modifications require sudo/root access
 - Service restarts need proper privileges
-- Package manager interactions should be validated
 - File permission preservation during configuration changes
-
-## Threat Model
-
-### Assets Protected
-- System registry settings (Windows)
-- Agent configuration files
-- Service performance and availability
-- System resource utilization
-
-### Threat Actors
-- Malicious users with local access
-- Compromised scripts or executables
-- Insider threats with administrative access
-- Supply chain attacks on dependencies
-
-### Attack Vectors
-- **Privilege escalation** through improper permission handling
-- **Configuration tampering** leading to service disruption
-- **Information disclosure** through verbose error messages
-- **Denial of service** through resource exhaustion settings
 
 ## Contact
 
-For security-related inquiries, please contact:
-- **Email**: [security contact]
-- **Encryption**: [PGP key information if available]
+For security-related inquiries, please contact Mitel Security Team at: security@mitel.com
 
 ## Acknowledgments
 
-We appreciate security researchers who report vulnerabilities responsibly and help improve the security of this tool.
-
-Thank you for helping keep the PM+ Agent Configuration tool secure!
+We appreciate security researchers who report vulnerabilities responsibly through proper Mitel channels.
