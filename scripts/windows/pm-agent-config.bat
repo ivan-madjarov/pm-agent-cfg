@@ -227,8 +227,10 @@ REM ============================================================================
     
     if defined VERBOSE echo [VERBOSE] Querying patch scan timeout...
     for /f "tokens=3" %%a in ('reg query "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" 2^>nul ^| findstr "%PATCH_TIMEOUT_VALUE%"') do (
-        echo Patch Scan Timeout: %%a seconds
-        set "CURRENT_TIMEOUT=%%a"
+        set "CURRENT_TIMEOUT_HEX=%%a"
+        call :hex_to_decimal "!CURRENT_TIMEOUT_HEX!" CURRENT_TIMEOUT_DEC
+        echo Patch Scan Timeout: !CURRENT_TIMEOUT_DEC! seconds
+        set "CURRENT_TIMEOUT=!CURRENT_TIMEOUT_DEC!"
     )
     if not defined CURRENT_TIMEOUT (
         echo Patch Scan Timeout: Not set
@@ -236,8 +238,10 @@ REM ============================================================================
     
     if defined VERBOSE echo [VERBOSE] Querying thread max CPU usage...
     for /f "tokens=3" %%a in ('reg query "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" 2^>nul ^| findstr "%CPU_USAGE_VALUE%"') do (
-        echo Thread Max CPU Usage: %%a%%
-        set "CURRENT_CPU=%%a"
+        set "CURRENT_CPU_HEX=%%a"
+        call :hex_to_decimal "!CURRENT_CPU_HEX!" CURRENT_CPU_DEC
+        echo Thread Max CPU Usage: !CURRENT_CPU_DEC!%%
+        set "CURRENT_CPU=!CURRENT_CPU_DEC!"
     )
     if not defined CURRENT_CPU (
         echo Thread Max CPU Usage: Not set
@@ -475,6 +479,24 @@ REM ============================================================================
         exit /b 1
     )
     exit /b 0
+
+:hex_to_decimal
+    setlocal EnableDelayedExpansion
+    set "hex_value=%~1"
+    set "return_var=%~2"
+    
+    REM Remove 0x prefix if present
+    if "!hex_value:~0,2!"=="0x" (
+        set "hex_value=!hex_value:~2!"
+    )
+    
+    REM Convert hex to decimal using PowerShell (fastest method)
+    for /f %%i in ('powershell -NoProfile -Command "[Convert]::ToInt32('!hex_value!', 16)"') do (
+        set "decimal_result=%%i"
+    )
+    
+    endlocal & set "%return_var%=%decimal_result%"
+    goto :eof
 
 :prompt_service_restart
     echo IMPORTANT: Service restart required for changes to take effect
