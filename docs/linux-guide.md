@@ -14,7 +14,7 @@
 
 A comprehensive shell script that manages PM+ Agent CPU throttling settings through the `PerformanceSettings.json` file with **no external dependencies**. Choose your preferred interface:
 
-### ✅ **Primary Tool: Shell Script**
+### [READY] **Primary Tool: Shell Script**
 **File**: `scripts/linux/pm-agent-config.sh`
 - **Zero dependencies** - pure bash script with built-in JSON handling
 - **Multiple interfaces** - command-line AND interactive menu modes
@@ -259,7 +259,7 @@ journalctl -u uems_agent -f
 tail -f /usr/local/manageengine/uems_agent/logs/*.log
 ```
 
-## 🚀 **Deployment**
+## **DEPLOYMENT**
 
 ### Single Server Deployment
 ```bash

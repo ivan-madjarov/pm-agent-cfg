@@ -170,8 +170,8 @@ sudo ./pm-agent-config.sh
 **Advanced**: Optional EXE compilation available for Windows professional deployment packages.
 
 See detailed platform documentation:
-- [Windows Registry Configuration](docs/windows-guide.md) ✅ **Available**
-- [Linux JSON Configuration](docs/linux-guide.md) ✅ **Available**
+- [Windows Registry Configuration](docs/windows-guide.md) [AVAILABLE]
+- [Linux JSON Configuration](docs/linux-guide.md) [AVAILABLE]
 
 ## Development
 

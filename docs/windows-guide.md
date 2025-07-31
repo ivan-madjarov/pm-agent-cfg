@@ -14,16 +14,16 @@
 
 A single, comprehensive tool that configures PM+ Agent registry settings with **no external dependencies**. Choose your preferred interface:
 
-### ✅ **Primary Tool: Standalone Batch Script**
+### [READY] **Primary Tool: Standalone Batch Script**
 **File**: `scripts/windows/pm-agent-config.bat`
 
 **Why This is Perfect:**
-- 🚀 **Zero Dependencies** - works on any Windows machine (7 through 11)
-- 📦 **Single File** - just copy and run (10KB)
-- 🎮 **Multiple Interfaces** - command-line AND interactive menu
-- 🔒 **Built-in Security** - administrator privilege checking
-- 📊 **Status Display** - shows current configuration
-- 🔧 **Professional Help** - comprehensive documentation
+- [READY] **Zero Dependencies** - works on any Windows machine (7 through 11)
+- [READY] **Single File** - just copy and run (10KB)
+- [READY] **Multiple Interfaces** - command-line AND interactive menu
+- [READY] **Built-in Security** - administrator privilege checking
+- [READY] **Status Display** - shows current configuration
+- [READY] **Professional Help** - comprehensive documentation
 
 ## **Quick Start**
 
@@ -99,7 +99,7 @@ Simply double-click `pm-agent-config.bat` to launch the interactive menu.
 
 ## 🔧 **Advanced Options**
 
-### ✅ **Option 2: Compiled Executable (Optional)**
+### [READY] **Option 2: Compiled Executable (Optional)**
 
 For organizations requiring a professional executable:
 
@@ -124,18 +124,18 @@ pm-agent-config.exe -Status
 ## 📋 **Requirements**
 
 ### All Options
-- ✅ **Windows 7+** (including Windows 10, 11, Server editions)
-- ✅ **Administrator privileges** (for registry modification)
-- ✅ **DesktopCentral DCAgent** installed
+- [OK] **Windows 7+** (including Windows 10, 11, Server editions)
+- [CRITICAL] **Administrator privileges** (for registry modification)
+- [OK] **DesktopCentral DCAgent** installed
 
 ### Batch Script (Primary)
-- ✅ **No additional requirements** - uses built-in Windows commands
+- [OK] **No additional requirements** - uses built-in Windows commands
 
 ### Compiled EXE (Optional)
 - **Build Requirements**: PowerShell 5.1+, `ps2exe` module
 - **Runtime Requirements**: None (fully standalone)
 
-## 🚀 **Deployment Guide**
+## **DEPLOYMENT GUIDE**
 
 ### Simple Deployment (Recommended)
 1. **Copy** `pm-agent-config.bat` to target machines
@@ -192,19 +192,19 @@ reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAg
 
 ```
 scripts/windows/
-├── pm-agent-config.bat         # 🎯 Primary tool (use this!)
-├── pm-agent-config.ps1         # Source for EXE compilation
-└── build-exe.ps1              # EXE build script
++-- pm-agent-config.bat         # [PRIMARY] Primary tool (use this!)
++-- pm-agent-config.ps1         # Source for EXE compilation
++-- build-exe.ps1              # EXE build script
 ```
 
 ## 🎯 **Summary**
 
 **Use `pm-agent-config.bat` for everything!**
 
-- ✅ **Zero dependencies** - works everywhere
-- ✅ **Command-line AND menu** - fits all users
-- ✅ **Professional features** - status, help, verbose logging
-- ✅ **Single file deployment** - copy and run
-- ✅ **Comprehensive solution** - no need for multiple tools
+- [READY] **Zero dependencies** - works everywhere
+- [READY] **Command-line AND menu** - fits all users
+- [READY] **Professional features** - status, help, verbose logging
+- [READY] **Single file deployment** - copy and run
+- [READY] **Comprehensive solution** - no need for multiple tools
 
 This replaces all previous Windows tools with one superior solution.
