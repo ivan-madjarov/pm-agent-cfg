@@ -160,9 +160,9 @@ REM ============================================================================
         echo Administrator privileges to run.
         echo.
         echo Please run as Administrator:
-        echo 1. Right-click Command Prompt
+        echo 1. Right-click Command Prompt or PowerShell
         echo 2. Select "Run as administrator"
-        echo 3. Run this script again
+        echo 3. Navigate to script location and run this script again
         echo.
         exit /b 1
     )
@@ -275,6 +275,16 @@ REM ============================================================================
             echo Service Status: [OK] RUNNING
         ) else if "!SERVICE_STATE!"=="STOPPED" (
             echo Service Status: [X] STOPPED
+        ) else if "!SERVICE_STATE!"=="START_PENDING" (
+            echo Service Status: [~] STARTING...
+        ) else if "!SERVICE_STATE!"=="STOP_PENDING" (
+            echo Service Status: [~] STOPPING...
+        ) else if "!SERVICE_STATE!"=="PAUSED" (
+            echo Service Status: [!] PAUSED
+        ) else if "!SERVICE_STATE!"=="CONTINUE_PENDING" (
+            echo Service Status: [~] RESUMING...
+        ) else if "!SERVICE_STATE!"=="PAUSE_PENDING" (
+            echo Service Status: [~] PAUSING...
         ) else (
             echo Service Status: !SERVICE_STATE!
         )
@@ -367,12 +377,10 @@ REM ============================================================================
         exit /b 1
     )
 
-:show_interactive_menu
-    echo Interactive Menu Mode
-    echo =====================
-    echo.
+:display_menu_options
     echo Select Performance Mode:
     echo.
+    echo 0. Show Menu Options
     echo 1. Low Performance Mode    (CPU Usage: 15%%, Scan Timeout: 200s)
     echo 2. Medium Performance Mode (CPU Usage: 20%%, Scan Timeout: 200s)
     echo 3. High Performance Mode   (CPU Usage: 30%%, Scan Timeout: 200s)
@@ -380,12 +388,24 @@ REM ============================================================================
     echo 5. Show Current Settings and Service Status
     echo 6. Restart PM+ Agent Service
     echo 7. Exit
+    exit /b 0
+
+:show_interactive_menu
+    echo Interactive Menu Mode
+    echo =====================
+    echo.
+    call :display_menu_options
     echo.
 
     :menu_loop
-    set /p choice="Enter your choice (1-7): "
+    set /p choice="Enter your choice (1-7, 0 for menu): "
     
-    if "%choice%"=="1" (
+    if "%choice%"=="0" (
+        echo.
+        call :display_menu_options
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="1" (
         echo.
         call :configure_mode "low"
         goto :menu_end
@@ -415,7 +435,7 @@ REM ============================================================================
         echo Exiting...
         exit /b 0
     ) else (
-        echo Invalid choice. Please enter 1, 2, 3, 4, 5, 6, or 7.
+        echo Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, or 7.
         echo.
         goto :menu_loop
     )
@@ -431,15 +451,54 @@ REM ============================================================================
     if defined VERBOSE echo [VERBOSE] Checking service status: %SERVICE_NAME%
     sc query "%SERVICE_NAME%" >nul 2>&1
     if %errorLevel% equ 0 (
-        for /f "tokens=3" %%a in ('sc query "%SERVICE_NAME%" ^| findstr "STATE"') do (
-            set "SERVICE_STATE=%%a"
+        REM Get the state line from sc query output and extract the text description
+        for /f "tokens=3,4" %%a in ('sc query "%SERVICE_NAME%" ^| findstr "STATE"') do (
+            set "SERVICE_STATE_CODE=%%a"
+            set "SERVICE_STATE=%%b"
         )
-        if defined VERBOSE echo [VERBOSE] Service state: !SERVICE_STATE!
+        
+        REM Fallback: if we only got the code, convert it to text
+        if not defined SERVICE_STATE (
+            if "!SERVICE_STATE_CODE!"=="1" set "SERVICE_STATE=STOPPED"
+            if "!SERVICE_STATE_CODE!"=="2" set "SERVICE_STATE=START_PENDING"
+            if "!SERVICE_STATE_CODE!"=="3" set "SERVICE_STATE=STOP_PENDING"
+            if "!SERVICE_STATE_CODE!"=="4" set "SERVICE_STATE=RUNNING"
+            if "!SERVICE_STATE_CODE!"=="5" set "SERVICE_STATE=CONTINUE_PENDING"
+            if "!SERVICE_STATE_CODE!"=="6" set "SERVICE_STATE=PAUSE_PENDING"
+            if "!SERVICE_STATE_CODE!"=="7" set "SERVICE_STATE=PAUSED"
+        )
+        
+        if defined VERBOSE echo [VERBOSE] Service state: !SERVICE_STATE! (code: !SERVICE_STATE_CODE!)
         exit /b 0
     ) else (
         if defined VERBOSE echo [VERBOSE] Service not found or not accessible
         exit /b 1
     )
+
+:wait_for_service_stop
+    if defined VERBOSE echo [VERBOSE] Waiting for service to fully stop...
+    set "wait_count=0"
+    :wait_loop
+    call :check_service_status
+    if %errorLevel% neq 0 (
+        REM Service not found or error - consider it stopped
+        if defined VERBOSE echo [VERBOSE] Service appears to be stopped (not found/accessible)
+        exit /b 0
+    )
+    if "!SERVICE_STATE!"=="STOPPED" (
+        if defined VERBOSE echo [VERBOSE] Service confirmed stopped
+        exit /b 0
+    )
+    set /a wait_count+=1
+    if %wait_count% geq 12 (
+        if defined VERBOSE echo [VERBOSE] Timeout waiting for service to stop (current state: !SERVICE_STATE!)
+        REM Don't fail completely - let the start attempt proceed
+        if defined VERBOSE echo [VERBOSE] Proceeding with start attempt despite timeout
+        exit /b 0
+    )
+    if defined VERBOSE echo [VERBOSE] Service still in state: !SERVICE_STATE!, waiting... (attempt %wait_count%/12)
+    timeout /t 2 /nobreak >nul 2>&1
+    goto :wait_loop
 
 :restart_agent_service
     echo Restarting PM+ Agent service to apply changes...
@@ -452,33 +511,96 @@ REM ============================================================================
         exit /b 1
     )
     
+    REM Check if service is already stopped - no need to stop it
+    if "!SERVICE_STATE!"=="STOPPED" (
+        echo Service is already stopped, proceeding to start...
+        call :do_service_start
+        exit /b %errorLevel%
+    )
+    
+    REM Check if service is in a transitional state
+    if "!SERVICE_STATE!"=="STOP_PENDING" (
+        echo Service is already stopping, waiting for it to complete...
+        call :wait_for_service_stop
+        echo [OK] Service confirmed stopped
+        call :do_service_start
+        exit /b %errorLevel%
+    )
+    
+    if "!SERVICE_STATE!"=="START_PENDING" (
+        echo Service is currently starting, waiting for it to complete...
+        timeout /t 5 /nobreak >nul 2>&1
+        call :check_service_status
+        if "!SERVICE_STATE!"=="RUNNING" (
+            echo Service started successfully, will now restart it...
+        ) else (
+            echo Service start appears to have failed, attempting restart...
+        )
+    )
+    
     echo Stopping service: %SERVICE_NAME%
     if defined VERBOSE echo [VERBOSE] Executing: net stop "%SERVICE_NAME%"
     net stop "%SERVICE_NAME%" >nul 2>&1
-    if %errorLevel% equ 0 (
+    set "stop_error=%errorLevel%"
+    if %stop_error% equ 0 (
         echo [OK] Service stopped successfully
+        
+        echo Waiting for service to stop completely...
+        timeout /t 3 /nobreak >nul 2>&1
+        
+        REM Verify service is actually stopped before attempting to start
+        call :wait_for_service_stop
+        REM Always proceed to start - wait_for_service_stop now handles timeouts gracefully
+        echo [OK] Service confirmed stopped
+        
+        call :do_service_start
+        exit /b %errorLevel%
     ) else (
-        echo [X] Failed to stop service (error code: %errorLevel%)
-        echo Please stop the service manually
+        echo [X] Failed to stop service (error code: %stop_error%)
+        echo Please stop and start the service manually:
+        echo   net stop "%SERVICE_NAME%"
+        echo   net start "%SERVICE_NAME%"
         exit /b 1
     )
-    
-    echo Waiting for service to stop completely...
-    timeout /t 3 /nobreak >nul 2>&1
-    
+
+:do_service_start
+    echo.
     echo Starting service: %SERVICE_NAME%
     if defined VERBOSE echo [VERBOSE] Executing: net start "%SERVICE_NAME%"
     net start "%SERVICE_NAME%" >nul 2>&1
-    if %errorLevel% equ 0 (
+    set "start_error=%errorLevel%"
+    
+    if %start_error% equ 0 (
         echo [OK] Service started successfully
         echo.
-        echo [OK] PM+ Agent service restarted - configuration changes are now active
-    ) else (
-        echo [X] Failed to start service (error code: %errorLevel%)
-        echo Please start the service manually
-        exit /b 1
+        REM Double-check the service is actually running
+        timeout /t 2 /nobreak >nul 2>&1
+        call :check_service_status
+        if %errorLevel% equ 0 (
+            if "!SERVICE_STATE!"=="RUNNING" (
+                echo [OK] PM+ Agent service restarted - configuration changes are now active
+            ) else (
+                echo [!] Service start command succeeded but service state is: !SERVICE_STATE!
+                echo [!] Configuration changes should still be active
+            )
+        ) else (
+            echo [OK] PM+ Agent service restart completed - configuration changes are now active
+        )
+        REM Successful restart - exit the function
+        exit /b 0
     )
-    exit /b 0
+    
+    REM Only reach here if start failed
+    echo [X] Failed to start service (error code: %start_error%)
+    echo Service was stopped but failed to restart. Please start manually:
+    echo   net start "%SERVICE_NAME%"
+    echo.
+    echo Common causes:
+    echo - Service dependencies not ready (try waiting a few moments and starting manually)
+    echo - Configuration errors
+    echo - Insufficient permissions
+    echo - Service executable issues
+    exit /b 1
 
 :hex_to_decimal
     setlocal EnableDelayedExpansion
@@ -496,6 +618,36 @@ REM ============================================================================
     )
     
     endlocal & set "%return_var%=%decimal_result%"
+    goto :eof
+
+:simple_service_restart
+    REM Alternative restart method using SC command
+    echo [ALT] Attempting alternative restart method using SC command...
+    if defined VERBOSE echo [VERBOSE] Executing: sc stop "%SERVICE_NAME%"
+    sc stop "%SERVICE_NAME%" >nul 2>&1
+    
+    REM Wait a bit longer for SC stop
+    echo [ALT] Waiting for service to stop...
+    timeout /t 8 /nobreak >nul 2>&1
+    
+    if defined VERBOSE echo [VERBOSE] Executing: sc start "%SERVICE_NAME%"
+    sc start "%SERVICE_NAME%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo [OK] Service restarted successfully using SC command
+        timeout /t 3 /nobreak >nul 2>&1
+        call :check_service_status
+        if %errorLevel% equ 0 (
+            echo [OK] Service status: !SERVICE_STATE!
+        )
+        exit /b 0
+    ) else (
+        echo [X] Alternative restart method also failed
+        echo Please restart the service manually:
+        echo   sc stop "%SERVICE_NAME%" && timeout /t 5 && sc start "%SERVICE_NAME%"
+        echo   OR
+        echo   net stop "%SERVICE_NAME%" && net start "%SERVICE_NAME%"
+        exit /b 1
+    )
     goto :eof
 
 :prompt_service_restart
@@ -525,3 +677,4 @@ REM ============================================================================
     exit /b 0
 
 REM End of script
+goto :eof

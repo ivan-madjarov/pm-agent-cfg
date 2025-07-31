@@ -12,6 +12,9 @@ param(
     [switch]$Status,
     
     [Parameter(Mandatory=$false)]
+    [switch]$Menu,
+    
+    [Parameter(Mandatory=$false)]
     [switch]$VerboseOutput,
     
     [Parameter(Mandatory=$false)]
@@ -78,7 +81,8 @@ PARAMETERS:
                         high   = 30% CPU usage, 200s timeout
                         ultra  = 40% CPU usage, 200s timeout
     
-    -Status             Display current registry settings
+    -Status             Display current registry settings and service status
+    -Menu               Show interactive menu
     -VerboseOutput      Enable verbose output
     -Help               Show this help message
 
@@ -88,6 +92,7 @@ EXAMPLES:
     pm-agent-config.exe -Mode high        # Configure for high performance
     pm-agent-config.exe -Mode ultra       # Configure for ultra performance
     pm-agent-config.exe -Status           # Show current settings
+    pm-agent-config.exe -Menu             # Show interactive menu
 
 REQUIREMENTS:
     - Administrator privileges
@@ -217,6 +222,104 @@ function Show-CurrentSettings {
     }
     
     Write-Host ""
+    Write-Host "PM+ Agent Service Status:" -ForegroundColor Cyan
+    Write-Host "========================" -ForegroundColor Cyan
+    Show-ServiceStatus
+    Write-Host ""
+}
+
+function Show-ServiceStatus {
+    $serviceName = "ManageEngine UEMS - Agent"
+    
+    try {
+        $service = Get-Service -Name $serviceName -ErrorAction Stop
+        $status = $service.Status
+        
+        switch ($status) {
+            "Running" { Write-Host "Service Status: [OK] RUNNING" -ForegroundColor Green }
+            "Stopped" { Write-Host "Service Status: [X] STOPPED" -ForegroundColor Red }
+            "StartPending" { Write-Host "Service Status: [~] STARTING..." -ForegroundColor Yellow }
+            "StopPending" { Write-Host "Service Status: [~] STOPPING..." -ForegroundColor Yellow }
+            "Paused" { Write-Host "Service Status: [!] PAUSED" -ForegroundColor Magenta }
+            "ContinuePending" { Write-Host "Service Status: [~] RESUMING..." -ForegroundColor Yellow }
+            "PausePending" { Write-Host "Service Status: [~] PAUSING..." -ForegroundColor Yellow }
+            default { Write-Host "Service Status: $status" -ForegroundColor White }
+        }
+    }
+    catch {
+        Write-Host "Service Status: [X] NOT FOUND or ACCESS DENIED" -ForegroundColor Red
+    }
+}
+
+function Restart-AgentService {
+    $serviceName = "ManageEngine UEMS - Agent"
+    
+    Write-Host "Restarting PM+ Agent service to apply changes..." -ForegroundColor Yellow
+    Write-Host ""
+    
+    try {
+        $service = Get-Service -Name $serviceName -ErrorAction Stop
+        $currentStatus = $service.Status
+        
+        # Check if service is already stopped - no need to stop it
+        if ($currentStatus -eq "Stopped") {
+            Write-Host "Service is already stopped, proceeding to start..." -ForegroundColor Cyan
+        }
+        # Check if service is in a transitional state
+        elseif ($currentStatus -eq "StopPending") {
+            Write-Host "Service is already stopping, waiting for it to complete..." -ForegroundColor Cyan
+            $service.WaitForStatus("Stopped", (New-TimeSpan -Seconds 30))
+        }
+        elseif ($currentStatus -eq "StartPending") {
+            Write-Host "Service is currently starting, waiting for it to complete..." -ForegroundColor Cyan
+            try {
+                $service.WaitForStatus("Running", (New-TimeSpan -Seconds 10))
+                Write-Host "Service started successfully, will now restart it..." -ForegroundColor Cyan
+            }
+            catch {
+                Write-Host "Service start appears to have failed, attempting restart..." -ForegroundColor Yellow
+            }
+        }
+        
+        # Stop the service if it's running
+        if ($service.Status -ne "Stopped") {
+            Write-Host "Stopping service: $serviceName" -ForegroundColor Yellow
+            Stop-Service -Name $serviceName -Force
+            Write-Host "[OK] Service stopped successfully" -ForegroundColor Green
+            
+            # Wait for service to fully stop
+            Write-Host "Waiting for service to stop completely..." -ForegroundColor Cyan
+            $service.WaitForStatus("Stopped", (New-TimeSpan -Seconds 30))
+        }
+        
+        # Start the service
+        Write-Host ""
+        Write-Host "Starting service: $serviceName" -ForegroundColor Yellow
+        Start-Service -Name $serviceName
+        Write-Host "[OK] Service started successfully" -ForegroundColor Green
+        
+        # Verify service is actually running
+        Start-Sleep -Seconds 2
+        $service.Refresh()
+        if ($service.Status -eq "Running") {
+            Write-Host ""
+            Write-Host "[OK] PM+ Agent service restarted - configuration changes are now active" -ForegroundColor Green
+        } else {
+            Write-Host ""
+            Write-Host "[!] Service start command succeeded but service state is: $($service.Status)" -ForegroundColor Yellow
+            Write-Host "[!] Configuration changes should still be active" -ForegroundColor Yellow
+        }
+        
+        return $true
+    }
+    catch {
+        Write-Host "[X] Failed to restart service: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Please restart the service manually:" -ForegroundColor Yellow
+        Write-Host "  Stop-Service -Name '$serviceName' -Force" -ForegroundColor Cyan
+        Write-Host "  Start-Service -Name '$serviceName'" -ForegroundColor Cyan
+        return $false
+    }
 }
 
 function Set-PerformanceMode {
@@ -251,12 +354,37 @@ function Set-PerformanceMode {
         Write-Host "[OK] Configuration applied successfully!" -ForegroundColor Green
         Write-Host "========================================" -ForegroundColor Green
         Write-Host ""
-        Write-Host "IMPORTANT: You may need to restart the DCAgent service" -ForegroundColor Yellow
-        Write-Host "for changes to take effect:" -ForegroundColor Yellow
+        
+        # Prompt for service restart
+        Write-Host "IMPORTANT: Service restart required for changes to take effect" -ForegroundColor Yellow
         Write-Host ""
-        Write-Host "  Restart-Service 'DCAgent' -Force" -ForegroundColor Cyan
-        Write-Host ""
-        return $true
+        
+        try {
+            $service = Get-Service -Name "ManageEngine UEMS - Agent" -ErrorAction Stop
+            Write-Host "Current service status: $($service.Status)" -ForegroundColor Cyan
+            Write-Host ""
+            
+            $choice = Read-Host "Restart PM+ Agent service now? (y/N)"
+            if ($choice -match "^[Yy]") {
+                Write-Host ""
+                if (Restart-AgentService) {
+                    return $true
+                } else {
+                    return $false
+                }
+            } else {
+                Write-Host ""
+                Write-Host "Service restart skipped. To apply changes, restart manually:" -ForegroundColor Yellow
+                Write-Host "  Stop-Service -Name 'ManageEngine UEMS - Agent' -Force" -ForegroundColor Cyan
+                Write-Host "  Start-Service -Name 'ManageEngine UEMS - Agent'" -ForegroundColor Cyan
+                return $true
+            }
+        }
+        catch {
+            Write-Host "WARNING: Service 'ManageEngine UEMS - Agent' not found or not accessible" -ForegroundColor Yellow
+            Write-Host "Please restart the agent service manually" -ForegroundColor Yellow
+            return $true
+        }
     }
     else {
         Write-Host "=======================================" -ForegroundColor Red
@@ -269,6 +397,80 @@ function Set-PerformanceMode {
     }
 }
 
+function Show-MenuOptions {
+    Write-Host ""
+    Write-Host "Select Performance Mode:" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "0. Show Menu Options" -ForegroundColor Yellow
+    Write-Host "1. Low Performance Mode    (CPU Usage: 15%, Scan Timeout: 200s)"
+    Write-Host "2. Medium Performance Mode (CPU Usage: 20%, Scan Timeout: 200s)"
+    Write-Host "3. High Performance Mode   (CPU Usage: 30%, Scan Timeout: 200s)"
+    Write-Host "4. Ultra Performance Mode  (CPU Usage: 40%, Scan Timeout: 200s)"
+    Write-Host "5. Show Current Settings and Service Status"
+    Write-Host "6. Restart PM+ Agent Service"
+    Write-Host "7. Exit"
+    Write-Host ""
+}
+
+function Show-InteractiveMenu {
+    Write-Host ""
+    Write-Host "Interactive Menu Mode" -ForegroundColor Cyan
+    Write-Host "====================" -ForegroundColor Cyan
+    Show-MenuOptions
+    
+    do {
+        $choice = Read-Host "Enter your choice (1-7, 0 for menu)"
+        
+        switch ($choice) {
+            "0" {
+                Show-MenuOptions
+                continue
+            }
+            "1" {
+                Write-Host ""
+                Set-PerformanceMode -PerformanceMode "low"
+                return
+            }
+            "2" {
+                Write-Host ""
+                Set-PerformanceMode -PerformanceMode "medium"
+                return
+            }
+            "3" {
+                Write-Host ""
+                Set-PerformanceMode -PerformanceMode "high"
+                return
+            }
+            "4" {
+                Write-Host ""
+                Set-PerformanceMode -PerformanceMode "ultra"
+                return
+            }
+            "5" {
+                Write-Host ""
+                Show-CurrentSettings
+                Write-Host ""
+                continue
+            }
+            "6" {
+                Write-Host ""
+                Restart-AgentService
+                Write-Host ""
+                continue
+            }
+            "7" {
+                Write-Host "Exiting..." -ForegroundColor Yellow
+                return
+            }
+            default {
+                Write-Host "Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, or 7." -ForegroundColor Red
+                Write-Host ""
+                continue
+            }
+        }
+    } while ($true)
+}
+
 # Main execution logic
 try {
     Write-Host ""
@@ -276,7 +478,7 @@ try {
     Write-Host "=====================================" -ForegroundColor Cyan
     
     # Show help if requested
-    if ($Help -or (-not $Mode -and -not $Status)) {
+    if ($Help -or (-not $Mode -and -not $Status -and -not $Menu)) {
         Show-Help
         exit 0
     }
@@ -290,6 +492,11 @@ try {
         Write-Host "Administrator privileges to run." -ForegroundColor Yellow
         Write-Host ""
         Write-Host "Please run as Administrator and try again." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "To run as Administrator:" -ForegroundColor Yellow
+        Write-Host "1. Right-click Command Prompt or PowerShell" -ForegroundColor Yellow
+        Write-Host "2. Select 'Run as administrator'" -ForegroundColor Yellow
+        Write-Host "3. Navigate to script location and run again" -ForegroundColor Yellow
         exit 1
     }
     
@@ -298,6 +505,12 @@ try {
     # Show current settings
     if ($Status) {
         Show-CurrentSettings
+        exit 0
+    }
+    
+    # Show interactive menu
+    if ($Menu) {
+        Show-InteractiveMenu
         exit 0
     }
     

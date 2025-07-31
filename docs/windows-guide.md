@@ -6,9 +6,10 @@
 > **THIS TOOL MUST BE RUN AS ADMINISTRATOR**
 > 
 > **How to run as Administrator:**
-> 1. Right-click Command Prompt → "Run as administrator"
-> 2. OR Right-click the `.bat` file → "Run as administrator"
-> 3. **The tool will FAIL without Administrator privileges!**
+> 1. Right-click **Command Prompt** → "Run as administrator"
+> 2. OR Right-click **PowerShell** → "Run as administrator"
+> 3. Navigate to script location and run the tool
+> 4. **The tool will FAIL without Administrator privileges!**
 
 ## **The Solution**
 
@@ -22,14 +23,14 @@ A single, comprehensive tool that configures PM+ Agent registry settings with **
 - [READY] **Single File** - just copy and run (10KB)
 - [READY] **Multiple Interfaces** - command-line AND interactive menu
 - [READY] **Built-in Security** - administrator privilege checking
-- [READY] **Status Display** - shows current configuration
+- [READY] **Status Display** - shows current configuration with decimal values and comprehensive service status
 - [READY] **Professional Help** - comprehensive documentation
 
 ## **Quick Start**
 
 > **[!] ADMINISTRATOR PRIVILEGES REQUIRED [!]**  
 > **ALL commands below require Administrator privileges!**
-> **Open Command Prompt as Administrator before running any commands.**
+> **Open Command Prompt or PowerShell as Administrator before running any commands.**
 
 ### Command-Line Usage (IT Professionals)
 ```batch
@@ -60,6 +61,7 @@ pm-agent-config.bat --menu
 pm-agent-config.bat --menu
 
 # Follow the on-screen prompts:
+# 0. List all menu options again
 # 1. Low Performance Mode    (15% CPU, 200s timeout)
 # 2. Medium Performance Mode (20% CPU, 200s timeout)
 # 3. High Performance Mode   (30% CPU, 200s timeout)
@@ -69,24 +71,26 @@ pm-agent-config.bat --menu
 # 7. Exit
 ```
 
-### Double-Click Usage
-Simply double-click `pm-agent-config.bat` to launch the interactive menu.
+### Elevated Console Usage
+When using the batch script, always start an elevated Command Prompt first and run the script from there. This ensures all registry modifications and service operations can be performed properly.
 
-## ⚙️ **What It Configures**
+## **CONFIGURATION DETAILS**
 
 ### Registry Settings Modified
 
 #### Patch Scan Timeout
 - **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent\Patch`
 - **Value**: `Patch_scan_timeout` (DWORD)
-- **Data**: `200` seconds (both modes)
+- **Data**: `200` seconds (all modes)
 
 #### CPU Usage Limit  
 - **Path**: `HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent`
 - **Value**: `THRDMAXCPUUSAGE_2C` (DWORD)
 - **Data**: 
   - **Low Performance**: `15` (15% CPU)
+  - **Medium Performance**: `20` (20% CPU)
   - **High Performance**: `30` (30% CPU)
+  - **Ultra Performance**: `40` (40% CPU)
 
 ### Performance Modes
 
@@ -97,7 +101,7 @@ Simply double-click `pm-agent-config.bat` to launch the interactive menu.
 | **High** | 30% | Workstations | Faster processing, acceptable CPU usage |
 | **Ultra** | 40% | High-performance needs | Maximum throughput, use with caution |
 
-## 🔧 **Advanced Options**
+## **ADVANCED OPTIONS**
 
 ### [READY] **Option 2: Compiled Executable (Optional)**
 

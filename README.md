@@ -1,39 +1,46 @@
 # PM+ Agent Configuration
 
-**Mitel Networks Corporation - Internal Tool**
+**Mitel Networks Corporation - Customer Deployment Tool**
 
-Cross-platform agent configuration management system supporting both Linux and Windows environments for Mitel's PM+ (Performance Monitoring Plus) infrastructure.
+Cross-platform agent configuration management system supporting both Linux and Windows environments for Mitel's PM+ (Performance Monitoring Plus) infrastructure. Designed for deployment in both Mitel and customer environments with enterprise-grade reliability.
 
 > **[!] CRITICAL REQUIREMENT [!]**  
 > **ALL CONFIGURATION SCRIPTS MUST BE EXECUTED WITH ELEVATED PRIVILEGES**
-> - **Windows**: Run as Administrator (right-click → "Run as administrator")
-> - **Linux**: Execute with sudo or root privileges
+> - **Windows**: Start **Command Prompt** or **PowerShell** as Administrator, then run scripts
+> - **Linux**: Use `sudo` for elevated privileges (or run as root if available)
 > 
 > **These tools modify system registry/configuration files and will fail without proper elevation!**
 
 ## Current Features
 
-### Windows Registry Configuration Tool [READY]
+### Windows Registry Configuration Tool [PRODUCTION-READY v3.1]
 **Zero-dependency solution** for configuring DesktopCentral DCAgent registry settings:
 - **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
+- **Enhanced Interactive Menu** - professional interface with menu relist functionality (option 0)
 - **Multiple Interfaces** - command-line AND interactive menu in one tool
 - **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - **Built-in Security** - administrator privilege checking and validation
-- **Status Display** - view current registry configurations and service status
-- **Service Management** - automatic agent service restart with --restart/--no-restart options
-- **Single File Deployment** - copy `pm-agent-config.bat` and run (10KB)
+- **Status Display** - view current registry configurations with decimal values and comprehensive service status
+- **Intelligent Service Management** - enhanced restart logic with state verification and error recovery
+- **Command Options** - --restart/--no-restart flags for automated deployments
+- **Single File Deployment** - copy `pm-agent-config.bat` and run (12KB)
+- **Production Reliability** - comprehensive error handling and service restart verification
+- **Menu Navigation** - option 0 to redisplay menu for improved usability
 
-**Bonus**: Optional PowerShell-to-EXE compilation for professional deployment packages.
+**Bonus**: PowerShell version with full interactive menu system matching batch script functionality.
 
-### Linux JSON Configuration Tool [READY]
+### Linux JSON Configuration Tool [PRODUCTION-READY v3.1]
 **Zero-dependency solution** for configuring DesktopCentral UEMS Agent performance settings:
 - **Shell Script** - pure bash with no external dependencies
+- **Enhanced Interactive Menu** - professional interface with clear screen functionality
 - **Multiple Interfaces** - command-line AND interactive menu modes
 - **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - **Built-in Security** - root privilege checking and automatic backups
-- **Status Display** - view current JSON configurations and service status
-- **Service Management** - intelligent service restart with --restart/--no-restart options
+- **Status Display** - view current JSON configurations and comprehensive service status
+- **Intelligent Service Management** - enhanced restart logic with multi-service detection
+- **Command Options** - --restart/--no-restart flags for automated deployments
 - **Single File Deployment** - copy `pm-agent-config.sh` and run
+- **Production Reliability** - comprehensive service state management and error recovery
 
 See platform-specific guides:
 - [Windows Configuration Guide](docs/windows-guide.md) **Available**
@@ -109,7 +116,10 @@ pm-agent-config.bat --status        # Show current settings
 # IMPORTANT: Run Command Prompt as Administrator first!
 cd scripts\windows
 pm-agent-config.bat --menu
-# Follow the numbered menu prompts
+# Enhanced interactive menu with relist functionality:
+# - Enter "0" to redisplay menu options when screen gets cluttered
+# - Perfect for multiple consecutive operations
+# - Professional user interface with clear navigation
 ```
 
 #### Option 3: Double-Click (Simplest)
@@ -134,7 +144,10 @@ sudo ./pm-agent-config.sh --status        # Show current settings
 # IMPORTANT: Use sudo or run as root!
 cd scripts/linux
 sudo ./pm-agent-config.sh --menu
-# Follow the numbered menu prompts
+# Enhanced interactive menu with refresh functionality:
+# - Enter "0" to refresh/redisplay menu options
+# - Automatic screen clearing for clean interface
+# - Professional user experience with clear navigation
 ```
 
 #### Option 3: Default Behavior
@@ -184,19 +197,25 @@ See detailed platform documentation:
 - Linux: `./scripts/linux/build.sh` (creates executable and copies to dist/)
 - Windows: `.\scripts\windows\build-exe.ps1` (optional - compiles PowerShell to EXE)
 
-### Internal Usage Guidelines
-**IMPORTANT**: This tool is proprietary to Mitel Networks Corporation and is intended for internal use only by authorized Mitel personnel and designated partners.
+### Usage Guidelines
+**IMPORTANT**: This tool is proprietary to Mitel Networks Corporation and is intended for use by authorized Mitel personnel and designated partners in both Mitel and customer environments. Follow all applicable security policies and change management procedures.
+
+### Customer Environment Considerations
+- **Change Management**: Obtain proper change approvals before deployment
+- **Security Compliance**: Ensure tool usage meets customer compliance requirements
+- **Documentation**: Maintain audit trail of configuration changes
+- **Access Controls**: Respect customer identity and access management policies
 
 ### Usage Testing
 - Linux: Test with `sudo ./scripts/linux/pm-agent-config.sh --help`
 - Windows: **Run Command Prompt as Administrator**, then test with `.\scripts\windows\pm-agent-config.bat --help`
-- Both platforms: Use `--dry-run` flag to preview changes without applying them
+- Both platforms: Use `--dry-run` flag to preview changes without applying them (Linux only)
 
 The scripts are self-contained and require no external dependencies beyond the target platform's built-in shell capabilities.
 
 ## Deployment
 
-**IMPORTANT**: This is proprietary Mitel software. Only deploy within authorized Mitel infrastructure and follow all Mitel security policies and procedures.
+**IMPORTANT**: This is proprietary Mitel software. Deploy within authorized Mitel infrastructure and customer environments following all applicable security policies, change management procedures, and compliance requirements.
 
 > **[!] DEPLOYMENT CRITICAL REQUIREMENT [!]**  
 > **ALL DEPLOYMENTS MUST ENSURE ELEVATED PRIVILEGE EXECUTION**
@@ -224,4 +243,10 @@ sudo ./pm-agent-config.sh --mode high
 
 ### Bulk Deployment
 Use your preferred configuration management system (Ansible, Puppet, etc.) or simple shell loops to deploy to multiple systems. Both tools support automation through command-line arguments.
+
+### Customer Environment Deployment
+- **Pre-Deployment**: Coordinate with customer security teams and obtain proper approvals
+- **Change Windows**: Follow customer change management processes
+- **Documentation**: Provide configuration change documentation to customer
+- **Validation**: Verify changes meet customer requirements and security standards
 

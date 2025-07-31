@@ -20,8 +20,8 @@ A comprehensive shell script that manages PM+ Agent CPU throttling settings thro
 - **Multiple interfaces** - command-line AND interactive menu modes
 - **Performance modes** - Low (15%), Medium (20%), High (30%), Ultra (40%) CPU limits
 - **Built-in safety** - automatic backup before changes, rollback support
-- **Service integration** - automatic service restart to apply changes with smart restart options
-- **Service management** - --restart and --no-restart flags for automated deployments
+- **Service integration** - intelligent service restart with enhanced state checking and smart restart options
+- **Service management** - --restart and --no-restart flags with comprehensive status display for automated deployments
 - **Comprehensive validation** - checks for UEMS agent installation and privileges
 
 ## **Quick Start**
@@ -47,7 +47,16 @@ sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart 
 ```bash
 # IMPORTANT: Use sudo!
 sudo ./pm-agent-config.sh --menu
-# Follow the numbered menu prompts
+
+# Follow the on-screen prompts:
+# 0. List all menu options again  
+# 1. Low Performance Mode    (15% CPU)
+# 2. Medium Performance Mode (20% CPU)  
+# 3. High Performance Mode   (30% CPU)
+# 4. Ultra Performance Mode  (40% CPU)
+# 5. Show Current Settings and Service Status
+# 6. Restart PM+ Agent Service
+# 7. Exit
 ```
 
 ### Default Behavior

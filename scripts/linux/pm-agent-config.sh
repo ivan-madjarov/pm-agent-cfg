@@ -179,6 +179,50 @@ restore_backup() {
     fi
 }
 
+# Enhanced service status display
+show_service_status() {
+    local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
+    local found_service=false
+    
+    for service in "${services[@]}"; do
+        if systemctl list-unit-files --no-legend --no-pager 2>/dev/null | grep -q "^$service.service"; then
+            local status=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
+            local detailed_status=$(systemctl status "$service" --no-pager -l 2>/dev/null | grep "Active:" | awk '{print $2, $3}' || echo "unknown")
+            
+            case "$status" in
+                "active")
+                    echo "Service Status ($service): [OK] RUNNING"
+                    ;;
+                "inactive")
+                    echo "Service Status ($service): [X] STOPPED"
+                    ;;
+                "activating")
+                    echo "Service Status ($service): [~] STARTING..."
+                    ;;
+                "deactivating")
+                    echo "Service Status ($service): [~] STOPPING..."
+                    ;;
+                "failed")
+                    echo "Service Status ($service): [!] FAILED"
+                    ;;
+                "reloading")
+                    echo "Service Status ($service): [~] RELOADING..."
+                    ;;
+                *)
+                    echo "Service Status ($service): $status"
+                    ;;
+            esac
+            found_service=true
+            break
+        fi
+    done
+    
+    if [[ "$found_service" == "false" ]]; then
+        echo "Service Status: [X] NO KNOWN SERVICES FOUND"
+        log_info "Searched for: ${services[*]}"
+    fi
+}
+
 # Show current performance settings
 show_current_settings() {
     echo "Current PM+ Agent Performance Settings:"
@@ -211,27 +255,7 @@ show_current_settings() {
         echo ""
         echo "PM+ Agent Service Status:"
         echo "========================"
-        local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
-        local found_service=false
-        
-        for service in "${services[@]}"; do
-            if systemctl list-unit-files --no-legend --no-pager | grep -q "^$service.service"; then
-                local status=$(systemctl is-active "$service" 2>/dev/null || echo "inactive")
-                if [[ "$status" == "active" ]]; then
-                    echo "Service Status ($service): [OK] RUNNING"
-                elif [[ "$status" == "inactive" ]]; then
-                    echo "Service Status ($service): [X] STOPPED"
-                else
-                    echo "Service Status ($service): $status"
-                fi
-                found_service=true
-                break
-            fi
-        done
-        
-        if [[ "$found_service" == "false" ]]; then
-            echo "Service Status: [X] NO KNOWN SERVICES FOUND"
-        fi
+        show_service_status
     else
         log_warning "No performance configuration file found"
         log_info "Expected location: $CONFIG_FILE"
@@ -302,33 +326,88 @@ set_performance_mode() {
     fi
 }
 
-# Restart UEMS agent services
+# Restart UEMS agent services with enhanced state checking
 restart_agent_services() {
     log_info "Restarting UEMS Agent services to apply changes..."
     
     local services=("dcservice" "uems_agent" "dcagent" "manageengine-uems-agent")
     local restarted=false
+    local active_service=""
     
+    # Find the active service first
     for service in "${services[@]}"; do
         if systemctl is-active --quiet "$service" 2>/dev/null; then
-            if [[ "$DRY_RUN" == "true" ]]; then
-                log_info "[DRY RUN] Would restart service: $service"
-            else
-                log_verbose "Restarting service: $service"
-                systemctl restart "$service" && {
-                    log_success "Service restarted: $service"
-                    restarted=true
-                } || {
-                    log_warning "Failed to restart service: $service"
-                }
-            fi
+            active_service="$service"
+            break
         fi
     done
     
-    if [[ "$restarted" == "false" && "$DRY_RUN" == "false" ]]; then
-        log_warning "No known UEMS Agent services found to restart"
-        log_info "You may need to manually restart the agent service"
+    if [[ -z "$active_service" ]]; then
+        log_warning "No active UEMS Agent services found"
+        # Try to find any service that exists (even if stopped)
+        for service in "${services[@]}"; do
+            if systemctl list-unit-files --no-legend --no-pager 2>/dev/null | grep -q "^$service.service"; then
+                active_service="$service"
+                log_info "Found service (currently stopped): $service"
+                break
+            fi
+        done
+        
+        if [[ -z "$active_service" ]]; then
+            log_error "No known UEMS Agent services found to restart"
+            log_info "Available services: ${services[*]}"
+            return 1
+        fi
     fi
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[DRY RUN] Would restart service: $active_service"
+        return 0
+    fi
+    
+    # Check current service state
+    local current_status=$(systemctl is-active "$active_service" 2>/dev/null || echo "inactive")
+    
+    case "$current_status" in
+        "inactive")
+            log_info "Service is already stopped, proceeding to start..."
+            ;;
+        "activating")
+            log_info "Service is currently starting, waiting for it to complete..."
+            sleep 5
+            current_status=$(systemctl is-active "$active_service" 2>/dev/null || echo "inactive")
+            if [[ "$current_status" == "active" ]]; then
+                log_info "Service started successfully, will now restart it..."
+            else
+                log_warning "Service start appears to have failed, attempting restart..."
+            fi
+            ;;
+        "deactivating")
+            log_info "Service is currently stopping, waiting for it to complete..."
+            sleep 5
+            ;;
+    esac
+    
+    log_verbose "Restarting service: $active_service"
+    if systemctl restart "$active_service"; then
+        log_success "Service restarted: $active_service"
+        
+        # Wait a moment and verify it's running
+        sleep 2
+        if systemctl is-active --quiet "$active_service"; then
+            log_success "Service is running and configuration changes are now active"
+        else
+            log_warning "Service restart completed but may not be fully active yet"
+        fi
+        restarted=true
+    else
+        log_error "Failed to restart service: $active_service"
+        log_info "You may need to manually restart the service:"
+        log_info "  sudo systemctl restart $active_service"
+        return 1
+    fi
+    
+    return 0
 }
 
 # Prompt user for service restart
@@ -378,6 +457,7 @@ show_menu() {
         echo "Select an option:"
         echo ""
         echo "Performance Modes:"
+        echo "  0) Show Menu Options (refresh)"
         echo "  1) Low Performance (15% CPU limit)"
         echo "  2) Medium Performance (20% CPU limit)"
         echo "  3) High Performance (30% CPU limit)"
@@ -391,9 +471,10 @@ show_menu() {
         echo "  9) Help"
         echo "  10) Exit"
         echo ""
-        read -p "Enter your choice (1-10): " choice
+        read -p "Enter your choice (0-10, 0 for menu): " choice
         
         case $choice in
+            0) continue;; # Refresh menu
             1) set_performance_mode "low"; read -p "Press Enter to continue..."; ;;
             2) set_performance_mode "medium"; read -p "Press Enter to continue..."; ;;
             3) set_performance_mode "high"; read -p "Press Enter to continue..."; ;;
@@ -404,7 +485,7 @@ show_menu() {
             8) restart_agent_services; read -p "Press Enter to continue..."; ;;
             9) show_help; read -p "Press Enter to continue..."; ;;
             10) log_info "Exiting..."; exit 0; ;;
-            *) log_error "Invalid choice. Please select 1-10."; sleep 2; ;;
+            *) log_error "Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10."; sleep 2; ;;
         esac
     done
 }

@@ -2,52 +2,120 @@
 
 All notable changes to the PM+ Agent Configuration tool will be documented in this file.
 
-**Mitel Networks Corporation - Internal Project**
+**Mitel Networks Corporation - Customer Deployment Tool**
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - Project Quality Enhancement & Code Optimization
-### Fixed
-- **Character Encoding Issues**: Replaced all Unicode characters (✓, ✗, ═, └, ──) with ASCII equivalents for improved compatibility
-  - Windows batch script: All Unicode symbols → ASCII text equivalents
-  - PowerShell script: All Unicode symbols → ASCII text equivalents  
-  - Linux shell script: All Unicode symbols → ASCII text equivalents
-- **Help Display**: Fixed script name display in help output (now shows "pm-agent-config.bat" instead of parameter expansion)
-- **Tree Structure Display**: Registry key tree structure now uses ASCII characters (+--) instead of Unicode
-- **Documentation Emoji Issues**: Replaced all problematic emoji characters (⚠️, 🚨, 🔑, ✅, 🚀, etc.) with ASCII text equivalents
-- **Cross-Platform Compatibility**: Eliminated all Unicode characters that cause display issues in different environments
-- **Batch Script Error**: Resolved "batch label not found" error caused by Unicode character parsing issues
-- **PowerShell Parameter Conflict**: Fixed duplicate Verbose parameter issue by renaming to VerboseOutput
+## [v3.1.1] - 2025-01-31 - Service Logic & Documentation Refinement
+### 🔧 Critical Fixes & Documentation Updates
 
-### Enhanced
-- **Four-Mode Performance System**: Standardized all platforms to support Low (15%), Medium (20%), High (30%), Ultra (40%) CPU limits
-  - Windows batch script: Expanded from 2 to 4 performance modes with full interactive menu support
-  - PowerShell script: Updated with all 4 modes and improved parameter validation
-  - Linux shell script: Already supported 4 modes, cleaned up unused variables
-  - Documentation: Updated all guides to reflect consistent 4-mode system across platforms
-- **Code Optimization**: Comprehensive cleanup and streamlining of all scripts and documentation
-  - Build scripts: Improved efficiency and error handling
-  - CI/CD workflow: Streamlined from 5 jobs to 3 for better performance
-  - Documentation: Removed redundancy while maintaining comprehensive coverage
-  - Security documentation: Streamlined threat model and contact information
-- **Documentation Standards**: Professional formatting and consistency improvements
-- **Professional Deployment**: Enhanced build processes and deployment procedures
+### Fixed - Service Restart Logic
+- **Windows Batch Script**: Resolved execution flow issues in service restart functionality
+  - Fixed error level preservation preventing proper service start after successful stop
+  - Corrected logic flow where successful operations would show failure messages
+  - Eliminated redundant `goto :eof` statements causing batch parsing errors
+  - Reorganized service restart sequence for reliable stop/start operations
+
+### Enhanced - Documentation Consistency 
+- **Privilege Requirements**: Updated all documentation for proper elevated console usage
+  - Windows: Clarified to start Command Prompt/PowerShell as Administrator (not right-click files)
+  - Linux: Enhanced sudo usage guidance for systems without direct root access
+  - Removed ambiguous instructions about right-clicking script files
+- **Cross-Platform Instructions**: Standardized elevation guidance across all platforms
+
+### Improved - PowerShell Script
+- **Interactive Menu**: Added full menu system matching batch script functionality
+- **Help Documentation**: Enhanced privilege requirement instructions
+- **Parameter Support**: Added -Menu parameter for interactive mode
+
+## [v3.0.0] - 2025-01-31 - Production-Ready Customer Deployment Suite
+### 🚀 Major Release - Comprehensive Service Management & Interactive UX
+
+### Added - Interactive Menu Enhancements
+- **Menu Relist Functionality**: Added option "0" to redisplay menu options across all platforms
+  - Windows Batch: Enhanced interactive menu with instant relist capability
+  - Windows PowerShell: Added complete interactive menu system with relist support
+  - Linux Shell: Improved menu with refresh option for better navigation
+- **Cross-Platform Menu Consistency**: Standardized menu interfaces across all scripts
+  - Consistent option numbering and prompts: "Enter your choice (1-7, 0 for menu)"
+  - Unified menu option descriptions and behavior patterns
+  - Professional user experience across Windows and Linux platforms
+
+### Fixed - Critical Service Management Issues
+- **Service Restart Logic Errors**: Resolved critical Windows service restart flow issues
+  - Fixed logic error where successful service stops triggered false failure messages
+  - Reorganized service start flow to properly exit after successful operations
+  - Eliminated contradictory success/failure messages during restart sequences
+  - Enhanced error level preservation to prevent command interference
+- **Batch Script Parsing**: Fixed critical batch label and function scope issues
+  - Removed redundant `goto :eof` statements causing execution flow problems
+  - Fixed internal label scope issues (`:start_service` → `:do_service_start`)
+  - Eliminated "batch label specified" errors in menu operations
+  - Restructured service restart using proper function calls instead of goto labels
+
+### Enhanced - Production Reliability
+- **Service State Management**: Comprehensive improvements across all platforms
+  - Windows: Enhanced service status verification with accurate state reporting
+  - Windows: Improved timeout handling and service state transitions
+  - PowerShell: Added complete service management with verification steps
+  - Linux: Enhanced service detection with multi-service support
+- **Error Handling**: Professional error recovery and user guidance
+  - Clear manual restart instructions for service failure scenarios
+  - Specific error codes and remediation steps for common issues
+  - Enhanced verbose logging with detailed troubleshooting information
 
 ### Quality Improvements
-- **Code Standards**: Consistent formatting and best practices across all scripts
-- **Project Structure**: Optimized file organization and removed unnecessary complexity
-- **Enterprise Compatibility**: Enhanced reliability for corporate deployment scenarios
-- **Maintenance**: Streamlined codebase for easier long-term maintenance
+- **Code Consistency**: Standardized function structure and error handling patterns
+- **User Experience**: Professional interactive interfaces with intuitive navigation
+- **Documentation**: Updated all guides and security policies for customer deployment
 
-### Changed
-- Updated license to Mitel proprietary
-- Enhanced documentation for internal Mitel use
-- Optimized CI/CD pipeline for efficiency
-- Streamlined contributing guidelines and security policy
+## [Previous Releases] - Enterprise-Grade Service Management & Cross-Platform Consistency
+### Fixed
+- **Service Status Display Issues**: Fixed confusing service status output in Windows batch script
+  - Windows: Raw numeric codes (4) now display as human-readable text (RUNNING)
+  - Added comprehensive service state mapping for all Windows service states
+  - Enhanced service status parsing with fallback code-to-text conversion
+- **Service Restart Reliability**: Comprehensive improvements to service restart functionality
+  - Windows: Added intelligent service state checking before restart attempts
+  - Windows: Enhanced error messaging with specific failure context and remediation steps
+  - Linux: Improved service detection and state handling with better error recovery
+  - Both platforms: Added failsafes to prevent restart attempts on already-stopped services
+- **Hex-to-Decimal Conversion**: Fixed Windows registry value display issues
+  - Registry values now show human-readable format (200 seconds vs 0xc8 seconds)
+  - Added PowerShell-based hex conversion for accurate decimal display
+  - Performance mode detection now works correctly with decimal comparisons
+- **Character Encoding Issues**: Replaced all Unicode characters with ASCII equivalents for improved compatibility
+- **PowerShell Parameter Conflict**: Fixed duplicate Verbose parameter issue by renaming to VerboseOutput
+- **Documentation Consistency**: Removed remaining emoji and Unicode characters from all documentation
+
+### Enhanced
+- **Service Management System**: Complete overhaul of service restart functionality across all platforms
+  - Windows Batch: Intelligent state checking (STOPPED, RUNNING, START_PENDING, STOP_PENDING, etc.)
+  - Windows PowerShell: Enhanced service restart with comprehensive state management and timeout handling
+  - Linux: Improved service detection with multiple service name support and enhanced state monitoring
+  - All platforms: Added visual status indicators ([OK], [X], [~], [!]) for clear user feedback
+- **Cross-Platform Service Status**: Standardized service status display across Windows and Linux
+  - Consistent status indicators and messaging across all platforms
+  - Enhanced error handling and user guidance for service issues
+  - Comprehensive service state detection and reporting
+- **Four-Mode Performance System**: Standardized all platforms to support Low (15%), Medium (20%), High (30%), Ultra (40%) CPU limits
+- **Error Handling & User Experience**: Improved error messages and user guidance
+  - Clear remediation steps for common service restart failures
+  - Enhanced verbose logging for troubleshooting
+  - Better error context and specific manual recovery instructions
+
+### Quality Improvements
+- **Enterprise Reliability**: Enhanced service management for production environments
+- **Code Standards**: Consistent formatting and best practices across all scripts
+- **Cross-Platform Consistency**: Unified user experience across Windows and Linux platforms
+- **Documentation Accuracy**: Updated all documentation to reflect enhanced capabilities
 
 ### Added
-- Comprehensive CI/CD workflow with Windows and Linux testing
+- **Enhanced Service State Monitoring**: Comprehensive service state detection and handling
+- **Intelligent Restart Logic**: Prevents unnecessary operations and handles edge cases gracefully
+- **Visual Status Indicators**: Clear, consistent status display across all platforms
+- **Comprehensive Error Recovery**: Detailed error messages with specific remediation steps
 - Security policy with vulnerability reporting procedures
 - GitHub issue templates for bug reports and feature requests
 - Pull request template with platform-specific testing checklist
