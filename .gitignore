@@ -11,3 +11,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+# Exclude config, cnfg, and conf directories
+**/config/
+**/cnfg/
+**/conf/
