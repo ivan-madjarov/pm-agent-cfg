@@ -7,6 +7,13 @@ All notable changes to the PM+ Agent Configuration tool will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-08-11
+
+### Added
+- **PHP Development Enhancement**: Common application stub file for improved VS Code IntelliSense
+  - Added `inc/common-stubs.php` with type hints for custom classes and global functions
+  - Enhanced PHP validation and autocompletion support
+
 ## [v3.1.1] - 2025-01-31 - Service Logic & Documentation Refinement
 ### 🔧 Critical Fixes & Documentation Updates
 
@@ -235,3 +242,4 @@ For support, please:
 - Thanks to the Mitel team for enterprise deployment feedback
 - Windows registry modification best practices from Microsoft documentation
 - PowerShell community for EXE compilation techniques
+
