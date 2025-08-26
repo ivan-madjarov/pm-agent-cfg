@@ -1,43 +1,99 @@
 # Changelog
 
-All notable changes to the PM+ Agent Configuration tool will be documented in this file.
+All notable changes to the PM+ Agent Configuration tool are documented here.
 
-**Mitel Networks Corporation - Customer Deployment Tool**
+This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [3.1.1] - 2025-01-31
+### Fixed
+- Windows batch script: Resolved execution flow issues in service restart functionality (error level preservation, logic flow, redundant `goto :eof` statements, reliable stop/start sequence).
+- Service restart logic: Corrected success/failure messaging and improved error handling.
+- Batch script parsing: Fixed label scope issues and removed redundant statements.
 
-## [1.4.0] - 2025-08-11
+### Changed
+- Documentation: Updated privilege requirements and standardized elevation guidance for Windows and Linux.
+- PowerShell script: Added interactive menu system, improved help documentation, and added `-Menu` parameter for interactive mode.
 
+## [3.0.0] - 2025-01-31
 ### Added
-- **PHP Development Enhancement**: Common application stub file for improved VS Code IntelliSense
-  - Added `inc/common-stubs.php` with type hints for custom classes and global functions
-  - Enhanced PHP validation and autocompletion support
+- Interactive menu enhancements: Option to redisplay menu, consistent option numbering, unified descriptions, and cross-platform consistency.
+- Service state management: Improved status verification, timeout handling, and multi-service support.
+- Error handling: Clear manual restart instructions, specific error codes, verbose logging.
 
-## [v3.1.1] - 2025-01-31 - Service Logic & Documentation Refinement
-### 🔧 Critical Fixes & Documentation Updates
+### Fixed
+- Service restart reliability: Intelligent state checking, improved error messaging, and failsafes for stopped services.
+- Hex-to-decimal conversion: Registry values now display in human-readable format.
+- Character encoding: Replaced Unicode with ASCII for compatibility.
+- PowerShell parameter conflict: Renamed duplicate `Verbose` parameter.
 
-### Fixed - Service Restart Logic
-- **Windows Batch Script**: Resolved execution flow issues in service restart functionality
-  - Fixed error level preservation preventing proper service start after successful stop
-  - Corrected logic flow where successful operations would show failure messages
-  - Eliminated redundant `goto :eof` statements causing batch parsing errors
-  - Reorganized service restart sequence for reliable stop/start operations
+### Changed
+- Code consistency: Standardized function structure and error handling.
+- Documentation: Removed emojis and Unicode, updated guides and security policies.
 
-### Enhanced - Documentation Consistency 
-- **Privilege Requirements**: Updated all documentation for proper elevated console usage
-  - Windows: Clarified to start Command Prompt/PowerShell as Administrator (not right-click files)
-  - Linux: Enhanced sudo usage guidance for systems without direct root access
-  - Removed ambiguous instructions about right-clicking script files
-- **Cross-Platform Instructions**: Standardized elevation guidance across all platforms
+## [1.0.0] - 2024-01-19
+### Added
+- Initial release: Cross-platform PM+ agent configuration tool repository.
+- Windows registry configuration tool for DesktopCentral DCAgent.
+- Standalone batch script (`pm-agent-config.bat`) and PowerShell version (`pm-agent-config.ps1`).
+- Interactive menu mode and command-line argument support.
+- Registry backup functionality and administrator privilege checking.
+- Performance mode configuration options and comprehensive documentation.
 
-### Improved - PowerShell Script
-- **Interactive Menu**: Added full menu system matching batch script functionality
-- **Help Documentation**: Enhanced privilege requirement instructions
-- **Parameter Support**: Added -Menu parameter for interactive mode
+### Features
+- Windows batch script: Command-line and interactive menu modes, registry validation, privilege escalation, safe modification, multiple performance modes, verbose output, zero dependencies.
+- PowerShell script: Professional parameter handling, UAC integration, error handling, EXE compilation support, progress indicators, registry access.
 
-## [v3.0.0] - 2025-01-31 - Production-Ready Customer Deployment Suite
-### 🚀 Major Release - Comprehensive Service Management & Interactive UX
+### Security
+- Registry modifications require administrator privileges, input validation, safe backup, error handling.
+
+### Compatibility
+- Windows 10 (1903+), Windows Server 2019+, DesktopCentral DCAgent, Command Prompt, PowerShell, enterprise deployment.
+
+---
+
+## Version History Summary
+
+- **1.0.0**: Initial release with Windows registry configuration tool, batch and PowerShell scripts, documentation, security considerations.
+
+---
+
+## Upgrade Guide
+
+Guidelines for upgrading between versions will be added here.
+
+---
+
+## Known Issues
+
+### Windows
+- Administrator privileges required for registry modifications.
+- Antivirus may flag PowerShell EXE files (false positive).
+- Windows Defender SmartScreen may require approval for unsigned EXE files.
+
+### Planned Fixes
+- Code signing for PowerShell EXE.
+- Additional registry validation.
+- Enhanced error recovery mechanisms.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT License - see [LICENSE](LICENSE).
+
+## Support
+
+For support, check the troubleshooting guide, search issues, or create a new issue using the template.
+
+## Acknowledgments
+
+- Thanks to the Mitel team for feedback.
+- Windows registry modification best practices from Microsoft documentation.
+- PowerShell community for EXE compilation techniques.
 
 ### Added - Interactive Menu Enhancements
 - **Menu Relist Functionality**: Added option "0" to redisplay menu options across all platforms
