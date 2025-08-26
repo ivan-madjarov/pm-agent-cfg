@@ -4,7 +4,96 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.1] - 2025-01-31
+## [1.4.0] - 2025-08-11
+### Added
+- Interactive menu enhancements: Option to redisplay menu, consistent option numbering, unified descriptions, and cross-platform consistency.
+- Service state management: Improved status verification, timeout handling, and multi-service support.
+- Error handling: Clear manual restart instructions, specific error codes, verbose logging.
+
+### Fixed
+- Service restart reliability: Intelligent state checking, improved error messaging, and failsafes for stopped services.
+- Hex-to-decimal conversion: Registry values now display in human-readable format.
+- Character encoding: Replaced Unicode with ASCII for compatibility.
+- PowerShell parameter conflict: Renamed duplicate `Verbose` parameter.
+
+### Changed
+- Code consistency: Standardized function structure and error handling.
+- Documentation: Removed emojis and Unicode, updated guides and security policies.
+
+## [1.3.0] - 2025-01-31
+### Fixed
+- Windows batch script: Resolved execution flow issues in service restart functionality (error level preservation, logic flow, redundant `goto :eof` statements, reliable stop/start sequence).
+- Service restart logic: Corrected success/failure messaging and improved error handling.
+- Batch script parsing: Fixed label scope issues and removed redundant statements.
+
+### Changed
+- Documentation: Updated privilege requirements and standardized elevation guidance for Windows and Linux.
+- PowerShell script: Added interactive menu system, improved help documentation, and added `-Menu` parameter for interactive mode.
+
+## [1.2.0] - 2024-01-19
+### Added
+- Initial release: Cross-platform PM+ agent configuration tool repository.
+- Windows registry configuration tool for DesktopCentral DCAgent.
+- Standalone batch script (`pm-agent-config.bat`) and PowerShell version (`pm-agent-config.ps1`).
+- Interactive menu mode and command-line argument support.
+- Registry backup functionality and administrator privilege checking.
+- Performance mode configuration options and comprehensive documentation.
+
+### Features
+- Windows batch script: Command-line and interactive menu modes, registry validation, privilege escalation, safe modification, multiple performance modes, verbose output, zero dependencies.
+- PowerShell script: Professional parameter handling, UAC integration, error handling, EXE compilation support, progress indicators, registry access.
+
+### Security
+- Registry modifications require administrator privileges, input validation, safe backup, error handling.
+
+### Compatibility
+- Windows 10 (1903+), Windows Server 2019+, DesktopCentral DCAgent, Command Prompt, PowerShell, enterprise deployment.
+
+---
+
+## Version History Summary
+
+- **1.2.0**: Initial release with Windows registry configuration tool, batch and PowerShell scripts, documentation, security considerations.
+
+---
+
+## Upgrade Guide
+
+Guidelines for upgrading between versions will be added here.
+
+---
+
+## Known Issues
+
+### Windows
+- Administrator privileges required for registry modifications.
+- Antivirus may flag PowerShell EXE files (false positive).
+- Windows Defender SmartScreen may require approval for unsigned EXE files.
+
+### Planned Fixes
+- Code signing for PowerShell EXE.
+- Additional registry validation.
+- Enhanced error recovery mechanisms.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT License - see [LICENSE](LICENSE).
+
+## Support
+
+For support, check the troubleshooting guide, search issues, or create a new issue using the template.
+
+## Acknowledgments
+
+- Thanks to the Mitel team for feedback.
+- Windows registry modification best practices from Microsoft documentation.
+- PowerShell community for EXE compilation techniques.
 ### Fixed
 - Windows batch script: Resolved execution flow issues in service restart functionality (error level preservation, logic flow, redundant `goto :eof` statements, reliable stop/start sequence).
 - Service restart logic: Corrected success/failure messaging and improved error handling.
