@@ -35,6 +35,7 @@ set "SHOW_MENU="
 set "VERBOSE="
 set "RESTART_SERVICE="
 set "NO_RESTART="
+set "UNSET="
 
 :parse_args
 if "%~1"=="" goto :args_done
@@ -100,6 +101,11 @@ if /i "%~1"=="--no-restart" (
     shift
     goto :parse_args
 )
+if /i "%~1"=="--unset" (
+    set "UNSET=1"
+    shift
+    goto :parse_args
+)
 REM Unknown argument
 echo ERROR: Unknown argument: %~1
 echo Use --help for usage information.
@@ -132,13 +138,19 @@ if defined SHOW_MENU (
     exit /b %errorLevel%
 )
 
+if defined UNSET (
+    call :unset_performance
+    exit /b %errorLevel%
+)
+
 if defined MODE (
     call :configure_mode "%MODE%"
     exit /b %errorLevel%
 )
 
-REM No arguments provided, show help
-goto :show_help
+REM No arguments provided, show interactive menu
+call :show_interactive_menu
+exit /b %errorLevel%
 
 REM ============================================================================
 REM End of main execution - functions follow
@@ -192,20 +204,25 @@ REM ============================================================================
     echo                              medium = 20%% CPU usage, 200s timeout
     echo                              high   = 30%% CPU usage, 200s timeout
     echo                              ultra  = 40%% CPU usage, 200s timeout
+    echo                              unset  = Remove configured limits (set to unlimited)
     echo.
     echo     --status, -s             Display current registry settings and service status
     echo     --menu, -i               Show interactive menu
+    echo     (No arguments)           Launch interactive menu
     echo     --restart                Force service restart after configuration
     echo     --no-restart             Skip service restart prompt
+    echo     --unset                  Remove configured limits (set to unlimited)
     echo     --help, -h               Show this help message
     echo     --verbose, -v            Enable verbose output
     echo.
     echo EXAMPLES:
-    echo     pm-agent-config.bat --mode high        Configure for high performance
-    echo     pm-agent-config.bat --mode low --restart  Configure and restart service 
-    echo     pm-agent-config.bat --mode ultra       Configure for maximum performance
-    echo     pm-agent-config.bat --status           Show current settings and service status
-    echo     pm-agent-config.bat --menu             Show interactive menu
+    echo     pm-agent-config.bat --mode low          Configure for low performance
+    echo     pm-agent-config.bat --mode medium       Configure for medium performance  
+    echo     pm-agent-config.bat --mode high         Configure for high performance
+    echo     pm-agent-config.bat --mode ultra        Configure for ultra performance
+    echo     pm-agent-config.bat --mode unset        Remove configured limits (set to unlimited)
+    echo     pm-agent-config.bat --status            Show current settings and service status
+    echo     pm-agent-config.bat --menu              Show interactive menu
     echo.
     echo REQUIREMENTS:
     echo     - Administrator privileges
@@ -220,10 +237,52 @@ REM ============================================================================
     echo.
     exit /b 0
 
+:test_registry_access
+    echo Testing Registry Access:
+    echo ========================
+    echo.
+    
+    echo Testing Patch Key: %PATCH_KEY%
+    reg query "%PATCH_KEY%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo [OK] Can access Patch registry key
+    ) else (
+        echo [X] Cannot access Patch registry key - Error: %errorLevel%
+        echo [INFO] This may indicate DesktopCentral DCAgent is not installed
+    )
+    
+    echo Testing Agent Key: %AGENT_KEY%
+    reg query "%AGENT_KEY%" >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo [OK] Can access Agent registry key
+    ) else (
+        echo [X] Cannot access Agent registry key - Error: %errorLevel%
+        echo [INFO] This may indicate DesktopCentral DCAgent is not installed
+    )
+    
+    echo.
+    echo Registry Key Paths Being Used:
+    echo Patch: %PATCH_KEY%
+    echo Agent: %AGENT_KEY%
+    echo.
+    echo Value Names:
+    echo Patch Timeout: %PATCH_TIMEOUT_VALUE%
+    echo CPU Usage: %CPU_USAGE_VALUE%
+    echo.
+    exit /b 0
+
 :show_current_settings
     echo Current PM+ Agent Registry Settings:
     echo ===================================
     echo.
+    
+    REM Clear previous values to ensure accurate display
+    set "CURRENT_TIMEOUT="
+    set "CURRENT_CPU="
+    set "CURRENT_TIMEOUT_HEX="
+    set "CURRENT_TIMEOUT_DEC="
+    set "CURRENT_CPU_HEX="
+    set "CURRENT_CPU_DEC="
     
     if defined VERBOSE echo [VERBOSE] Querying patch scan timeout...
     for /f "tokens=3" %%a in ('reg query "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" 2^>nul ^| findstr "%PATCH_TIMEOUT_VALUE%"') do (
@@ -330,24 +389,62 @@ REM ============================================================================
     
     REM Set patch scan timeout
     if defined VERBOSE echo [VERBOSE] Setting patch scan timeout to %TIMEOUT%...
+    if defined VERBOSE echo [VERBOSE] Registry path: %PATCH_KEY%\%PATCH_TIMEOUT_VALUE%
+    
+    REM First, ensure the registry key exists
+    reg add "%PATCH_KEY%" /f >nul 2>&1
+    
+    REM Then set the value
     reg add "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" /t REG_DWORD /d %TIMEOUT% /f >nul 2>&1
-    if %errorLevel% equ 0 (
-        echo [OK] Patch scan timeout configured successfully
-        set /a SUCCESS_COUNT+=1
+    set "REG_ERROR=%errorLevel%"
+    if %REG_ERROR% equ 0 (
+        REM Verify the value was set correctly
+        reg query "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" >nul 2>&1
+        if !errorLevel! equ 0 (
+            echo [OK] Patch scan timeout configured successfully
+            set /a SUCCESS_COUNT+=1
+        ) else (
+            echo [X] Failed to verify patch scan timeout configuration
+            if defined VERBOSE echo [VERBOSE] Query verification failed
+        )
     ) else (
         echo [X] Failed to configure patch scan timeout
-        if defined VERBOSE echo [VERBOSE] Registry error code: %errorLevel%
+        if defined VERBOSE echo [VERBOSE] Registry add error code: %REG_ERROR%
+        REM Try alternative approach - check if we have permission issues
+        reg query "%PATCH_KEY%" >nul 2>&1
+        if !errorLevel! neq 0 (
+            if defined VERBOSE echo [VERBOSE] Registry key does not exist or access denied: %PATCH_KEY%
+        )
     )
     
     REM Set CPU usage limit
     if defined VERBOSE echo [VERBOSE] Setting CPU usage limit to %CPU_VALUE%%%...
+    if defined VERBOSE echo [VERBOSE] Registry path: %AGENT_KEY%\%CPU_USAGE_VALUE%
+    
+    REM First, ensure the registry key exists
+    reg add "%AGENT_KEY%" /f >nul 2>&1
+    
+    REM Then set the value
     reg add "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" /t REG_DWORD /d %CPU_VALUE% /f >nul 2>&1
-    if %errorLevel% equ 0 (
-        echo [OK] CPU usage limit configured successfully
-        set /a SUCCESS_COUNT+=1
+    set "REG_ERROR=%errorLevel%"
+    if %REG_ERROR% equ 0 (
+        REM Verify the value was set correctly
+        reg query "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" >nul 2>&1
+        if !errorLevel! equ 0 (
+            echo [OK] CPU usage limit configured successfully
+            set /a SUCCESS_COUNT+=1
+        ) else (
+            echo [X] Failed to verify CPU usage limit configuration
+            if defined VERBOSE echo [VERBOSE] Query verification failed
+        )
     ) else (
         echo [X] Failed to configure CPU usage limit
-        if defined VERBOSE echo [VERBOSE] Registry error code: %errorLevel%
+        if defined VERBOSE echo [VERBOSE] Registry add error code: %REG_ERROR%
+        REM Try alternative approach - check if we have permission issues
+        reg query "%AGENT_KEY%" >nul 2>&1
+        if !errorLevel! neq 0 (
+            if defined VERBOSE echo [VERBOSE] Registry key does not exist or access denied: %AGENT_KEY%
+        )
     )
     
     echo.
@@ -387,7 +484,9 @@ REM ============================================================================
     echo 4. Ultra Performance Mode  (CPU Usage: 40%%, Scan Timeout: 200s)
     echo 5. Show Current Settings and Service Status
     echo 6. Restart PM+ Agent Service
-    echo 7. Exit
+    echo 7. Unset Performance Limits (set to UNLIMITED)
+    echo 8. Test Registry Access (Debug)
+    echo 9. Exit
     exit /b 0
 
 :show_interactive_menu
@@ -398,7 +497,7 @@ REM ============================================================================
     echo.
 
     :menu_loop
-    set /p choice="Enter your choice (1-7, 0 for menu): "
+    set /p choice="Enter your choice (0-9, 0 for menu): "
     
     if "%choice%"=="0" (
         echo.
@@ -408,19 +507,23 @@ REM ============================================================================
     ) else if "%choice%"=="1" (
         echo.
         call :configure_mode "low"
-        goto :menu_end
+        echo.
+        goto :menu_loop
     ) else if "%choice%"=="2" (
         echo.
         call :configure_mode "medium"
-        goto :menu_end
+        echo.
+        goto :menu_loop
     ) else if "%choice%"=="3" (
         echo.
         call :configure_mode "high" 
-        goto :menu_end
+        echo.
+        goto :menu_loop
     ) else if "%choice%"=="4" (
         echo.
         call :configure_mode "ultra"
-        goto :menu_end
+        echo.
+        goto :menu_loop
     ) else if "%choice%"=="5" (
         echo.
         call :show_current_settings
@@ -432,16 +535,23 @@ REM ============================================================================
         echo.
         goto :menu_loop
     ) else if "%choice%"=="7" (
+        echo.
+        call :unset_performance
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="8" (
+        echo.
+        call :test_registry_access
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="9" (
         echo Exiting...
         exit /b 0
     ) else (
-        echo Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, or 7.
+        echo Invalid choice. Please enter a number between 0 and 9.
         echo.
         goto :menu_loop
     )
-    
-    :menu_end
-    exit /b %errorLevel%
 
 REM ============================================================================
 REM Service Management Functions
@@ -676,5 +786,85 @@ REM ============================================================================
     )
     exit /b 0
 
+:unset_performance
+    echo Unsetting PM+ Agent performance limits (set to UNLIMITED)...
+    echo(
+
+    set "SUCCESS_COUNT=0"
+    set "ALREADY_UNSET_COUNT=0"
+
+    REM Remove patch timeout value if present
+    if defined VERBOSE echo [VERBOSE] Attempting to remove patch timeout value...
+    reg query "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" >nul 2>&1
+    if !errorLevel! equ 0 (
+        REM Value exists, try to delete it
+        reg delete "%PATCH_KEY%" /v "%PATCH_TIMEOUT_VALUE%" /f >nul 2>&1
+        if !errorLevel! equ 0 (
+            echo [OK] Removed %PATCH_TIMEOUT_VALUE% from %PATCH_KEY%
+            set /a SUCCESS_COUNT+=1
+        ) else (
+            echo [X] Failed to remove %PATCH_TIMEOUT_VALUE% (error: !errorLevel!)
+        )
+    ) else (
+        echo [INFO] %PATCH_TIMEOUT_VALUE% was already not set
+        set /a ALREADY_UNSET_COUNT+=1
+    )
+
+    REM Remove CPU usage value if present
+    if defined VERBOSE echo [VERBOSE] Attempting to remove CPU usage value...
+    reg query "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" >nul 2>&1
+    if !errorLevel! equ 0 (
+        REM Value exists, try to delete it
+        reg delete "%AGENT_KEY%" /v "%CPU_USAGE_VALUE%" /f >nul 2>&1
+        if !errorLevel! equ 0 (
+            echo [OK] Removed %CPU_USAGE_VALUE% from %AGENT_KEY%
+            set /a SUCCESS_COUNT+=1
+        ) else (
+            echo [X] Failed to remove %CPU_USAGE_VALUE% (error: !errorLevel!)
+        )
+    ) else (
+        echo [INFO] %CPU_USAGE_VALUE% was already not set
+        set /a ALREADY_UNSET_COUNT+=1
+    )
+
+    echo(
+
+    if !SUCCESS_COUNT! geq 1 (
+        echo ========================================
+        if !SUCCESS_COUNT! equ 1 (
+            echo [OK] Unset operation completed - 1 setting removed.
+        ) else (
+            echo [OK] Unset operation completed - multiple settings removed.
+        )
+        echo ========================================
+        echo(
+
+        REM Decide restart behavior
+        if defined RESTART_SERVICE (
+            call :restart_agent_service
+            exit /b !errorLevel!
+        )
+
+        if not defined NO_RESTART (
+            call :prompt_service_restart
+            exit /b !errorLevel!
+        )
+
+        echo Service restart skipped (--no-restart specified)
+        exit /b 0
+    ) else if !ALREADY_UNSET_COUNT! geq 1 (
+        echo ========================================
+        echo [OK] Performance limits are already unset (unlimited).
+        echo ========================================
+        echo(
+        exit /b 0
+    ) else (
+        echo ========================================
+        echo [X] No configured performance limits were found to remove.
+        echo ========================================
+        echo(
+        exit /b 0
+    )
+exit /b 0
+
 REM End of script
-goto :eof

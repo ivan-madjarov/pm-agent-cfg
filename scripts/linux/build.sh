@@ -21,4 +21,5 @@ echo "Output: $BUILD_DIR/pm-agent-config.sh"
 echo ""
 echo "CRITICAL: This script requires sudo privileges!"
 echo "Usage: sudo $BUILD_DIR/pm-agent-config.sh --help"
+echo "Example to remove configured limits: sudo $BUILD_DIR/pm-agent-config.sh --unset"
 

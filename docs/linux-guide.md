@@ -37,6 +37,7 @@ sudo ./pm-agent-config.sh --mode low      # 15% CPU limit
 sudo ./pm-agent-config.sh --mode medium   # 20% CPU limit
 sudo ./pm-agent-config.sh --mode high     # 30% CPU limit
 sudo ./pm-agent-config.sh --mode ultra    # 40% CPU limit
+sudo ./pm-agent-config.sh --mode unset    # Remove limits (set to unlimited)
 sudo ./pm-agent-config.sh --status        # Show current settings and service status
 sudo ./pm-agent-config.sh --backup        # Create configuration backup
 sudo ./pm-agent-config.sh --mode high --restart     # Configure and restart service
@@ -49,14 +50,15 @@ sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart 
 sudo ./pm-agent-config.sh --menu
 
 # Follow the on-screen prompts:
-# 0. List all menu options again  
-# 1. Low Performance Mode    (15% CPU)
-# 2. Medium Performance Mode (20% CPU)  
-# 3. High Performance Mode   (30% CPU)
-# 4. Ultra Performance Mode  (40% CPU)
+# 0. Show Menu Options (refresh menu display)
+# 1. Low Performance Mode    (15% CPU, 200s timeout)
+# 2. Medium Performance Mode (20% CPU, 200s timeout)  
+# 3. High Performance Mode   (30% CPU, 200s timeout)
+# 4. Ultra Performance Mode  (40% CPU, 200s timeout)
 # 5. Show Current Settings and Service Status
 # 6. Restart PM+ Agent Service
-# 7. Exit
+# 7. Unset Performance Limits (set to UNLIMITED)
+# 8. Exit
 ```
 
 ### Default Behavior
@@ -73,6 +75,7 @@ sudo ./pm-agent-config.sh
 | **medium** | 20% | Balanced performance | Mixed workloads, general purpose |
 | **high** | 30% | Aggressive scanning | Workstations, development systems |
 | **ultra** | 40% | Maximum performance | Testing, temporary high-throughput needs |
+| **unset** | Unlimited | Remove configured limits | Agent defaults (use with extreme caution) |
 
 ## 📁 **Configuration Details**
 

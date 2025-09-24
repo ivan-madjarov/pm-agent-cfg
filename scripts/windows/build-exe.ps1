@@ -112,6 +112,7 @@ if (Build-Executable) {
     Write-Host "Usage examples:" -ForegroundColor Yellow
     Write-Host "  pm-agent-config.exe -Mode low|medium|high|ultra" -ForegroundColor Cyan
     Write-Host "  pm-agent-config.exe -Status" -ForegroundColor Cyan
+    Write-Host "  pm-agent-config.exe -Mode unset   # Remove configured limits (set to unlimited)" -ForegroundColor Cyan
 } else {
     Write-Host "Build failed!" -ForegroundColor Red
     exit 1

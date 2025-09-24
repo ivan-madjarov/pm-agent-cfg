@@ -4,6 +4,34 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-09-24
+### Added
+- Unset functionality: Added "unset limits (unlimited)" option to remove performance limits and restore agent defaults
+- Enhanced interactive menus: Fixed menu cycling to return to menu after operations instead of exiting
+- Improved menu consistency: Standardized menu options 0-9 across Windows and Linux versions (added debug option)
+- Linux implementation: Added `pm-agent-config.sh` with full feature parity including unset functionality
+- Enhanced error handling: Better permission error handling with verification of successful registry updates
+- Registry diagnostics: Added registry access testing functionality (Windows batch script option 8)
+- Smart status display: Enhanced settings display with variable clearing to prevent stale data
+
+### Fixed
+- Interactive menu behavior: Scripts now properly cycle back to menu after operations
+- PowerShell output suppression: Eliminated unwanted "True" output using `| Out-Null`
+- Menu flow control: Changed `return` statements to `continue` for proper menu cycling
+- Batch script parsing: Improved error handling and safer echo syntax
+- Registry permission handling: Added specific handling for UnauthorizedAccessException with value verification
+- Batch script registry operations: Enhanced registry key creation and value verification
+- Batch script syntax error: Fixed malformed goto statement in unset performance function
+- Variable expansion issues: Fixed delayed expansion problems in batch script conditional blocks
+- Silent unset behavior: Enhanced unset function to provide feedback even when values are already removed
+
+### Changed
+- Menu structure: Unified option numbering (0-9) across all platforms with debug option
+- Documentation: Updated all guides to reflect new unset functionality, menu improvements, and registry test feature
+- Cross-platform consistency: Aligned Windows and Linux script behavior and capabilities
+- Success reporting: Added partial success reporting for cases where some registry operations encounter permission warnings
+- Version increment: Updated to v3.2 to reflect significant enhancements and debugging capabilities
+
 ## [1.4.0] - 2025-08-11
 ### Added
 - Interactive menu enhancements: Option to redisplay menu, consistent option numbering, unified descriptions, and cross-platform consistency.

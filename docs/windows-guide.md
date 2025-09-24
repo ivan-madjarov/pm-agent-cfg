@@ -47,6 +47,9 @@ pm-agent-config.bat --mode low
 # Configure for ultra performance (40% CPU)
 pm-agent-config.bat --mode ultra
 
+# Remove configured limits (set to unlimited)
+pm-agent-config.bat --mode unset
+
 # Show current settings
 pm-agent-config.bat --status
 
@@ -61,14 +64,16 @@ pm-agent-config.bat --menu
 pm-agent-config.bat --menu
 
 # Follow the on-screen prompts:
-# 0. List all menu options again
+# 0. Show Menu Options (refresh menu display)
 # 1. Low Performance Mode    (15% CPU, 200s timeout)
 # 2. Medium Performance Mode (20% CPU, 200s timeout)
 # 3. High Performance Mode   (30% CPU, 200s timeout)
 # 4. Ultra Performance Mode  (40% CPU, 200s timeout)
 # 5. Show Current Settings and Service Status
 # 6. Restart PM+ Agent Service
-# 7. Exit
+# 7. Unset Performance Limits (set to UNLIMITED)
+# 8. Test Registry Access (Debug)
+# 9. Exit
 ```
 
 ### Elevated Console Usage
@@ -100,6 +105,7 @@ When using the batch script, always start an elevated Command Prompt first and r
 | **Medium** | 20% | Mixed workloads | Balanced performance for general use |
 | **High** | 30% | Workstations | Faster processing, acceptable CPU usage |
 | **Ultra** | 40% | High-performance needs | Maximum throughput, use with caution |
+| **Unset** | Unlimited | Remove limits | Agent defaults (use with extreme caution) |
 
 ## **ADVANCED OPTIONS**
 
@@ -173,8 +179,18 @@ net start DCAgent
 - Or right-click the batch file → "Run as administrator"
 
 #### "Registry key not found"
-**Cause**: DesktopCentral DCAgent not installed or wrong version
-**Solution**: Verify DCAgent installation and version
+**Cause**: DesktopCentral DCAgent not installed or wrong version  
+**Solution**: 
+1. Use **Option 8 (Test Registry Access)** to diagnose registry access issues
+2. Verify DCAgent installation and version
+3. Check if registry paths exist manually
+
+#### Registry Access Testing
+**New Feature**: Use **Menu Option 8 - Test Registry Access (Debug)** to:
+- Verify registry key accessibility
+- Display exact registry paths being used
+- Diagnose permission or installation issues
+- Confirm DCAgent registry structure
 
 #### Settings not taking effect
 **Solution**: Restart DCAgent service

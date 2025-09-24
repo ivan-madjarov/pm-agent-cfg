@@ -13,7 +13,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 
 ## Current Features
 
-### Windows Registry Configuration Tool [PRODUCTION-READY v3.1]
+### Windows Registry Configuration Tool [PRODUCTION-READY v3.2]
 **Zero-dependency solution** for configuring DesktopCentral DCAgent registry settings:
 - **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
 - **Enhanced Interactive Menu** - professional interface with menu relist functionality (option 0)
@@ -22,8 +22,10 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Built-in Security** - administrator privilege checking and validation
 - **Status Display** - view current registry configurations with decimal values and comprehensive service status
 - **Intelligent Service Management** - enhanced restart logic with state verification and error recovery
+- **Registry Diagnostics** - built-in registry access testing and troubleshooting (option 8)
+- **Enhanced Error Handling** - improved permission error handling with value verification
 - **Command Options** - --restart/--no-restart flags for automated deployments
-- **Single File Deployment** - copy `pm-agent-config.bat` and run (12KB)
+- **Single File Deployment** - copy `pm-agent-config.bat` and run (13KB)
 - **Production Reliability** - comprehensive error handling and service restart verification
 - **Menu Navigation** - option 0 to redisplay menu for improved usability
 
@@ -108,6 +110,7 @@ pm-agent-config.bat --mode high     # 30% CPU limit
 pm-agent-config.bat --mode medium   # 20% CPU limit  
 pm-agent-config.bat --mode low      # 15% CPU limit
 pm-agent-config.bat --mode ultra    # 40% CPU limit
+pm-agent-config.bat --mode unset    # Remove limits (set to unlimited)
 pm-agent-config.bat --status        # Show current settings
 ```
 
@@ -136,6 +139,7 @@ sudo ./pm-agent-config.sh --mode high     # 30% CPU limit
 sudo ./pm-agent-config.sh --mode medium   # 20% CPU limit
 sudo ./pm-agent-config.sh --mode low      # 15% CPU limit
 sudo ./pm-agent-config.sh --mode ultra    # 40% CPU limit
+sudo ./pm-agent-config.sh --mode unset    # Remove limits (set to unlimited)
 sudo ./pm-agent-config.sh --status        # Show current settings
 ```
 
@@ -162,6 +166,7 @@ sudo ./pm-agent-config.sh
 - **Medium Performance**: 20% CPU usage limit (balanced workloads)
 - **High Performance**: 30% CPU usage limit (ideal for workstations)
 - **Ultra Performance**: 40% CPU usage limit (maximum throughput)
+- **Unset**: Remove configured limits (set to unlimited - use with caution)
 
 ### Requirements
 

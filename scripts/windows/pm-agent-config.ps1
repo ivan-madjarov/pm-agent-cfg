@@ -5,12 +5,13 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [ValidateSet("low", "medium", "high", "ultra")]
+    [ValidateSet("low", "medium", "high", "ultra", "unset")]
     [string]$Mode,
     
     [Parameter(Mandatory=$false)]
     [switch]$Status,
     
+    [Alias("i")]
     [Parameter(Mandatory=$false)]
     [switch]$Menu,
     
@@ -75,14 +76,16 @@ USAGE:
     pm-agent-config.exe [OPTIONS]
 
 PARAMETERS:
-    -Mode <low|medium|high|ultra>   Agent Resource Utilization Limit
+    -Mode <low|medium|high|ultra|unset>   Agent Resource Utilization Limit
                         low    = 15% CPU usage, 200s timeout
                         medium = 20% CPU usage, 200s timeout
                         high   = 30% CPU usage, 200s timeout
                         ultra  = 40% CPU usage, 200s timeout
+                        unset  = Remove configured limits (set to unlimited)
     
     -Status             Display current registry settings and service status
     -Menu               Show interactive menu
+    (No arguments)      Launch interactive menu
     -VerboseOutput      Enable verbose output
     -Help               Show this help message
 
@@ -91,6 +94,7 @@ EXAMPLES:
     pm-agent-config.exe -Mode medium      # Configure for medium performance
     pm-agent-config.exe -Mode high        # Configure for high performance
     pm-agent-config.exe -Mode ultra       # Configure for ultra performance
+    pm-agent-config.exe -Mode unset       # Remove configured limits (set to unlimited)
     pm-agent-config.exe -Status           # Show current settings
     pm-agent-config.exe -Menu             # Show interactive menu
 
@@ -105,6 +109,84 @@ REGISTRY KEYS MODIFIED:
     $AGENT_KEY
     +-- $CPU_USAGE_VALUE (DWORD)
 "@
+}
+
+function Unset-PerformanceLimits {
+    Write-Host "";
+    Write-Host "Unsetting PM+ Agent performance limits (set to UNLIMITED)..." -ForegroundColor Yellow
+
+    $successCount = 0
+    $totalSettings = 2
+
+    try {
+        # Convert paths
+        $patchPsKey = $PATCH_KEY -replace "HKEY_LOCAL_MACHINE", "HKLM:"
+        $agentPsKey = $AGENT_KEY -replace "HKEY_LOCAL_MACHINE", "HKLM:"
+
+        # Remove patch timeout if present
+        if (Test-Path $patchPsKey) {
+            try {
+                Remove-ItemProperty -Path $patchPsKey -Name $PATCH_TIMEOUT_VALUE -ErrorAction Stop
+                Write-Log "[OK] Removed $PATCH_TIMEOUT_VALUE from $patchPsKey"
+                $successCount++
+            }
+            catch {
+                Write-Verbose-Log "Patch timeout not present or removal failed: $($_.Exception.Message)"
+            }
+        }
+
+        # Remove CPU usage value if present
+        if (Test-Path $agentPsKey) {
+            try {
+                Remove-ItemProperty -Path $agentPsKey -Name $CPU_USAGE_VALUE -ErrorAction Stop
+                Write-Log "[OK] Removed $CPU_USAGE_VALUE from $agentPsKey"
+                $successCount++
+            }
+            catch {
+                Write-Verbose-Log "CPU usage value not present or removal failed: $($_.Exception.Message)"
+            }
+        }
+
+        if ($successCount -ge 1) {
+            Write-Host "";
+            Write-Host "========================================" -ForegroundColor Green
+            Write-Host "[OK] Unset operation completed (at least one setting removed)." -ForegroundColor Green
+            Write-Host "========================================" -ForegroundColor Green
+            Write-Host ""
+
+            try {
+                $service = Get-Service -Name "ManageEngine UEMS - Agent" -ErrorAction Stop
+                Write-Host "Current service status: $($service.Status)" -ForegroundColor Cyan
+                Write-Host ""
+
+                $choice = Read-Host "Restart PM+ Agent service now to apply 'unset' changes? (y/N)"
+                if ($choice -match "^[Yy]") {
+                    if (Restart-AgentService) { return $true } else { return $false }
+                } else {
+                    Write-Host ""
+                    Write-Host "Service restart skipped. To apply changes, restart manually:" -ForegroundColor Yellow
+                    Write-Host "  Stop-Service -Name 'ManageEngine UEMS - Agent' -Force" -ForegroundColor Cyan
+                    Write-Host "  Start-Service -Name 'ManageEngine UEMS - Agent'" -ForegroundColor Cyan
+                    return $true
+                }
+            }
+            catch {
+                Write-Host "WARNING: Service 'ManageEngine UEMS - Agent' not found or not accessible" -ForegroundColor Yellow
+                Write-Host "Please restart the agent service manually" -ForegroundColor Yellow
+                return $true
+            }
+        }
+        else {
+            Write-Host "=======================================" -ForegroundColor Yellow
+            Write-Host "No configured performance limits were found to remove." -ForegroundColor Yellow
+            Write-Host "=======================================" -ForegroundColor Yellow
+            return $true
+        }
+    }
+    catch {
+        Write-Host "[X] Failed to unset performance limits: $($_.Exception.Message)" -ForegroundColor Red
+        return $false
+    }
 }
 
 function Test-Administrator {
@@ -132,10 +214,24 @@ function Set-RegistryValue {
             New-Item -Path $psKeyPath -Force | Out-Null
         }
         
-        # Set the value
-        Set-ItemProperty -Path $psKeyPath -Name $ValueName -Value $ValueData -Type DWord
+        # Set the value with error handling
+        Set-ItemProperty -Path $psKeyPath -Name $ValueName -Value $ValueData -Type DWord -ErrorAction Stop
         Write-Log "[OK] Successfully set $ValueName = $ValueData"
         return $true
+    }
+    catch [System.UnauthorizedAccessException] {
+        Write-Verbose-Log "Permission denied for $ValueName, but checking if value was set..."
+        # Sometimes the operation fails but the value is still set
+        try {
+            $currentValue = Get-ItemProperty -Path $psKeyPath -Name $ValueName -ErrorAction SilentlyContinue
+            if ($currentValue.$ValueName -eq $ValueData) {
+                Write-Log "[OK] Successfully set $ValueName = $ValueData (despite permission warning)"
+                return $true
+            }
+        }
+        catch { }
+        Write-Log "[X] Failed to set $ValueName due to insufficient permissions" "ERROR"
+        return $false
     }
     catch {
         Write-Log "[X] Failed to set $ValueName`: $($_.Exception.Message)" "ERROR"
@@ -353,8 +449,25 @@ function Set-PerformanceMode {
         Write-Host "========================================" -ForegroundColor Green
         Write-Host "[OK] Configuration applied successfully!" -ForegroundColor Green
         Write-Host "========================================" -ForegroundColor Green
+    } elseif ($successCount -gt 0) {
+        Write-Host "========================================" -ForegroundColor Yellow
+        Write-Host "[PARTIAL] Configuration partially applied ($successCount/$totalSettings settings)" -ForegroundColor Yellow
+        Write-Host "========================================" -ForegroundColor Yellow
         Write-Host ""
-        
+        Write-Host "Note: Some registry permission warnings may appear but settings" -ForegroundColor Yellow
+        Write-Host "can still be successfully applied. Check current settings to verify." -ForegroundColor Yellow
+    } else {
+        Write-Host "========================================" -ForegroundColor Red
+        Write-Host "[ERROR] Configuration failed - no settings were applied" -ForegroundColor Red
+        Write-Host "========================================" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Please ensure you're running as Administrator and try again." -ForegroundColor Red
+        return
+    }
+    
+    Write-Host ""
+    
+    if ($successCount -gt 0) {
         # Prompt for service restart
         Write-Host "IMPORTANT: Service restart required for changes to take effect" -ForegroundColor Yellow
         Write-Host ""
@@ -408,7 +521,8 @@ function Show-MenuOptions {
     Write-Host "4. Ultra Performance Mode  (CPU Usage: 40%, Scan Timeout: 200s)"
     Write-Host "5. Show Current Settings and Service Status"
     Write-Host "6. Restart PM+ Agent Service"
-    Write-Host "7. Exit"
+    Write-Host "7. Unset Performance Limits (set to UNLIMITED)"
+    Write-Host "8. Exit"
     Write-Host ""
 }
 
@@ -419,7 +533,7 @@ function Show-InteractiveMenu {
     Show-MenuOptions
     
     do {
-        $choice = Read-Host "Enter your choice (1-7, 0 for menu)"
+        $choice = Read-Host "Enter your choice (0-8, 0 for menu)"
         
         switch ($choice) {
             "0" {
@@ -428,23 +542,27 @@ function Show-InteractiveMenu {
             }
             "1" {
                 Write-Host ""
-                Set-PerformanceMode -PerformanceMode "low"
-                return
+                Set-PerformanceMode -PerformanceMode "low" | Out-Null
+                Write-Host ""
+                continue
             }
             "2" {
                 Write-Host ""
-                Set-PerformanceMode -PerformanceMode "medium"
-                return
+                Set-PerformanceMode -PerformanceMode "medium" | Out-Null
+                Write-Host ""
+                continue
             }
             "3" {
                 Write-Host ""
-                Set-PerformanceMode -PerformanceMode "high"
-                return
+                Set-PerformanceMode -PerformanceMode "high" | Out-Null
+                Write-Host ""
+                continue
             }
             "4" {
                 Write-Host ""
-                Set-PerformanceMode -PerformanceMode "ultra"
-                return
+                Set-PerformanceMode -PerformanceMode "ultra" | Out-Null
+                Write-Host ""
+                continue
             }
             "5" {
                 Write-Host ""
@@ -454,16 +572,22 @@ function Show-InteractiveMenu {
             }
             "6" {
                 Write-Host ""
-                Restart-AgentService
+                Restart-AgentService | Out-Null
                 Write-Host ""
                 continue
             }
             "7" {
+                Write-Host ""
+                Unset-PerformanceLimits | Out-Null
+                Write-Host ""
+                continue
+            }
+            "8" {
                 Write-Host "Exiting..." -ForegroundColor Yellow
                 return
             }
             default {
-                Write-Host "Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, or 7." -ForegroundColor Red
+                Write-Host "Invalid choice. Please enter a number between 0 and 8." -ForegroundColor Red
                 Write-Host ""
                 continue
             }
@@ -477,9 +601,14 @@ try {
     Write-Host "PM+ Agent Registry Configuration Tool" -ForegroundColor Cyan
     Write-Host "=====================================" -ForegroundColor Cyan
     
-    # Show help if requested
-    if ($Help -or (-not $Mode -and -not $Status -and -not $Menu)) {
+    # Show help if requested. If no specific action is provided, open interactive menu by default.
+    if ($Help) {
         Show-Help
+        exit 0
+    }
+
+    if (-not $Mode -and -not $Status -and -not $Menu) {
+        Show-InteractiveMenu
         exit 0
     }
     
@@ -516,10 +645,10 @@ try {
     
     # Configure performance mode
     if ($Mode) {
-        if (Set-PerformanceMode -PerformanceMode $Mode) {
-            exit 0
+        if ($Mode -eq 'unset') {
+            if (Unset-PerformanceLimits) { exit 0 } else { exit 1 }
         } else {
-            exit 1
+            if (Set-PerformanceMode -PerformanceMode $Mode) { exit 0 } else { exit 1 }
         }
     }
 }

@@ -94,14 +94,16 @@ USAGE:
     sudo $SCRIPT_NAME [OPTIONS]
 
 OPTIONS:
-    --mode <mode>       Set performance mode (low, medium, high, ultra)
+    --mode <mode>       Set performance mode (low, medium, high, ultra, unset)
     --status           Show current performance settings
     --backup           Create backup of current settings
     --restore          Restore from backup
     --menu             Interactive menu mode
+    (No arguments)     Launch interactive menu mode
     --dry-run          Show what would be changed without applying
     --restart          Force service restart after configuration
     --no-restart       Skip service restart prompt
+    --unset            Remove configured limits (set to unlimited) by removing the performance config
     --verbose          Enable verbose output
     --help             Show this help message
 
@@ -110,14 +112,18 @@ PERFORMANCE MODES:
     medium  - 20% CPU limit (good for mixed workloads)  
     high    - 30% CPU limit (recommended for workstations)
     ultra   - 40% CPU limit (use with caution)
+    unset   - Remove configured limits (set to unlimited)
 
 EXAMPLES:
-    sudo $SCRIPT_NAME --mode high
-    sudo $SCRIPT_NAME --mode low --restart
-    sudo $SCRIPT_NAME --status
-    sudo $SCRIPT_NAME --menu
-    sudo $SCRIPT_NAME --backup
-    sudo $SCRIPT_NAME --dry-run --mode low --no-restart
+    sudo $SCRIPT_NAME --mode low           Configure for low performance
+    sudo $SCRIPT_NAME --mode medium        Configure for medium performance
+    sudo $SCRIPT_NAME --mode high          Configure for high performance
+    sudo $SCRIPT_NAME --mode ultra         Configure for ultra performance
+    sudo $SCRIPT_NAME --mode unset         Remove configured limits (set to unlimited)
+    sudo $SCRIPT_NAME --status             Show current settings
+    sudo $SCRIPT_NAME --menu               Show interactive menu
+    sudo $SCRIPT_NAME --backup             Create backup of current settings
+    sudo $SCRIPT_NAME --unset              Remove configured limits
 
 REQUIREMENTS:
     - Root/sudo privileges
@@ -131,6 +137,40 @@ FILES:
 For more information, see the documentation at:
 https://github.com/ivan-madjarov/pm-agent-cfg
 EOF
+}
+
+# Unset performance limits: remove PerformanceSettings.json (after backup)
+unset_performance_limits() {
+    echo ""
+    log_info "Unsetting PM+ Agent performance limits (set to UNLIMITED)..."
+
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        log_warning "No performance config file found to unset: $CONFIG_FILE"
+        return 0
+    fi
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[DRY RUN] Would remove configuration file: $CONFIG_FILE"
+        return 0
+    fi
+
+    # Create backup if not already present
+    create_backup
+
+    if rm -f "$CONFIG_FILE"; then
+        log_success "Performance configuration removed: $CONFIG_FILE"
+
+        if [[ "$RESTART_SERVICE" == "true" ]]; then
+            restart_agent_services
+        elif [[ "$NO_RESTART" == "false" ]]; then
+            prompt_service_restart
+        else
+            log_info "Service restart skipped (--no-restart specified)"
+        fi
+    else
+        log_error "Failed to remove configuration file: $CONFIG_FILE"
+        return 1
+    fi
 }
 
 # Check if UEMS agent directory exists
@@ -454,24 +494,19 @@ show_menu() {
     while true; do
         clear
         show_header
-        echo "Select an option:"
+        echo "Select Performance Mode:"
         echo ""
-        echo "Performance Modes:"
-        echo "  0) Show Menu Options (refresh)"
-        echo "  1) Low Performance (15% CPU limit)"
-        echo "  2) Medium Performance (20% CPU limit)"
-        echo "  3) High Performance (30% CPU limit)"
-        echo "  4) Ultra Performance (40% CPU limit)"
+        echo "0) Show Menu Options (refresh)"
+        echo "1) Low Performance Mode    (CPU Usage: 15%, Scan Timeout: 200s)"
+        echo "2) Medium Performance Mode (CPU Usage: 20%, Scan Timeout: 200s)"
+        echo "3) High Performance Mode   (CPU Usage: 30%, Scan Timeout: 200s)"
+        echo "4) Ultra Performance Mode  (CPU Usage: 40%, Scan Timeout: 200s)"
+        echo "5) Show Current Settings and Service Status"
+        echo "6) Restart PM+ Agent Service"
+        echo "7) Unset Performance Limits (set to UNLIMITED)"
+        echo "8) Exit"
         echo ""
-        echo "Other Options:"
-        echo "  5) Show Current Settings and Service Status"
-        echo "  6) Create Backup"
-        echo "  7) Restore from Backup"
-        echo "  8) Restart PM+ Agent Service"
-        echo "  9) Help"
-        echo "  10) Exit"
-        echo ""
-        read -p "Enter your choice (0-10, 0 for menu): " choice
+        read -p "Enter your choice (0-8, 0 for menu): " choice
         
         case $choice in
             0) continue;; # Refresh menu
@@ -480,12 +515,10 @@ show_menu() {
             3) set_performance_mode "high"; read -p "Press Enter to continue..."; ;;
             4) set_performance_mode "ultra"; read -p "Press Enter to continue..."; ;;
             5) show_current_settings; read -p "Press Enter to continue..."; ;;
-            6) create_backup; read -p "Press Enter to continue..."; ;;
-            7) restore_backup; read -p "Press Enter to continue..."; ;;
-            8) restart_agent_services; read -p "Press Enter to continue..."; ;;
-            9) show_help; read -p "Press Enter to continue..."; ;;
-            10) log_info "Exiting..."; exit 0; ;;
-            *) log_error "Invalid choice. Please enter 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10."; sleep 2; ;;
+            6) restart_agent_services; read -p "Press Enter to continue..."; ;;
+            7) unset_performance_limits; read -p "Press Enter to continue..."; ;;
+            8) log_info "Exiting..."; exit 0; ;;
+            *) log_error "Invalid choice. Please enter a number between 0 and 8."; sleep 2; ;;
         esac
     done
 }
@@ -524,6 +557,9 @@ parse_arguments() {
             --no-restart)
                 NO_RESTART=true
                 ;;
+            --unset)
+                UNSET=true
+                ;;
             --verbose)
                 VERBOSE=true
                 ;;
@@ -560,6 +596,8 @@ main() {
         create_backup
     elif [[ "$RESTORE" == "true" ]]; then
         restore_backup
+    elif [[ "$UNSET" == "true" ]]; then
+        unset_performance_limits
     elif [[ -n "$MODE" ]]; then
         set_performance_mode "$MODE"
     elif [[ "$MENU" == "true" ]]; then
