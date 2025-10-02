@@ -57,6 +57,8 @@ pm-agent-config.bat --status
 pm-agent-config.bat --menu
 ```
 
+Legacy alias: Older versions (<= v1.5.0) documented a separate `--unset` flag. For backward compatibility the batch script still accepts `--unset`, but the unified and preferred form is `--mode unset`.
+
 ### Interactive Menu (End Users)
 ```batch
 # IMPORTANT: Run Command Prompt as Administrator first!

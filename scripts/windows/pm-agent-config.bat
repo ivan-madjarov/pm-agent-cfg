@@ -199,12 +199,12 @@ REM ============================================================================
     echo     pm-agent-config.bat [OPTIONS]
     echo.
     echo OPTIONS:
-    echo     --mode, -m ^<low^|medium^|high^|ultra^>    Set performance mode
-    echo                              low    = 15%% CPU usage, 200s timeout
-    echo                              medium = 20%% CPU usage, 200s timeout
-    echo                              high   = 30%% CPU usage, 200s timeout
-    echo                              ultra  = 40%% CPU usage, 200s timeout
-    echo                              unset  = Remove configured limits (set to unlimited)
+    echo     --mode, -m ^<low^|medium^|high^|ultra^|unset^>  Set performance mode ("unset" removes limits)
+    echo                                low    = 15%% CPU usage, 200s timeout
+    echo                                medium = 20%% CPU usage, 200s timeout
+    echo                                high   = 30%% CPU usage, 200s timeout
+    echo                                ultra  = 40%% CPU usage, 200s timeout
+    echo                                unset  = Remove configured limits (set to unlimited)
     echo.
     echo     --status, -s             Display current registry settings and service status
     echo     --menu, -i               Show interactive menu
@@ -356,6 +356,12 @@ REM ============================================================================
 :configure_mode
     set "PERF_MODE=%~1"
     
+    REM Added ticket #202510024200014: allow --mode unset (previously required separate --unset flag)
+    if /i "%PERF_MODE%"=="unset" (
+        call :unset_performance
+        exit /b %errorLevel%
+    )
+    
     if /i "%PERF_MODE%"=="low" (
         set "CPU_VALUE=%LOW_CPU%"
         set "MODE_NAME=LOW"
@@ -374,7 +380,7 @@ REM ============================================================================
         set "MODE_DESC=ultra performance"
     ) else (
         echo ERROR: Invalid performance mode: %PERF_MODE%
-        echo Valid options: low, medium, high, ultra
+        echo Valid options: low, medium, high, ultra, unset
         exit /b 1
     )
     
@@ -713,21 +719,26 @@ REM ============================================================================
     exit /b 1
 
 :hex_to_decimal
+    REM Locale & dependency free hex -> decimal converter (removed PowerShell dependency for ticket #202510024200014)
     setlocal EnableDelayedExpansion
     set "hex_value=%~1"
     set "return_var=%~2"
-    
-    REM Remove 0x prefix if present
-    if "!hex_value:~0,2!"=="0x" (
-        set "hex_value=!hex_value:~2!"
+    if not defined hex_value (
+        endlocal & set "%return_var%=" & goto :eof
     )
-    
-    REM Convert hex to decimal using PowerShell (fastest method)
-    for /f %%i in ('powershell -NoProfile -Command "[Convert]::ToInt32('!hex_value!', 16)"') do (
-        set "decimal_result=%%i"
+    REM Normalize (strip 0x / leading zeros)
+    if /i "!hex_value:~0,2!"=="0x" set "hex_value=!hex_value:~2!"
+    set "hex_value=!hex_value: =!"
+    if not defined hex_value (
+        endlocal & set "%return_var%=" & goto :eof
     )
-    
-    endlocal & set "%return_var%=%decimal_result%"
+    REM Use CMD arithmetic (supports 0xHH notation). Prepend 0x to ensure hex interpretation.
+    2>nul (set /a dec_value=0x!hex_value!)
+    if not defined dec_value (
+        REM Fallback: maybe already decimal
+        set "dec_value=!hex_value!"
+    )
+    endlocal & set "%return_var%=%dec_value%"
     goto :eof
 
 :simple_service_restart

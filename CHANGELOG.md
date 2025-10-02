@@ -1,6 +1,15 @@
 # Changelog
 
 All notable changes to the PM+ Agent Configuration tool are documented here.
+## [Unreleased]
+### Fixed
+- (Windows) Ticket #202510024200014: `--mode unset` was rejected as invalid; now accepted directly without requiring separate `--unset` flag.
+- (Windows) Removed PowerShell dependency in hex-to-decimal conversion to avoid failures on systems where `powershell` command is localized or unavailable in PATH (e.g., German locale reporting "Der Befehl 'powershell' ist entweder falsch geschrieben..."). Conversion now uses native CMD arithmetic for locale independence.
+- (Windows) Updated help and error messages to list `unset` explicitly in valid `--mode` options.
+
+### Changed
+- (Docs) Will update Windows guide to reflect unified `--mode unset` usage (pending in this cycle).
+
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
