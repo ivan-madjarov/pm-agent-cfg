@@ -947,3 +947,7 @@ REM End of script
         exit /b 1
     )
     goto :eof
+
+REM Backward-compatible alias for earlier internal references (CLI --export calls :export_registry)
+:export_registry
+    goto :export_registry_exit

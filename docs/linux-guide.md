@@ -45,7 +45,7 @@ sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart 
 
 # Legacy alias: older versions supported a standalone --unset flag. It still works for backward compatibility but --mode unset is preferred.
 
-### Collecting Configuration for Support (v1.6.1)
+### Collecting Configuration for Support
 Run status to see (and copy) the config path:
 ```bash
 sudo ./pm-agent-config.sh --status | grep "Configuration file:" 

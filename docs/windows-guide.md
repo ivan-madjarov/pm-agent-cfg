@@ -53,7 +53,8 @@ pm-agent-config.bat --mode unset
 # Show current settings
 pm-agent-config.bat --status
 
-# Export registry (troubleshooting - exports then exits; file pm-agent-dca-<time><rand>.reg in current directory)
+# Export registry (troubleshooting)
+# Creates pm-agent-dca-<HHMMSS><RANDOM>.reg in the current directory and THEN EXITS the script intentionally
 pm-agent-config.bat --export
 
 # Interactive menu

@@ -25,27 +25,25 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 ## [1.6.1] - 2025-10-02
 ## [1.6.2] - 2025-10-02
 ### Added
-- (Windows Batch / PowerShell) Registry export feature: `--export` flag (batch) / `-Export` switch (PowerShell) and interactive menu option (Batch: option 9, PowerShell: option 9) producing a timestamped `.reg` file for troubleshooting.
-- (PowerShell) Added Test Registry Access function and menu option 8 for parity with batch script (diagnose registry key accessibility and installation issues).
+- (Windows Batch / PowerShell) Registry export feature: `--export` (batch) / `-Export` (PowerShell) and interactive menu option (Batch: 9, PowerShell: 9) producing a timestamped `.reg` file for troubleshooting.
+- (PowerShell) Test Registry Access function and menu option 8 for parity with batch script (diagnose registry key accessibility and installation issues).
 
 ### Changed
-- (Windows Batch/PowerShell) Registry export now writes to the current working directory (not TEMP) for clearer user access. Explicit failure if directory is not writable.
-- (Windows Batch) Interactive menu renumbered (Test Registry option 8, Export option 9, Exit now option 10).
-- (PowerShell) Interactive menu renumbered to match batch (Test Registry option 8, Export option 9, Exit now option 10) for full cross-platform parity.
-- (PowerShell) Export behavior aligned with batch script: unified filename pattern `pm-agent-dca-YYYYMMDDHHMMSS.reg` (removed underscore and custom path option for consistency). Removed previously documented optional `-ExportPath` parameter to enforce standardized artifact naming/location.
- - (Windows Batch) Export operation (menu option 9 / --export) now intentionally exits after successful export with a clear summary message to avoid further locale-related menu loop edge cases.
+- (Windows Batch/PowerShell) Registry export writes to the current working directory (not TEMP). Explicit failure if directory is not writable.
+- (Windows Batch & PowerShell) Interactive menus renumbered for parity (Test Registry = 8, Export = 9, Exit = 10 in batch; PowerShell mirrors numbering where applicable).
+- (PowerShell) Export naming standardized; removed `-ExportPath` parameter for consistency and simplicity.
+- (Windows Batch) Export operation (menu option 9 / `--export`) now intentionally exits after success with a summary to eliminate fragile post-export menu looping on certain locales.
 
 ### Fixed
-- (Windows Batch) Export timestamp generation: replaced nested FOR loop with separate uppercase/lowercase FOR loops to eliminate locale-dependent parsing error ("`. was unexpected at this time.`") on non-English regional settings.
-- (Windows Batch) Export filename timestamp sanitization: removed locale artifacts (commas / fractional seconds) and replaced fragile token parsing with locale-agnostic digit-only extraction.
-- (Windows Batch) Interactive menu now returns to menu loop after export operation (previously exited due to parse error in timestamp generation).
-- (PowerShell) Ensured fallback minimal writer uses same standardized filename pattern when `reg.exe` export fails.
+- (Windows Batch) Locale-dependent export timestamp crashes (`. was unexpected at this time.`) eliminated by abandoning complex `%DATE%` / `%TIME%` token parsing in favor of a simplified time+random strategy.
+- (Windows Batch) Removed comma / fractional second artifacts from filenames (sanitized timestamp generation).
+- (Windows Batch) Missing internal label reference when using `--export` (legacy call to `:export_registry`) now resolved via an alias label pointing to the implemented `:export_registry_exit` logic.
+- (PowerShell) Fallback minimal writer uses standardized filename when `reg.exe export` fails.
 
 ### Notes
-- Users should run export from a writable working directory (elevated prompt). If access is denied, the tool reports the path and suggests retrying elsewhere.
-- PowerShell version attempts full subtree export with `reg.exe` first, then falls back to a minimal writer including only relevant values if necessary.
-- Linux documentation formalizes how to collect the JSON configuration file for support; no direct export command required.
-- Batch script timestamp extraction now uses two separate FOR loops (uppercase then lowercase letters) to avoid locale-sensitive parsing when iterating over character sets.
+- Batch filename format: `pm-agent-dca-<HHMMSS><RANDOM>.reg` (time+random only) for maximum compatibility; PowerShell keeps full datetime pattern `pm-agent-dca-YYYYMMDDHHmmss.reg` for richer timestamping.
+- Export always targets the directory from which the script is launched—ensure it's writable (run elevated if required).
+- Linux variant uses file collection (`PerformanceSettings.json`) instead of registry export; no export flag required.
 
 ## [1.5.0] - 2025-09-24
 ### Added
