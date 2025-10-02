@@ -920,18 +920,19 @@ REM End of script
 :export_registry
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    REM Build a locale-agnostic timestamp by concatenating date and time then stripping separators.
-    set "RAW=%DATE%%TIME%"
-    REM Replace spaces with 0 (pads single-digit hour) and remove common separators & comma
-    set "RAW=%RAW: =0%"
-    for %%S in (/ \ - . : ,) do set "RAW=%RAW:%%S=%"
-    REM Now RAW should be a continuous string of digits (and maybe stray letters from some locales).
-    REM Extract only digits to TS (max 14: YYYYMMDDHHMMSS or locale equivalent)
-    set "TS="
-    for /l %%I in (0,1,31) do (
-        set "_ch=!RAW:~%%I,1!"
-        if defined _ch for %%D in (0 1 2 3 4 5 6 7 8 9) do if "!_ch!"=="%%D" set "TS=!TS!%%D"
-    )
+    REM Build timestamp: concatenate DATE and TIME then strip common separators; keep first 14 digits (YYYYMMDDHHMMSS variant)
+    set "TS_SRC=%DATE%%TIME%"
+    set "TS_SRC=%TS_SRC: =0%"
+    set "TS_SRC=%TS_SRC:/=%"
+    set "TS_SRC=%TS_SRC:\=%"
+    set "TS_SRC=%TS_SRC:-=%"
+    set "TS_SRC=%TS_SRC:.=%"
+    set "TS_SRC=%TS_SRC::=%"
+    set "TS_SRC=%TS_SRC:,=%"
+    REM Now reduce to digits only without FOR loops (replace each digit with itself; remove letters by iterative stripping of alphabet)
+    set "TS=%TS_SRC%"
+    for %%L in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z) do set "TS=!TS:%%L=!"
+    REM Fallback if empty
     if not defined TS set "TS=export"
     set "TS=!TS:~0,14!"
     set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-!TS!.reg"
