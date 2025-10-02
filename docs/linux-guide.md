@@ -44,6 +44,15 @@ sudo ./pm-agent-config.sh --mode high --restart     # Configure and restart serv
 sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart prompt
 
 # Legacy alias: older versions supported a standalone --unset flag. It still works for backward compatibility but --mode unset is preferred.
+
+### Status Output Enhancements (v1.6.0)
+The `--status` command and menu option 5 now include a concise summary line:
+
+```
+Performance Mode (summary): medium
+```
+
+Values: `low`, `medium`, `high`, `ultra`, `unset` (when no JSON file is present), or `custom (X% CPU)` if a non-standard value is detected. The full JSON and service status details are still displayed underneath.
 ```
 
 ### Interactive Menu (End Users)

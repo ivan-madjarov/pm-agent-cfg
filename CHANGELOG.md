@@ -1,15 +1,19 @@
 # Changelog
 
 All notable changes to the PM+ Agent Configuration tool are documented here.
-## [Unreleased]
+## [1.6.0] - 2025-10-02
+### Added
+- (Windows/Linux/PowerShell) Concise performance mode summary line in status output: `Performance Mode (summary): <mode>` for quick identification (low|medium|high|ultra|unset|custom).
+
 ### Fixed
-- (Windows) Ticket #202510024200014: `--mode unset` was rejected as invalid; now accepted directly without requiring separate `--unset` flag.
-- (Windows) Removed PowerShell dependency in hex-to-decimal conversion to avoid failures on systems where `powershell` command is localized or unavailable in PATH (e.g., German locale reporting "Der Befehl 'powershell' ist entweder falsch geschrieben..."). Conversion now uses native CMD arithmetic for locale independence.
-- (Windows) Updated help and error messages to list `unset` explicitly in valid `--mode` options.
+- (Windows) Ticket #202510024200014: `--mode unset` previously rejected; now accepted directly without requiring separate `--unset` flag.
+- (Windows) Locale issue: removed PowerShell dependency for hex conversion (avoids failures on hosts where `powershell` command name/localization caused errors). Implemented native CMD arithmetic.
+- (PowerShell) Added matching performance mode summary to maintain parity with batch/Linux scripts.
 
 ### Changed
-- (Docs) Will update Windows guide to reflect unified `--mode unset` usage (pending in this cycle).
-- (Linux) Direct `--mode unset` support added (previously required separate `--unset` flag); `--unset` retained as legacy alias.
+- (Windows/Linux/Docs) Unified unset handling via `--mode unset`; retained `--unset` / legacy note for backward compatibility.
+- (Linux) Direct `--mode unset` support (formerly required standalone `--unset`).
+- (Docs) Updated Windows & Linux guides plus README to mention performance mode summary line and unified unset usage.
 
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

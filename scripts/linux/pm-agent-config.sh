@@ -287,6 +287,23 @@ show_current_settings() {
             cat "$CONFIG_FILE"
         fi
         
+        # Determine simple performance mode summary
+        local dc_val mode_summary
+        dc_val=$(grep -o '"dcservice"[:][0-9]\+' "$CONFIG_FILE" | head -n1 | cut -d: -f2)
+        if [[ -z "$dc_val" ]]; then
+            mode_summary="unknown"
+        else
+            case "$dc_val" in
+                15) mode_summary="low" ;;
+                20) mode_summary="medium" ;;
+                30) mode_summary="high" ;;
+                40) mode_summary="ultra" ;;
+                *) mode_summary="custom ($dc_val% CPU)" ;;
+            esac
+        fi
+        echo ""
+        echo "Performance Mode (summary): $mode_summary"
+
         echo ""
         log_info "File size: $(du -h "$CONFIG_FILE" | cut -f1)"
         log_info "Last modified: $(stat -c %y "$CONFIG_FILE")"
@@ -299,6 +316,8 @@ show_current_settings() {
     else
         log_warning "No performance configuration file found"
         log_info "Expected location: $CONFIG_FILE"
+        echo ""
+        echo "Performance Mode (summary): unset"
         echo ""
         log_info "Available performance modes:"
         for mode in "${!MODE_DESCRIPTIONS[@]}"; do

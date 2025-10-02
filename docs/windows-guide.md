@@ -59,6 +59,15 @@ pm-agent-config.bat --menu
 
 Legacy alias: Older versions (<= v1.5.0) documented a separate `--unset` flag. For backward compatibility the batch script still accepts `--unset`, but the unified and preferred form is `--mode unset`.
 
+### Status Output Enhancements (v1.6.0)
+When you run either `pm-agent-config.bat --status` or choose menu option 5, the tool now prints a concise summary line:
+
+```
+Performance Mode (summary): low
+```
+
+Possible values: `low`, `medium`, `high`, `ultra`, `unset`, or `custom` (if a non-standard CPU value is detected). The detailed legacy lines (Patch Scan Timeout, Thread Max CPU Usage, and the colorized descriptive mode line) remain for full context.
+
 ### Interactive Menu (End Users)
 ```batch
 # IMPORTANT: Run Command Prompt as Administrator first!

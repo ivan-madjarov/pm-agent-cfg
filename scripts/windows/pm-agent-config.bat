@@ -305,6 +305,25 @@ REM ============================================================================
     if not defined CURRENT_CPU (
         echo Thread Max CPU Usage: Not set
     )
+
+    REM ---------------------------------------------------------------
+    REM Add concise summary line (ticket enhancement: simple mode name)
+    REM ---------------------------------------------------------------
+    set "SUMMARY_MODE=unset"
+    if defined CURRENT_CPU (
+        if "!CURRENT_CPU!"=="%LOW_CPU%" (
+            set "SUMMARY_MODE=low"
+        ) else if "!CURRENT_CPU!"=="%MEDIUM_CPU%" (
+            set "SUMMARY_MODE=medium"
+        ) else if "!CURRENT_CPU!"=="%HIGH_CPU%" (
+            set "SUMMARY_MODE=high"
+        ) else if "!CURRENT_CPU!"=="%ULTRA_CPU%" (
+            set "SUMMARY_MODE=ultra"
+        ) else (
+            set "SUMMARY_MODE=custom"
+        )
+    )
+    echo Performance Mode (summary): !SUMMARY_MODE!
     
     echo.
     

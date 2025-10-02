@@ -291,6 +291,22 @@ function Show-CurrentSettings {
         "Not set" 
     }
     
+    # Concise summary line (ticket #202510024200014) similar to batch/linux implementations
+    if ($settings.ContainsKey($CPU_USAGE_VALUE)) {
+        $cpu = $settings[$CPU_USAGE_VALUE]
+        $modeSummary = switch ($cpu) {
+            15 { 'low' ; break }
+            20 { 'medium' ; break }
+            30 { 'high' ; break }
+            40 { 'ultra' ; break }
+            default { "custom ($cpu%)" }
+        }
+    } else {
+        $modeSummary = 'unset'
+    }
+
+    Write-Host "Performance Mode (summary): $modeSummary"
+
     Write-Host "Patch Scan Timeout: $timeout"
     Write-Host "Thread Max CPU Usage: $cpuUsage"
     

@@ -21,6 +21,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - **Built-in Security** - administrator privilege checking and validation
 - **Status Display** - view current registry configurations with decimal values and comprehensive service status
+- **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
 - **Intelligent Service Management** - enhanced restart logic with state verification and error recovery
 - **Registry Diagnostics** - built-in registry access testing and troubleshooting (option 8)
 - **Enhanced Error Handling** - improved permission error handling with value verification
@@ -39,6 +40,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
 - **Built-in Security** - root privilege checking and automatic backups
 - **Status Display** - view current JSON configurations and comprehensive service status
+- **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
 - **Intelligent Service Management** - enhanced restart logic with multi-service detection
 - **Command Options** - --restart/--no-restart flags for automated deployments
 - **Single File Deployment** - copy `pm-agent-config.sh` and run
