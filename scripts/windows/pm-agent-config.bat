@@ -36,6 +36,7 @@ set "VERBOSE="
 set "RESTART_SERVICE="
 set "NO_RESTART="
 set "UNSET="
+set "DO_EXPORT="
 
 :parse_args
 if "%~1"=="" goto :args_done
@@ -106,6 +107,11 @@ if /i "%~1"=="--unset" (
     shift
     goto :parse_args
 )
+if /i "%~1"=="--export" (
+    set "DO_EXPORT=1"
+    shift
+    goto :parse_args
+)
 REM Unknown argument
 echo ERROR: Unknown argument: %~1
 echo Use --help for usage information.
@@ -135,6 +141,11 @@ if defined SHOW_STATUS (
 
 if defined SHOW_MENU (
     call :show_interactive_menu
+    exit /b %errorLevel%
+)
+
+if defined DO_EXPORT (
+    call :export_registry
     exit /b %errorLevel%
 )
 
@@ -212,6 +223,7 @@ REM ============================================================================
     echo     --restart                Force service restart after configuration
     echo     --no-restart             Skip service restart prompt
     echo     --unset                  Remove configured limits (set to unlimited)
+    echo     --export                 Export current DCAgent registry subtree to a .reg file (troubleshooting)
     echo     --help, -h               Show this help message
     echo     --verbose, -v            Enable verbose output
     echo.
@@ -511,7 +523,8 @@ REM ============================================================================
     echo 6. Restart PM+ Agent Service
     echo 7. Unset Performance Limits (set to UNLIMITED)
     echo 8. Test Registry Access (Debug)
-    echo 9. Exit
+    echo 9. Export Registry Settings (Troubleshooting)
+    echo 10. Exit
     exit /b 0
 
 :show_interactive_menu
@@ -522,7 +535,7 @@ REM ============================================================================
     echo.
 
     :menu_loop
-    set /p choice="Enter your choice (0-9, 0 for menu): "
+    set /p choice="Enter your choice (0-10, 0 for menu): "
     
     if "%choice%"=="0" (
         echo.
@@ -570,10 +583,15 @@ REM ============================================================================
         echo.
         goto :menu_loop
     ) else if "%choice%"=="9" (
+        echo.
+        call :export_registry
+        echo.
+        goto :menu_loop
+    ) else if "%choice%"=="10" (
         echo Exiting...
         exit /b 0
     ) else (
-        echo Invalid choice. Please enter a number between 0 and 9.
+        echo Invalid choice. Please enter a number between 0 and 10.
         echo.
         goto :menu_loop
     )
@@ -898,3 +916,25 @@ REM ============================================================================
 exit /b 0
 
 REM End of script
+
+:export_registry
+    echo Exporting DCAgent registry subtree for troubleshooting...
+    set "EXPORT_DIR=%TEMP%"
+    if not exist "%EXPORT_DIR%" set "EXPORT_DIR=."
+    for /f "tokens=1-4 delims=/-. " %%a in ("%date%") do set DT=%%d%%b%%c
+    for /f "tokens=1-2 delims=:." %%a in ("%time%") do set TM=%%a%%b
+    set "TS=%DT%_%TM%"
+    set "TS=%TS: =0%"
+    set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
+    if defined VERBOSE echo [VERBOSE] Using export path: %EXPORT_FILE%
+    reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1
+    if %errorLevel% equ 0 (
+        echo [OK] Registry exported to: %EXPORT_FILE%
+        echo Attach this file to support tickets for analysis.
+        exit /b 0
+    ) else (
+        echo [X] Failed to export registry (error %errorLevel%). Try running manually:
+        echo   reg export "%AGENT_KEY%" pm-agent-dca.reg /y
+        exit /b 1
+    )
+    goto :eof

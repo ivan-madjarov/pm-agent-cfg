@@ -24,6 +24,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
 - **Intelligent Service Management** - enhanced restart logic with state verification and error recovery
 - **Registry Diagnostics** - built-in registry access testing and troubleshooting (option 8)
+- **Registry Export** - export DCAgent registry subtree for support (`--export` flag / menu option)
 - **Enhanced Error Handling** - improved permission error handling with value verification
 - **Command Options** - --restart/--no-restart flags for automated deployments
 - **Single File Deployment** - copy `pm-agent-config.bat` and run (13KB)
@@ -41,6 +42,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Built-in Security** - root privilege checking and automatic backups
 - **Status Display** - view current JSON configurations and comprehensive service status
 - **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
+- **Config Collection** - `--status` reveals path to `PerformanceSettings.json` so you can copy it for support
 - **Intelligent Service Management** - enhanced restart logic with multi-service detection
 - **Command Options** - --restart/--no-restart flags for automated deployments
 - **Single File Deployment** - copy `pm-agent-config.sh` and run

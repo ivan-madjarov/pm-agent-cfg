@@ -53,6 +53,9 @@ pm-agent-config.bat --mode unset
 # Show current settings
 pm-agent-config.bat --status
 
+# Export registry (troubleshooting)
+pm-agent-config.bat --export
+
 # Interactive menu
 pm-agent-config.bat --menu
 ```
@@ -84,7 +87,8 @@ pm-agent-config.bat --menu
 # 6. Restart PM+ Agent Service
 # 7. Unset Performance Limits (set to UNLIMITED)
 # 8. Test Registry Access (Debug)
-# 9. Exit
+# 9. Export Registry Settings (Troubleshooting)
+# 10. Exit
 ```
 
 ### Elevated Console Usage
@@ -215,8 +219,14 @@ net start DCAgent
 # Check current configuration
 pm-agent-config.bat --status
 
+# Export registry (creates a .reg file in %TEMP%)
+pm-agent-config.bat --export
+
 # Verify registry directly
 reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent" /v "THRDMAXCPUUSAGE_2C"
+
+# Export registry subtree (timestamped .reg file in %TEMP%)
+pm-agent-config.bat --export
 ```
 
 ## 📁 **File Organization**

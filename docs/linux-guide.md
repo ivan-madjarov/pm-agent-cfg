@@ -45,6 +45,19 @@ sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart 
 
 # Legacy alias: older versions supported a standalone --unset flag. It still works for backward compatibility but --mode unset is preferred.
 
+### Collecting Configuration for Support (v1.6.1)
+Run status to see (and copy) the config path:
+```bash
+sudo ./pm-agent-config.sh --status | grep "Configuration file:" 
+# Typical default path:
+/usr/local/manageengine/uems_agent/data/PerformanceSettings.json
+```
+To collect the file:
+```bash
+sudo cp /usr/local/manageengine/uems_agent/data/PerformanceSettings.json ./PerformanceSettings.json.backup_for_ticket
+```
+Attach that file to your support ticket. If it’s missing, the mode is effectively `unset`.
+
 ### Status Output Enhancements (v1.6.0)
 The `--status` command and menu option 5 now include a concise summary line:
 

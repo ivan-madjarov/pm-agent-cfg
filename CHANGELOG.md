@@ -18,6 +18,23 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2025-10-02
+### Added
+- (Windows Batch / PowerShell) Registry export feature: `--export` flag and interactive menu option (Batch: option 9, PS menu option 8) producing a timestamped .reg file for troubleshooting.
+- (PowerShell) Added `-Export` and optional `-ExportPath` parameters for explicit export control.
+- (Docs - Windows) Usage examples, updated interactive menu, and troubleshooting section for registry export.
+- (Docs - Linux) New section documenting how to collect the JSON configuration file path via `--status` output and copy it for support.
+- (README) Highlighted registry export (Windows) and configuration collection (Linux) capabilities.
+
+### Changed
+- (Windows Batch) Interactive menu renumbered (Export inserted before Exit; Exit now option 10).
+- (PowerShell) Interactive menu updated to include export option (Exit now option 9) for parity with batch script.
+
+### Notes
+- Windows export defaults to `%TEMP%` with timestamped filename `pm-agent-dca-YYYYMMDD_HHMMSS.reg`.
+- PowerShell version attempts `reg.exe` export first, falls back to minimal writer (two key values) if full export fails.
+- Linux already exposed configuration path; documentation now formalizes support collection workflow.
+
 ## [1.5.0] - 2025-09-24
 ### Added
 - Unset functionality: Added "unset limits (unlimited)" option to remove performance limits and restore agent defaults

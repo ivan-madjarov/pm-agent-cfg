@@ -10,6 +10,12 @@ param(
     
     [Parameter(Mandatory=$false)]
     [switch]$Status,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$Export,
+
+    [Parameter(Mandatory=$false)]
+    [string]$ExportPath,
     
     [Alias("i")]
     [Parameter(Mandatory=$false)]
@@ -538,7 +544,8 @@ function Show-MenuOptions {
     Write-Host "5. Show Current Settings and Service Status"
     Write-Host "6. Restart PM+ Agent Service"
     Write-Host "7. Unset Performance Limits (set to UNLIMITED)"
-    Write-Host "8. Exit"
+    Write-Host "8. Export Registry Settings (Troubleshooting)"
+    Write-Host "9. Exit"
     Write-Host ""
 }
 
@@ -549,7 +556,7 @@ function Show-InteractiveMenu {
     Show-MenuOptions
     
     do {
-        $choice = Read-Host "Enter your choice (0-8, 0 for menu)"
+    $choice = Read-Host "Enter your choice (0-9, 0 for menu)"
         
         switch ($choice) {
             "0" {
@@ -599,16 +606,75 @@ function Show-InteractiveMenu {
                 continue
             }
             "8" {
+                Write-Host ""
+                Export-Registry | Out-Null
+                Write-Host ""
+                continue
+            }
+            "9" {
                 Write-Host "Exiting..." -ForegroundColor Yellow
                 return
             }
             default {
-                Write-Host "Invalid choice. Please enter a number between 0 and 8." -ForegroundColor Red
+                Write-Host "Invalid choice. Please enter a number between 0 and 9." -ForegroundColor Red
                 Write-Host ""
                 continue
             }
         }
     } while ($true)
+}
+
+function Export-Registry {
+    Write-Host ""; Write-Host "Exporting DCAgent registry subtree..." -ForegroundColor Yellow
+    $defaultPath = Join-Path $env:TEMP ("pm-agent-dca_{0}.reg" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+    if (-not $ExportPath) { $ExportPath = $defaultPath }
+    $targetDir = Split-Path -Parent $ExportPath
+    if (-not (Test-Path $targetDir)) {
+        try { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null } catch { }
+    }
+    $regExe = (Get-Command reg.exe -ErrorAction SilentlyContinue)
+    if ($regExe) {
+        & $regExe Path export $AGENT_KEY $ExportPath /y *> $null
+        if ($LASTEXITCODE -eq 0 -and (Test-Path $ExportPath)) {
+            Write-Host "[OK] Registry exported to: $ExportPath" -ForegroundColor Green
+            Write-Host "Attach this file to support tickets for analysis." -ForegroundColor Cyan
+            return
+        }
+        else {
+            Write-Host "[WARN] reg.exe export failed (code $LASTEXITCODE). Falling back to minimal writer..." -ForegroundColor Yellow
+        }
+    }
+    # Fallback minimal writer capturing only the two values if present
+    $lines = @('Windows Registry Editor Version 5.00','')
+    function Append-Key($rootKey) {
+        if (Test-Path $rootKey) {
+            $props = Get-ItemProperty -Path $rootKey -ErrorAction SilentlyContinue
+            if ($props) {
+                $winKey = $rootKey -replace '^HKLM:', 'HKEY_LOCAL_MACHINE'
+                $lines += "[$winKey]"
+                foreach ($n in $props.PSObject.Properties.Name) {
+                    if ($n -in @($PATCH_TIMEOUT_VALUE,$CPU_USAGE_VALUE)) {
+                        $val = $props.$n
+                        if ($val -is [int]) {
+                            $lines += '"{0}"=dword:{1}' -f $n, ($val.ToString('x8'))
+                        } else {
+                            $escaped = $val.ToString().Replace('\\','\\\\').Replace('"','\"')
+                            $lines += '"{0}"="{1}"' -f $n,$escaped
+                        }
+                    }
+                }
+                $lines += ''
+            }
+        }
+    }
+    Append-Key ($AGENT_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
+    Append-Key ($PATCH_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
+    $lines | Out-File -FilePath $ExportPath -Encoding ASCII -Force
+    if (Test-Path $ExportPath) {
+        Write-Host "[OK] Minimal registry export written to: $ExportPath" -ForegroundColor Green
+    } else {
+        Write-Host "[X] Failed to write fallback registry export" -ForegroundColor Red
+    }
 }
 
 # Main execution logic
@@ -623,7 +689,7 @@ try {
         exit 0
     }
 
-    if (-not $Mode -and -not $Status -and -not $Menu) {
+    if (-not $Mode -and -not $Status -and -not $Menu -and -not $Export) {
         Show-InteractiveMenu
         exit 0
     }
@@ -650,6 +716,11 @@ try {
     # Show current settings
     if ($Status) {
         Show-CurrentSettings
+        exit 0
+    }
+
+    if ($Export) {
+        Export-Registry
         exit 0
     }
     
