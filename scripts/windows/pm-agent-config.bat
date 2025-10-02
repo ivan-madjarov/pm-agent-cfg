@@ -918,23 +918,23 @@ exit /b 0
 REM End of script
 
 :export_registry
-    echo Exporting DCAgent registry subtree for troubleshooting...
-    set "EXPORT_DIR=%TEMP%"
-    if not exist "%EXPORT_DIR%" set "EXPORT_DIR=."
+    echo Exporting DCAgent registry subtree to current directory...
+    set "EXPORT_DIR=."
     for /f "tokens=1-4 delims=/-. " %%a in ("%date%") do set DT=%%d%%b%%c
     for /f "tokens=1-2 delims=:." %%a in ("%time%") do set TM=%%a%%b
     set "TS=%DT%_%TM%"
     set "TS=%TS: =0%"
     set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
-    if defined VERBOSE echo [VERBOSE] Using export path: %EXPORT_FILE%
+    if defined VERBOSE echo [VERBOSE] Export path: %EXPORT_FILE%
     reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1
     if %errorLevel% equ 0 (
-        echo [OK] Registry exported to: %EXPORT_FILE%
+        echo [OK] Registry exported: %EXPORT_FILE%
         echo Attach this file to support tickets for analysis.
         exit /b 0
     ) else (
-        echo [X] Failed to export registry (error %errorLevel%). Try running manually:
-        echo   reg export "%AGENT_KEY%" pm-agent-dca.reg /y
+        echo [X] Failed to export registry (error %errorLevel%).
+        echo Ensure you have write permission to the current directory: %CD%
+        echo You can retry from an elevated prompt or a writable folder.
         exit /b 1
     )
     goto :eof

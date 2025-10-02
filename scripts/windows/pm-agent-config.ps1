@@ -625,8 +625,8 @@ function Show-InteractiveMenu {
 }
 
 function Export-Registry {
-    Write-Host ""; Write-Host "Exporting DCAgent registry subtree..." -ForegroundColor Yellow
-    $defaultPath = Join-Path $env:TEMP ("pm-agent-dca_{0}.reg" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+    Write-Host ""; Write-Host "Exporting DCAgent registry subtree to current directory..." -ForegroundColor Yellow
+    $defaultPath = Join-Path (Get-Location) ("pm-agent-dca_{0}.reg" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
     if (-not $ExportPath) { $ExportPath = $defaultPath }
     $targetDir = Split-Path -Parent $ExportPath
     if (-not (Test-Path $targetDir)) {
@@ -669,7 +669,13 @@ function Export-Registry {
     }
     Append-Key ($AGENT_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
     Append-Key ($PATCH_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
-    $lines | Out-File -FilePath $ExportPath -Encoding ASCII -Force
+    try {
+        $lines | Out-File -FilePath $ExportPath -Encoding ASCII -Force
+    } catch {
+        Write-Host "[X] Failed to write export file: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Ensure you have write permissions to: $(Get-Location)" -ForegroundColor Yellow
+        return
+    }
     if (Test-Path $ExportPath) {
         Write-Host "[OK] Minimal registry export written to: $ExportPath" -ForegroundColor Green
     } else {

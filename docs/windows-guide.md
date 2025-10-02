@@ -219,13 +219,13 @@ net start DCAgent
 # Check current configuration
 pm-agent-config.bat --status
 
-# Export registry (creates a .reg file in %TEMP%)
+# Export registry (creates a timestamped .reg file in current directory)
 pm-agent-config.bat --export
 
 # Verify registry directly
 reg query "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent" /v "THRDMAXCPUUSAGE_2C"
 
-# Export registry subtree (timestamped .reg file in %TEMP%)
+# Export registry subtree (timestamped .reg file in current directory)
 pm-agent-config.bat --export
 ```
 

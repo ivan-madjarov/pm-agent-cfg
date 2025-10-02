@@ -19,6 +19,12 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.6.1] - 2025-10-02
+-## [1.6.2] - 2025-10-02
+### Changed
+- (Windows Batch/PowerShell) Registry export now writes to the current working directory instead of TEMP for clearer user access and attachment. Export now fails with an explicit error if the directory is not writable (no silent fallback).
+
+### Notes
+- Users should ensure they run the export from a writable location (e.g. an elevated prompt in a normal folder). If access is denied, the tool reports the path and suggests retrying elsewhere.
 ### Added
 - (Windows Batch / PowerShell) Registry export feature: `--export` flag and interactive menu option (Batch: option 9, PS menu option 8) producing a timestamped .reg file for troubleshooting.
 - (PowerShell) Added `-Export` and optional `-ExportPath` parameters for explicit export control.
