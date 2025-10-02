@@ -920,10 +920,17 @@ REM End of script
 :export_registry
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    for /f "tokens=1-4 delims=/-. " %%a in ("%date%") do set DT=%%d%%b%%c
-    for /f "tokens=1-2 delims=:." %%a in ("%time%") do set TM=%%a%%b
-    set "TS=%DT%_%TM%"
+    REM Build a timestamp that is locale-agnostic by sanitizing DATE and TIME
+    set "TS=%DATE%_%TIME%"
+    REM Remove spaces and common separators (/ \ - . :) and replace spaces with 0 padding
     set "TS=%TS: =0%"
+    set "TS=%TS:/=%"
+    set "TS=%TS:\=%"
+    set "TS=%TS:-=%"
+    set "TS=%TS:.=%"
+    set "TS=%TS::=%"
+    REM Trim potential trailing characters (like AM/PM) by keeping first 18 chars
+    set "TS=%TS:~0,18%"
     set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
     if defined VERBOSE echo [VERBOSE] Export path: %EXPORT_FILE%
     reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1

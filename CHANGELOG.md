@@ -6,6 +6,9 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 - (Windows/Linux/PowerShell) Concise performance mode summary line in status output: `Performance Mode (summary): <mode>` for quick identification (low|medium|high|ultra|unset|custom).
 
 ### Fixed
+- (Windows Batch) Export option crash: Replaced locale-dependent FOR date/time token parsing (causing ". was unexpected at this time." on some regional formats) with sanitizer-based timestamp generation.
+
+### Fixed
 - (Windows) Ticket #202510024200014: `--mode unset` previously rejected; now accepted directly without requiring separate `--unset` flag.
 - (Windows) Locale issue: removed PowerShell dependency for hex conversion (avoids failures on hosts where `powershell` command name/localization caused errors). Implemented native CMD arithmetic.
 - (PowerShell) Added matching performance mode summary to maintain parity with batch/Linux scripts.
