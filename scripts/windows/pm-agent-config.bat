@@ -920,23 +920,15 @@ REM End of script
 :export_registry
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    REM Build timestamp: concatenate DATE and TIME then strip separators manually (digit-only pass)
-    set "TS_SRC=%DATE%%TIME%"
-    set "TS_SRC=%TS_SRC: =0%"
-    set "TS_SRC=%TS_SRC:/=%"
-    set "TS_SRC=%TS_SRC:\=%"
-    set "TS_SRC=%TS_SRC:-=%"
-    set "TS_SRC=%TS_SRC:.=%"
-    set "TS_SRC=%TS_SRC::=%"
-    set "TS_SRC=%TS_SRC:,=%"
-    REM Extract digits only by substitution (no FOR loop to avoid locale parsing issues)
-    set "TS=%TS_SRC%"
-    for %%C in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do set "TS=!TS:%%C=!"
-    for %%C in (a b c d e f g h i j k l m n o p q r s t u v w x y z) do set "TS=!TS:%%C=!"
-    REM Fallback if empty
-    if not defined TS set "TS=export"
-    set "TS=!TS:~0,14!"
-    set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-!TS!.reg"
+    REM Use simple timestamp approach: just use random number + time to ensure uniqueness
+    REM Strip all non-alphanumeric characters to avoid locale issues
+    set "TS_RAW=%TIME: =0%"
+    set "TS_RAW=%TS_RAW::=%"
+    set "TS_RAW=%TS_RAW:.=%"
+    set "TS_RAW=%TS_RAW:,=%"
+    REM Take first 6 digits (HHMMSS equivalent) plus random for uniqueness
+    set "TS=%TS_RAW:~0,6%%RANDOM%"
+    set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
     if defined VERBOSE echo [VERBOSE] Export path: %EXPORT_FILE%
     reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1
     if %errorLevel% equ 0 (
