@@ -920,28 +920,21 @@ REM End of script
 :export_registry
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    REM Build a timestamp that is locale-agnostic by sanitizing DATE and TIME
-    set "TS=%DATE%_%TIME%"
-    REM Remove spaces and common separators (/ \ - . :) and replace spaces with 0 padding
-    set "TS=%TS: =0%"
-    set "TS=%TS:/=%"
-    set "TS=%TS:\=%"
-    set "TS=%TS:-=%"
-    set "TS=%TS:.=%"
-    set "TS=%TS::=%"
-    REM Remove locale decimal separator comma if present
-    set "TS=%TS:,=%"
-    REM Split date and time parts at underscore to trim fractional seconds
-    for /f "tokens=1,2 delims=_" %%a in ("%TS%") do (
-        set "DATEPART=%%a"
-        set "TIMEPART=%%b"
+    REM Build a locale-agnostic timestamp by concatenating date and time then stripping separators.
+    set "RAW=%DATE%%TIME%"
+    REM Replace spaces with 0 (pads single-digit hour) and remove common separators & comma
+    set "RAW=%RAW: =0%"
+    for %%S in (/ \ - . : ,) do set "RAW=%RAW:%%S=%"
+    REM Now RAW should be a continuous string of digits (and maybe stray letters from some locales).
+    REM Extract only digits to TS (max 14: YYYYMMDDHHMMSS or locale equivalent)
+    set "TS="
+    for /l %%I in (0,1,31) do (
+        set "_ch=!RAW:~%%I,1!"
+        if defined _ch for %%D in (0 1 2 3 4 5 6 7 8 9) do if "!_ch!"=="%%D" set "TS=!TS!%%D"
     )
-    REM Keep only first 6 digits of time (HHMMSS)
-    if defined TIMEPART set "TIMEPART=%TIMEPART:~0,6%"
-    if defined DATEPART if defined TIMEPART set "TS=%DATEPART%_%TIMEPART%"
-    REM Trim potential trailing characters (like AM/PM) by keeping first 18 chars
-    set "TS=%TS:~0,18%"
-    set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
+    if not defined TS set "TS=export"
+    set "TS=!TS:~0,14!"
+    set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-!TS!.reg"
     if defined VERBOSE echo [VERBOSE] Export path: %EXPORT_FILE%
     reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1
     if %errorLevel% equ 0 (
