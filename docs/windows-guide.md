@@ -53,7 +53,7 @@ pm-agent-config.bat --mode unset
 # Show current settings
 pm-agent-config.bat --status
 
-# Export registry (troubleshooting - creates pm-agent-dca-YYYYMMDDHHMMSS.reg in current directory)
+# Export registry (troubleshooting - exports then exits; file pm-agent-dca-<time><rand>.reg in current directory)
 pm-agent-config.bat --export
 
 # Interactive menu
@@ -87,7 +87,7 @@ pm-agent-config.bat --menu
 # 6. Restart PM+ Agent Service
 # 7. Unset Performance Limits (set to UNLIMITED)
 # 8. Test Registry Access (Debug)
-# 9. Export Registry Settings (Troubleshooting)
+# 9. Export Registry Settings (Troubleshooting - script will exit after export)
 # 10. Exit
 ```
 
@@ -219,7 +219,7 @@ net start DCAgent
 # Check current configuration
 pm-agent-config.bat --status
 
-# Export registry (creates pm-agent-dca-YYYYMMDDHHMMSS.reg in current directory)
+# Export registry (creates pm-agent-dca-<time><rand>.reg in current directory and exits)
 pm-agent-config.bat --export
 
 # Verify registry directly

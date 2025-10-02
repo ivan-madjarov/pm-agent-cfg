@@ -33,6 +33,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - (Windows Batch) Interactive menu renumbered (Test Registry option 8, Export option 9, Exit now option 10).
 - (PowerShell) Interactive menu renumbered to match batch (Test Registry option 8, Export option 9, Exit now option 10) for full cross-platform parity.
 - (PowerShell) Export behavior aligned with batch script: unified filename pattern `pm-agent-dca-YYYYMMDDHHMMSS.reg` (removed underscore and custom path option for consistency). Removed previously documented optional `-ExportPath` parameter to enforce standardized artifact naming/location.
+ - (Windows Batch) Export operation (menu option 9 / --export) now intentionally exits after successful export with a clear summary message to avoid further locale-related menu loop edge cases.
 
 ### Fixed
 - (Windows Batch) Export timestamp generation: replaced nested FOR loop with separate uppercase/lowercase FOR loops to eliminate locale-dependent parsing error ("`. was unexpected at this time.`") on non-English regional settings.

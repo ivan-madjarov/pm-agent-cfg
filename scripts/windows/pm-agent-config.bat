@@ -584,9 +584,8 @@ REM ============================================================================
         goto :menu_loop
     ) else if "%choice%"=="9" (
         echo.
-        call :export_registry
-        echo.
-        goto :menu_loop
+        call :export_registry_exit
+        goto :eof
     ) else if "%choice%"=="10" (
         echo Exiting...
         exit /b 0
@@ -917,28 +916,34 @@ exit /b 0
 
 REM End of script
 
-:export_registry
+:export_registry_exit
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    REM Use simple timestamp approach: just use random number + time to ensure uniqueness
-    REM Strip all non-alphanumeric characters to avoid locale issues
     set "TS_RAW=%TIME: =0%"
     set "TS_RAW=%TS_RAW::=%"
     set "TS_RAW=%TS_RAW:.=%"
     set "TS_RAW=%TS_RAW:,=%"
-    REM Take first 6 digits (HHMMSS equivalent) plus random for uniqueness
     set "TS=%TS_RAW:~0,6%%RANDOM%"
     set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
     if defined VERBOSE echo [VERBOSE] Export path: %EXPORT_FILE%
     reg export "%AGENT_KEY%" "%EXPORT_FILE%" /y >nul 2>&1
     if %errorLevel% equ 0 (
-        echo [OK] Registry exported: %EXPORT_FILE%
-        echo Attach this file to support tickets for analysis.
+        echo.
+        echo ========================================
+        echo [OK] Registry exported successfully
+        echo File: %EXPORT_FILE%
+        echo ========================================
+        echo.
+        echo Script is now exiting after export as designed.
+        echo Re-run the script for additional operations.
         exit /b 0
     ) else (
-        echo [X] Failed to export registry (error %errorLevel%).
-        echo Ensure you have write permission to the current directory: %CD%
-        echo You can retry from an elevated prompt or a writable folder.
+        echo.
+        echo ========================================
+        echo [X] Registry export failed (error %errorLevel%)
+        echo Directory: %CD%
+        echo ========================================
+        echo Ensure the current directory is writable or retry from an elevated prompt.
         exit /b 1
     )
     goto :eof
