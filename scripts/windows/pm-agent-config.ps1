@@ -13,9 +13,6 @@ param(
 
     [Parameter(Mandatory=$false)]
     [switch]$Export,
-
-    [Parameter(Mandatory=$false)]
-    [string]$ExportPath,
     
     [Alias("i")]
     [Parameter(Mandatory=$false)]
@@ -90,6 +87,7 @@ PARAMETERS:
                         unset  = Remove configured limits (set to unlimited)
     
     -Status             Display current registry settings and service status
+    -Export             Export DCAgent registry subtree to timestamped .reg file (current directory)
     -Menu               Show interactive menu
     (No arguments)      Launch interactive menu
     -VerboseOutput      Enable verbose output
@@ -626,23 +624,21 @@ function Show-InteractiveMenu {
 
 function Export-Registry {
     Write-Host ""; Write-Host "Exporting DCAgent registry subtree to current directory..." -ForegroundColor Yellow
-    $defaultPath = Join-Path (Get-Location) ("pm-agent-dca_{0}.reg" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
-    if (-not $ExportPath) { $ExportPath = $defaultPath }
-    $targetDir = Split-Path -Parent $ExportPath
-    if (-not (Test-Path $targetDir)) {
-        try { New-Item -ItemType Directory -Path $targetDir -Force | Out-Null } catch { }
-    }
+    $timestamp = Get-Date -Format 'yyyyMMddHHmmss'  # Align with batch: pm-agent-dca-YYYYMMDDHHMMSS.reg
+    $exportPath = Join-Path (Get-Location) ("pm-agent-dca-$timestamp.reg")
     $regExe = (Get-Command reg.exe -ErrorAction SilentlyContinue)
     if ($regExe) {
-        & $regExe Path export $AGENT_KEY $ExportPath /y *> $null
-        if ($LASTEXITCODE -eq 0 -and (Test-Path $ExportPath)) {
-            Write-Host "[OK] Registry exported to: $ExportPath" -ForegroundColor Green
+        # Use native reg.exe export (full subtree)
+        & $regExe export $AGENT_KEY $exportPath /y *> $null
+        if ($LASTEXITCODE -eq 0 -and (Test-Path $exportPath)) {
+            Write-Host "[OK] Registry exported to: $exportPath" -ForegroundColor Green
             Write-Host "Attach this file to support tickets for analysis." -ForegroundColor Cyan
             return
-        }
-        else {
+        } else {
             Write-Host "[WARN] reg.exe export failed (code $LASTEXITCODE). Falling back to minimal writer..." -ForegroundColor Yellow
         }
+    } else {
+        Write-Host "[WARN] reg.exe not found. Using minimal writer..." -ForegroundColor Yellow
     }
     # Fallback minimal writer capturing only the two values if present
     $lines = @('Windows Registry Editor Version 5.00','')
@@ -670,14 +666,14 @@ function Export-Registry {
     Append-Key ($AGENT_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
     Append-Key ($PATCH_KEY -replace 'HKEY_LOCAL_MACHINE','HKLM:')
     try {
-        $lines | Out-File -FilePath $ExportPath -Encoding ASCII -Force
+        $lines | Out-File -FilePath $exportPath -Encoding ASCII -Force
     } catch {
         Write-Host "[X] Failed to write export file: $($_.Exception.Message)" -ForegroundColor Red
         Write-Host "Ensure you have write permissions to: $(Get-Location)" -ForegroundColor Yellow
         return
     }
-    if (Test-Path $ExportPath) {
-        Write-Host "[OK] Minimal registry export written to: $ExportPath" -ForegroundColor Green
+    if (Test-Path $exportPath) {
+        Write-Host "[OK] Minimal registry export written to: $exportPath" -ForegroundColor Green
     } else {
         Write-Host "[X] Failed to write fallback registry export" -ForegroundColor Red
     }
