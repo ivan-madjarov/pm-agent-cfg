@@ -25,23 +25,26 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 ## [1.6.1] - 2025-10-02
 ## [1.6.2] - 2025-10-02
 ### Added
-- (Windows Batch / PowerShell) Registry export feature: `--export` flag (batch) / `-Export` switch (PowerShell) and interactive menu option (Batch: option 9, PowerShell: option 8) producing a timestamped `.reg` file for troubleshooting.
+- (Windows Batch / PowerShell) Registry export feature: `--export` flag (batch) / `-Export` switch (PowerShell) and interactive menu option (Batch: option 9, PowerShell: option 9) producing a timestamped `.reg` file for troubleshooting.
+- (PowerShell) Added Test Registry Access function and menu option 8 for parity with batch script (diagnose registry key accessibility and installation issues).
 
 ### Changed
 - (Windows Batch/PowerShell) Registry export now writes to the current working directory (not TEMP) for clearer user access. Explicit failure if directory is not writable.
-- (Windows Batch) Interactive menu renumbered (Export inserted before Exit; Exit now option 10).
-- (PowerShell) Interactive menu updated to include export option (Exit now option 9) for parity with batch script.
+- (Windows Batch) Interactive menu renumbered (Test Registry option 8, Export option 9, Exit now option 10).
+- (PowerShell) Interactive menu renumbered to match batch (Test Registry option 8, Export option 9, Exit now option 10) for full cross-platform parity.
 - (PowerShell) Export behavior aligned with batch script: unified filename pattern `pm-agent-dca-YYYYMMDDHHMMSS.reg` (removed underscore and custom path option for consistency). Removed previously documented optional `-ExportPath` parameter to enforce standardized artifact naming/location.
 
 ### Fixed
-- (Windows Batch) Export filename timestamp sanitization: removed locale artifacts (commas / fractional seconds) and replaced fragile token parsing with locale-agnostic digit extraction.
-- (Windows Batch) Interactive menu no longer exits after export operation; returns to menu loop reliably.
+- (Windows Batch) Export timestamp generation: replaced nested FOR loop with separate uppercase/lowercase FOR loops to eliminate locale-dependent parsing error ("`. was unexpected at this time.`") on non-English regional settings.
+- (Windows Batch) Export filename timestamp sanitization: removed locale artifacts (commas / fractional seconds) and replaced fragile token parsing with locale-agnostic digit-only extraction.
+- (Windows Batch) Interactive menu now returns to menu loop after export operation (previously exited due to parse error in timestamp generation).
 - (PowerShell) Ensured fallback minimal writer uses same standardized filename pattern when `reg.exe` export fails.
 
 ### Notes
 - Users should run export from a writable working directory (elevated prompt). If access is denied, the tool reports the path and suggests retrying elsewhere.
-- PowerShell version still attempts full subtree export with `reg.exe` first, then falls back to a minimal writer including only relevant values if necessary.
+- PowerShell version attempts full subtree export with `reg.exe` first, then falls back to a minimal writer including only relevant values if necessary.
 - Linux documentation formalizes how to collect the JSON configuration file for support; no direct export command required.
+- Batch script timestamp extraction now uses two separate FOR loops (uppercase then lowercase letters) to avoid locale-sensitive parsing when iterating over character sets.
 
 ## [1.5.0] - 2025-09-24
 ### Added

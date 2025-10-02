@@ -77,7 +77,7 @@ Possible values: `low`, `medium`, `high`, `ultra`, `unset`, or `custom` (if a no
 # Run the interactive menu
 pm-agent-config.bat --menu
 
-# Follow the on-screen prompts:
+# Follow the on-screen prompts (both batch and PowerShell have identical menus):
 # 0. Show Menu Options (refresh menu display)
 # 1. Low Performance Mode    (15% CPU, 200s timeout)
 # 2. Medium Performance Mode (20% CPU, 200s timeout)
