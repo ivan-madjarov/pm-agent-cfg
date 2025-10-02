@@ -530,6 +530,43 @@ function Set-PerformanceMode {
     }
 }
 
+function Test-RegistryAccess {
+    Write-Host ""
+    Write-Host "Testing Registry Access:" -ForegroundColor Cyan
+    Write-Host "========================" -ForegroundColor Cyan
+    Write-Host ""
+    
+    # Test Patch Key
+    $patchPsKey = $PATCH_KEY -replace "HKEY_LOCAL_MACHINE", "HKLM:"
+    Write-Host "Testing Patch Key: $PATCH_KEY" -ForegroundColor Yellow
+    if (Test-Path $patchPsKey) {
+        Write-Host "[OK] Can access Patch registry key" -ForegroundColor Green
+    } else {
+        Write-Host "[X] Cannot access Patch registry key" -ForegroundColor Red
+        Write-Host "[INFO] This may indicate DesktopCentral DCAgent is not installed" -ForegroundColor Yellow
+    }
+    
+    # Test Agent Key
+    $agentPsKey = $AGENT_KEY -replace "HKEY_LOCAL_MACHINE", "HKLM:"
+    Write-Host "Testing Agent Key: $AGENT_KEY" -ForegroundColor Yellow
+    if (Test-Path $agentPsKey) {
+        Write-Host "[OK] Can access Agent registry key" -ForegroundColor Green
+    } else {
+        Write-Host "[X] Cannot access Agent registry key" -ForegroundColor Red
+        Write-Host "[INFO] This may indicate DesktopCentral DCAgent is not installed" -ForegroundColor Yellow
+    }
+    
+    Write-Host ""
+    Write-Host "Registry Key Paths Being Used:" -ForegroundColor Cyan
+    Write-Host "Patch: $PATCH_KEY"
+    Write-Host "Agent: $AGENT_KEY"
+    Write-Host ""
+    Write-Host "Value Names:" -ForegroundColor Cyan
+    Write-Host "Patch Timeout: $PATCH_TIMEOUT_VALUE"
+    Write-Host "CPU Usage: $CPU_USAGE_VALUE"
+    Write-Host ""
+}
+
 function Show-MenuOptions {
     Write-Host ""
     Write-Host "Select Performance Mode:" -ForegroundColor Cyan
@@ -542,8 +579,9 @@ function Show-MenuOptions {
     Write-Host "5. Show Current Settings and Service Status"
     Write-Host "6. Restart PM+ Agent Service"
     Write-Host "7. Unset Performance Limits (set to UNLIMITED)"
-    Write-Host "8. Export Registry Settings (Troubleshooting)"
-    Write-Host "9. Exit"
+    Write-Host "8. Test Registry Access (Debug)"
+    Write-Host "9. Export Registry Settings (Troubleshooting)"
+    Write-Host "10. Exit"
     Write-Host ""
 }
 
@@ -554,7 +592,7 @@ function Show-InteractiveMenu {
     Show-MenuOptions
     
     do {
-    $choice = Read-Host "Enter your choice (0-9, 0 for menu)"
+    $choice = Read-Host "Enter your choice (0-10, 0 for menu)"
         
         switch ($choice) {
             "0" {
@@ -605,16 +643,22 @@ function Show-InteractiveMenu {
             }
             "8" {
                 Write-Host ""
-                Export-Registry | Out-Null
+                Test-RegistryAccess | Out-Null
                 Write-Host ""
                 continue
             }
             "9" {
+                Write-Host ""
+                Export-Registry | Out-Null
+                Write-Host ""
+                continue
+            }
+            "10" {
                 Write-Host "Exiting..." -ForegroundColor Yellow
                 return
             }
             default {
-                Write-Host "Invalid choice. Please enter a number between 0 and 9." -ForegroundColor Red
+                Write-Host "Invalid choice. Please enter a number between 0 and 10." -ForegroundColor Red
                 Write-Host ""
                 continue
             }

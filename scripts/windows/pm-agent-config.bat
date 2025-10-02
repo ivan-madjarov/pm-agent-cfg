@@ -920,7 +920,7 @@ REM End of script
 :export_registry
     echo Exporting DCAgent registry subtree to current directory...
     set "EXPORT_DIR=."
-    REM Build timestamp: concatenate DATE and TIME then strip common separators; keep first 14 digits (YYYYMMDDHHMMSS variant)
+    REM Build timestamp: concatenate DATE and TIME then strip separators manually (digit-only pass)
     set "TS_SRC=%DATE%%TIME%"
     set "TS_SRC=%TS_SRC: =0%"
     set "TS_SRC=%TS_SRC:/=%"
@@ -929,9 +929,10 @@ REM End of script
     set "TS_SRC=%TS_SRC:.=%"
     set "TS_SRC=%TS_SRC::=%"
     set "TS_SRC=%TS_SRC:,=%"
-    REM Now reduce to digits only without FOR loops (replace each digit with itself; remove letters by iterative stripping of alphabet)
+    REM Extract digits only by substitution (no FOR loop to avoid locale parsing issues)
     set "TS=%TS_SRC%"
-    for %%L in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z) do set "TS=!TS:%%L=!"
+    for %%C in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do set "TS=!TS:%%C=!"
+    for %%C in (a b c d e f g h i j k l m n o p q r s t u v w x y z) do set "TS=!TS:%%C=!"
     REM Fallback if empty
     if not defined TS set "TS=export"
     set "TS=!TS:~0,14!"
