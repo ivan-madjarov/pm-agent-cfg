@@ -14,7 +14,7 @@
 
 A comprehensive shell script that manages PM+ Agent CPU throttling settings through the `PerformanceSettings.json` file with **no external dependencies**. Choose your preferred interface:
 
-### [READY] **Primary Tool: Shell Script**
+### Primary Tool: Shell Script
 **File**: `scripts/linux/pm-agent-config.sh`
 - **Zero dependencies** - pure bash script with built-in JSON handling
 - **Multiple interfaces** - command-line AND interactive menu modes
@@ -58,7 +58,7 @@ sudo cp /usr/local/manageengine/uems_agent/data/PerformanceSettings.json ./Perfo
 ```
 Attach that file to your support ticket. If it’s missing, the mode is effectively `unset`.
 
-### Status Output Enhancements (v1.6.0)
+### Status Output Enhancements
 The `--status` command and menu option 5 now include a concise summary line:
 
 ```
@@ -68,7 +68,7 @@ Performance Mode (summary): medium
 Values: `low`, `medium`, `high`, `ultra`, `unset` (when no JSON file is present), or `custom (X% CPU)` if a non-standard value is detected. The full JSON and service status details are still displayed underneath.
 ```
 
-### Interactive Menu (End Users)
+### Interactive Menu
 ```bash
 # IMPORTANT: Use sudo!
 sudo ./pm-agent-config.sh --menu
@@ -91,7 +91,7 @@ sudo ./pm-agent-config.sh
 # Launches interactive menu by default
 ```
 
-## ⚙️ **Performance Modes**
+## ⚙️ Performance Modes
 
 | Mode | CPU Limit | Description | Use Case |
 |------|-----------|-------------|----------|

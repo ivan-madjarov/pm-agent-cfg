@@ -13,74 +13,52 @@ Cross-platform agent configuration management system supporting both Linux and W
 
 ## Current Features
 
-### Windows Registry Configuration Tool [PRODUCTION-READY v3.2]
-**Zero-dependency solution** for configuring DesktopCentral DCAgent registry settings:
-- **Standalone Batch Script** - works on any Windows machine (no Python/PowerShell required)
-- **Enhanced Interactive Menu** - professional interface with menu relist functionality (option 0)
-- **Multiple Interfaces** - command-line AND interactive menu in one tool
-- **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
-- **Built-in Security** - administrator privilege checking and validation
-- **Status Display** - view current registry configurations with decimal values and comprehensive service status
-- **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
-- **Intelligent Service Management** - enhanced restart logic with state verification and error recovery
-- **Registry Diagnostics** - built-in registry access testing and troubleshooting (option 8)
-- **Registry Export** - export DCAgent registry subtree for support (Batch: `--export` exits after creating `pm-agent-dca-<HHMMSS><RANDOM>.reg`; PowerShell: `-Export` creates `pm-agent-dca-YYYYMMDDHHmmss.reg` and returns to menu)
-- **Enhanced Error Handling** - improved permission error handling with value verification
-- **Command Options** - --restart/--no-restart flags for automated deployments
-- **Single File Deployment** - copy `pm-agent-config.bat` and run (13KB)
-- **Production Reliability** - comprehensive error handling and service restart verification
-- **Menu Navigation** - option 0 to redisplay menu for improved usability
+### Windows Registry Configuration Tool (v1.6.x)
+Key capabilities:
+- Standalone Batch Script (zero external dependencies)
+- Interactive menu with reliable looping (option 0 re-lists menu)
+- Performance modes: low (15%), medium (20%), high (30%), ultra (40%), unset
+- Export (Batch: `--export` / menu 9) creates `pm-agent-dca-<HHMMSS><RANDOM>.reg` and then exits intentionally
+- Export (PowerShell: `-Export` or `--export` / menu 9) creates `pm-agent-dca-YYYYMMDDHHmmss.reg` and stays in session
+- Registry diagnostics (menu option 8) to validate key accessibility
+- Unified status summary line: `Performance Mode (summary): <mode>`
+- Intelligent service restart prompts and error handling
+- Supports both native PowerShell parameter syntax and GNU-style double-dash flags (e.g. `--mode high`, `--export`)
 
-**Bonus**: PowerShell version with full interactive menu system matching batch script functionality (now accepts both `-Mode high` and GNU-style `--mode high` / `--export`).
+### Linux JSON Configuration Tool (v1.6.x parity)
+Key capabilities:
+- Pure bash script (no jq required; jq optional for pretty print)
+- Interactive menu with refresh (option 0)
+- Same performance modes + unset parity
+- Safe JSON modification with automatic backup & restore
+- Status output includes summary line and service detection
+- Designed for automation with flags (`--mode`, `--status`, `--restart`, `--no-restart`)
 
-### Linux JSON Configuration Tool [PRODUCTION-READY v3.1]
-**Zero-dependency solution** for configuring DesktopCentral UEMS Agent performance settings:
-- **Shell Script** - pure bash with no external dependencies
-- **Enhanced Interactive Menu** - professional interface with clear screen functionality
-- **Multiple Interfaces** - command-line AND interactive menu modes
-- **Performance Modes** - Low (15% CPU), Medium (20% CPU), High (30% CPU), Ultra (40% CPU)
-- **Built-in Security** - root privilege checking and automatic backups
-- **Status Display** - view current JSON configurations and comprehensive service status
-- **Status Summary** - concise `Performance Mode (summary): low|medium|high|ultra|unset|custom` line for quick identification
-- **Config Collection** - `--status` reveals path to `PerformanceSettings.json` so you can copy it for support
-- **Intelligent Service Management** - enhanced restart logic with multi-service detection
-- **Command Options** - --restart/--no-restart flags for automated deployments
-- **Single File Deployment** - copy `pm-agent-config.sh` and run
-- **Production Reliability** - comprehensive service state management and error recovery
+**PowerShell Companion**: Provides identical functional surface to batch (except batch exits after export; PowerShell does not) and now supports GNU-style `--flags` for operator muscle memory consistency.
 
 See platform-specific guides:
-- [Windows Configuration Guide](docs/windows-guide.md) **Available**
-- [Linux Configuration Guide](docs/linux-guide.md) **Available**
+- [Windows Configuration Guide](docs/windows-guide.md)
+- [Linux Configuration Guide](docs/linux-guide.md)
 
 ## Project Structure
 
 ```
 pm-agent-cfg/
-├── .github/               # GitHub templates and CI/CD workflows
-│   ├── workflows/         # Automated testing and validation
-│   └── ISSUE_TEMPLATE/    # Issue and PR templates
-├── scripts/               # Main configuration tools
-│   ├── linux/             # pm-agent-config.sh (Linux JSON config)
-│   └── windows/           # pm-agent-config.bat/.ps1 (Windows Registry)
-├── docs/                  # Platform-specific documentation
-│   ├── linux-guide.md     # Linux configuration guide
-│   └── windows-guide.md   # Windows configuration guide
-├── CHANGELOG.md           # Version history
-├── CONTRIBUTING.md        # Development guidelines
-├── DEPLOYMENT.md          # Deployment instructions
-├── SECURITY.md            # Security policy
-├── LICENSE                # Mitel proprietary license
-└── README.md              # This file
+├── scripts/
+│   ├── windows/                 # pm-agent-config.bat / pm-agent-config.ps1
+│   └── linux/                   # pm-agent-config.sh
+├── docs/
+│   ├── windows-guide.md
+│   └── linux-guide.md
+├── CHANGELOG.md
+├── README.md
+├── SECURITY.md
+├── CONTRIBUTING.md
+└── LICENSE
 ```
-
-## Platform Support
-
-- **Linux**: CentOS, Ubuntu, RHEL, Debian (any modern distribution)
-- **Windows**: Windows Server 2019+, Windows 10+ (any edition)
 
 ## Architecture
 
-This project provides **zero-dependency, single-file solutions** for both platforms:
 
 ### Windows Implementation
 - **Method**: Direct Windows Registry manipulation
@@ -103,7 +81,7 @@ Both implementations provide identical user experiences while using platform-app
 > - **Windows**: Open Command Prompt as Administrator
 > - **Linux**: Use sudo or run as root
 
-### Windows Registry Configuration [READY]
+### Windows Registry Configuration
 **One tool, multiple ways to use it:**
 
 #### Option 1: Command-Line (IT Professionals)
@@ -132,7 +110,7 @@ pm-agent-config.bat --menu
 #### Option 3: Double-Click (Simplest)
 **IMPORTANT**: Right-click `pm-agent-config.bat` → "Run as administrator" to launch the interactive menu.
 
-### Linux JSON Configuration [READY]
+### Linux JSON Configuration
 **Comprehensive shell script with multiple interfaces:**
 
 #### Option 1: Command-Line (IT Professionals)
@@ -178,7 +156,7 @@ sudo ./pm-agent-config.sh
 > **BOTH PLATFORMS REQUIRE ELEVATED PRIVILEGES - NON-NEGOTIABLE!**
 
 #### Windows
-- [OK] Windows 7+ (any edition)
+- Windows 10 / Windows Server 2019+ (earlier versions may work but are not primary targets)
 - **[CRITICAL]**: Administrator privileges (Run as Administrator)
 - [OK] DesktopCentral DCAgent installed
 - [OK] **That's it!** No Python, PowerShell modules, or other dependencies
@@ -192,8 +170,8 @@ sudo ./pm-agent-config.sh
 **Advanced**: Optional EXE compilation available for Windows professional deployment packages.
 
 See detailed platform documentation:
-- [Windows Registry Configuration](docs/windows-guide.md) [AVAILABLE]
-- [Linux JSON Configuration](docs/linux-guide.md) [AVAILABLE]
+- [Windows Registry Configuration](docs/windows-guide.md)
+- [Linux JSON Configuration](docs/linux-guide.md)
 
 ## Development
 

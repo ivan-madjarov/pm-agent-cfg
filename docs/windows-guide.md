@@ -15,16 +15,16 @@
 
 A single, comprehensive tool that configures PM+ Agent registry settings with **no external dependencies**. Choose your preferred interface:
 
-### [READY] **Primary Tool: Standalone Batch Script**
+### Primary Tool: Standalone Batch Script
 **File**: `scripts/windows/pm-agent-config.bat`
 
-**Why This is Perfect:**
-- [READY] **Zero Dependencies** - works on any Windows machine (7 through 11)
-- [READY] **Single File** - just copy and run (10KB)
-- [READY] **Multiple Interfaces** - command-line AND interactive menu
-- [READY] **Built-in Security** - administrator privilege checking
-- [READY] **Status Display** - shows current configuration with decimal values and comprehensive service status
-- [READY] **Professional Help** - comprehensive documentation
+**Why This is Useful:**
+- **Zero Dependencies** - works on Windows 10 / Server 2019+ (earlier versions may work)
+- **Single File** - just copy and run (≈10–13 KB)
+- **Multiple Interfaces** - command-line AND interactive menu
+- **Built-in Security** - administrator privilege checking
+- **Status Display** - current configuration with decimal values + service state
+- **Professional Help** - integrated usage guidance
 
 ## **Quick Start**
 
@@ -57,7 +57,7 @@ pm-agent-config.bat --status
 # Creates pm-agent-dca-<HHMMSS><RANDOM>.reg in the current directory and THEN EXITS the script intentionally
 pm-agent-config.bat --export
 
-:: PowerShell equivalent (now supports GNU-style double-dash too):
+:: PowerShell equivalent (supports native -Export or GNU-style --export and DOES NOT exit after export):
 powershell -File .\pm-agent-config.ps1 --export
 
 # Interactive menu
@@ -66,7 +66,7 @@ pm-agent-config.bat --menu
 
 Legacy alias: Older versions (<= v1.5.0) documented a separate `--unset` flag. For backward compatibility the batch script still accepts `--unset`, but the unified and preferred form is `--mode unset`.
 
-### Status Output Enhancements (v1.6.0)
+### Status Output Enhancements
 When you run either `pm-agent-config.bat --status` or choose menu option 5, the tool now prints a concise summary line:
 
 ```
@@ -75,7 +75,7 @@ Performance Mode (summary): low
 
 Possible values: `low`, `medium`, `high`, `ultra`, `unset`, or `custom` (if a non-standard CPU value is detected). The detailed legacy lines (Patch Scan Timeout, Thread Max CPU Usage, and the colorized descriptive mode line) remain for full context.
 
-### Interactive Menu (End Users)
+### Interactive Menu
 ```batch
 # IMPORTANT: Run Command Prompt as Administrator first!
 # Run the interactive menu
@@ -128,7 +128,7 @@ When using the batch script, always start an elevated Command Prompt first and r
 
 ## **ADVANCED OPTIONS**
 
-### [READY] **Option 2: Compiled Executable (Optional)**
+### Optional: Compiled Executable
 
 For organizations requiring a professional executable:
 
@@ -150,10 +150,10 @@ pm-agent-config.exe -Status
 - Standalone deployment (~1-2MB)
 - Identical functionality to batch script
 
-## 📋 **Requirements**
+## 📋 Requirements
 
 ### All Options
-- [OK] **Windows 7+** (including Windows 10, 11, Server editions)
+- **Windows 10+ / Server 2019+** (earlier versions unverified)
 - [CRITICAL] **Administrator privileges** (for registry modification)
 - [OK] **DesktopCentral DCAgent** installed
 
