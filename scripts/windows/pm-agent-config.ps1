@@ -4,26 +4,77 @@
 # Can be compiled to EXE using ps2exe or similar tools
 
 param(
-    [Parameter(Mandatory=$false)]
-    [ValidateSet("low", "medium", "high", "ultra", "unset")]
+    [Parameter(Mandatory=$false, Position=0)]
     [string]$Mode,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Status,
 
     [Parameter(Mandatory=$false)]
     [switch]$Export,
-    
+
     [Alias("i")]
     [Parameter(Mandatory=$false)]
     [switch]$Menu,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$VerboseOutput,
-    
+
     [Parameter(Mandatory=$false)]
-    [switch]$Help
+    [switch]$Help,
+
+    # Capture any remaining raw arguments so we can normalize GNU-style double-dash flags
+    [Parameter(ValueFromRemainingArguments=$true)]
+    [string[]]$_Extra
 )
+
+### GNU-Style Double-Dash Normalization ######################################
+# Users may invoke the PowerShell script with batch-style flags (e.g. --export,
+# --status, --mode high). Native PowerShell expects single-dash parameters, so
+# we normalize here before proceeding. We purposely removed ValidateSet so we
+# can inspect raw tokens first, then enforce allowed mode values manually.
+if ($Mode -and $Mode.StartsWith("--")) {
+    # Treat first token as part of a GNU-style sequence
+    $gnuTokens = @($Mode)
+    if ($_Extra) { $gnuTokens += $_Extra }
+    # Clear original bindings; we'll re-hydrate proper switches
+    $Mode = $null
+    $_Extra = @()
+    for ($i = 0; $i -lt $gnuTokens.Count; $i++) {
+        $t = $gnuTokens[$i]
+        switch -Regex ($t) {
+            '^--help$'     { $Help = $true; continue }
+            '^--status$'   { $Status = $true; continue }
+            '^--export$'   { $Export = $true; continue }
+            '^--menu$'     { $Menu = $true; continue }
+            '^--verbose$'  { $VerboseOutput = $true; continue }
+            '^--unset$'    { $Mode = 'unset'; continue }
+            '^--mode$'     {
+                if ($i + 1 -lt $gnuTokens.Count) {
+                    $Mode = $gnuTokens[$i + 1]
+                    $i++
+                }
+                continue
+            }
+            default { }
+        }
+    }
+}
+
+# Secondary pass: if Mode still looks like a stray double-dash flag and no other
+# switch was derived, map common aliases (--low, --medium, etc.).
+if ($Mode -and $Mode.StartsWith('--')) {
+    $maybe = $Mode.Substring(2)
+    if ($maybe -in @('low','medium','high','ultra','unset')) { $Mode = $maybe } else { $Mode = $null }
+}
+
+# Validate Mode if set
+if ($Mode -and ($Mode -notin @('low','medium','high','ultra','unset'))) {
+    Write-Host "ERROR: Invalid value supplied for -Mode: '$Mode'" -ForegroundColor Red
+    Write-Host "Valid options: low, medium, high, ultra, unset" -ForegroundColor Yellow
+    Write-Host "(Hint: Use --mode <value> or -Mode <value>; both forms now supported)" -ForegroundColor Yellow
+    exit 1
+}
 
 # Configuration constants
 $PATCH_KEY = "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AdventNet\DesktopCentral\DCAgent\Patch"

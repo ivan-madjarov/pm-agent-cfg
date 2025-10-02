@@ -31,7 +31,7 @@ Cross-platform agent configuration management system supporting both Linux and W
 - **Production Reliability** - comprehensive error handling and service restart verification
 - **Menu Navigation** - option 0 to redisplay menu for improved usability
 
-**Bonus**: PowerShell version with full interactive menu system matching batch script functionality.
+**Bonus**: PowerShell version with full interactive menu system matching batch script functionality (now accepts both `-Mode high` and GNU-style `--mode high` / `--export`).
 
 ### Linux JSON Configuration Tool [PRODUCTION-READY v3.1]
 **Zero-dependency solution** for configuring DesktopCentral UEMS Agent performance settings:

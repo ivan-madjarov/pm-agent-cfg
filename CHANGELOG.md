@@ -39,6 +39,7 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - (Windows Batch) Removed comma / fractional second artifacts from filenames (sanitized timestamp generation).
 - (Windows Batch) Missing internal label reference when using `--export` (legacy call to `:export_registry`) now resolved via an alias label pointing to the implemented `:export_registry_exit` logic.
 - (PowerShell) Fallback minimal writer uses standardized filename when `reg.exe export` fails.
+- (PowerShell) Added GNU-style double-dash flag compatibility (`--export`, `--status`, `--mode`, `--unset`, `--help`, `--menu`, `--verbose`) for parity with batch usage patterns; manual mode validation replaces previous ValidateSet to enable preprocessing.
 
 ### Notes
 - Batch filename format: `pm-agent-dca-<HHMMSS><RANDOM>.reg` (time+random only) for maximum compatibility; PowerShell keeps full datetime pattern `pm-agent-dca-YYYYMMDDHHmmss.reg` for richer timestamping.

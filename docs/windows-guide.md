@@ -57,6 +57,9 @@ pm-agent-config.bat --status
 # Creates pm-agent-dca-<HHMMSS><RANDOM>.reg in the current directory and THEN EXITS the script intentionally
 pm-agent-config.bat --export
 
+:: PowerShell equivalent (now supports GNU-style double-dash too):
+powershell -File .\pm-agent-config.ps1 --export
+
 # Interactive menu
 pm-agent-config.bat --menu
 ```
