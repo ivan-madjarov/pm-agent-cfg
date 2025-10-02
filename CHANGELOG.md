@@ -1,28 +1,9 @@
 # Changelog
 
 All notable changes to the PM+ Agent Configuration tool are documented here.
-## [1.6.0] - 2025-10-02
-### Added
-- (Windows/Linux/PowerShell) Concise performance mode summary line in status output: `Performance Mode (summary): <mode>` for quick identification (low|medium|high|ultra|unset|custom).
- - (Windows Batch) Refined export filename timestamp format (removed locale comma / fractional seconds to ensure clean filenames).
-
-### Fixed
-- (Windows Batch) Export option crash: Replaced locale-dependent FOR date/time token parsing (causing ". was unexpected at this time." on some regional formats) with sanitizer-based timestamp generation.
-
-### Fixed
-- (Windows) Ticket #202510024200014: `--mode unset` previously rejected; now accepted directly without requiring separate `--unset` flag.
-- (Windows) Locale issue: removed PowerShell dependency for hex conversion (avoids failures on hosts where `powershell` command name/localization caused errors). Implemented native CMD arithmetic.
-- (PowerShell) Added matching performance mode summary to maintain parity with batch/Linux scripts.
-
-### Changed
-- (Windows/Linux/Docs) Unified unset handling via `--mode unset`; retained `--unset` / legacy note for backward compatibility.
-- (Linux) Direct `--mode unset` support (formerly required standalone `--unset`).
-- (Docs) Updated Windows & Linux guides plus README to mention performance mode summary line and unified unset usage.
-
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.1] - 2025-10-02
 ## [1.6.2] - 2025-10-02
 ### Added
 - (Windows Batch / PowerShell) Registry export feature: `--export` (batch) / `-Export` (PowerShell) and interactive menu option (Batch: 9, PowerShell: 9) producing a timestamped `.reg` file for troubleshooting.
@@ -45,6 +26,24 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - Batch filename format: `pm-agent-dca-<HHMMSS><RANDOM>.reg` (time+random only) for maximum compatibility; PowerShell keeps full datetime pattern `pm-agent-dca-YYYYMMDDHHmmss.reg` for richer timestamping.
 - Export always targets the directory from which the script is launched—ensure it's writable (run elevated if required).
 - Linux variant uses file collection (`PerformanceSettings.json`) instead of registry export; no export flag required.
+
+## [1.6.0] - 2025-10-02
+### Added
+- (Windows/Linux/PowerShell) Concise performance mode summary line in status output: `Performance Mode (summary): <mode>` for quick identification (low|medium|high|ultra|unset|custom).
+ - (Windows Batch) Refined export filename timestamp format (removed locale comma / fractional seconds to ensure clean filenames).
+
+### Fixed
+- (Windows Batch) Export option crash: Replaced locale-dependent FOR date/time token parsing (causing ". was unexpected at this time." on some regional formats) with sanitizer-based timestamp generation.
+
+### Fixed
+- (Windows) Ticket #202510024200014: `--mode unset` previously rejected; now accepted directly without requiring separate `--unset` flag.
+- (Windows) Locale issue: removed PowerShell dependency for hex conversion (avoids failures on hosts where `powershell` command name/localization caused errors). Implemented native CMD arithmetic.
+- (PowerShell) Added matching performance mode summary to maintain parity with batch/Linux scripts.
+
+### Changed
+- (Windows/Linux/Docs) Unified unset handling via `--mode unset`; retained `--unset` / legacy note for backward compatibility.
+- (Linux) Direct `--mode unset` support (formerly required standalone `--unset`).
+- (Docs) Updated Windows & Linux guides plus README to mention performance mode summary line and unified unset usage.
 
 ## [1.5.0] - 2025-09-24
 ### Added
