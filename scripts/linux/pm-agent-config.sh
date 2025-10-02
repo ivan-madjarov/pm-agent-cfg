@@ -95,17 +95,17 @@ USAGE:
 
 OPTIONS:
     --mode <mode>       Set performance mode (low, medium, high, ultra, unset)
-    --status           Show current performance settings
-    --backup           Create backup of current settings
-    --restore          Restore from backup
-    --menu             Interactive menu mode
-    (No arguments)     Launch interactive menu mode
-    --dry-run          Show what would be changed without applying
-    --restart          Force service restart after configuration
-    --no-restart       Skip service restart prompt
-    --unset            Remove configured limits (set to unlimited) by removing the performance config
-    --verbose          Enable verbose output
-    --help             Show this help message
+    --status            Show current performance settings
+    --backup            Create backup of current settings
+    --restore           Restore from backup
+    --menu              Interactive menu mode
+    (No arguments)      Launch interactive menu mode
+    --dry-run           Show what would be changed without applying
+    --restart           Force service restart after configuration
+    --no-restart        Skip service restart prompt
+    --unset             (Legacy alias) Remove configured limits (same as --mode unset)
+    --verbose           Enable verbose output
+    --help              Show this help message
 
 PERFORMANCE MODES:
     low     - 15% CPU limit (recommended for production servers)
@@ -123,7 +123,7 @@ EXAMPLES:
     sudo $SCRIPT_NAME --status             Show current settings
     sudo $SCRIPT_NAME --menu               Show interactive menu
     sudo $SCRIPT_NAME --backup             Create backup of current settings
-    sudo $SCRIPT_NAME --unset              Remove configured limits
+    sudo $SCRIPT_NAME --unset              (Legacy) Remove configured limits (same as --mode unset)
 
 REQUIREMENTS:
     - Root/sudo privileges
@@ -311,9 +311,15 @@ show_current_settings() {
 set_performance_mode() {
     local mode="$1"
     
+    # Ticket #202510024200014: support direct "--mode unset" (previously required --unset)
+    if [[ "$mode" == "unset" ]]; then
+        unset_performance_limits
+        return $?
+    fi
+    
     if [[ -z "${PERFORMANCE_MODES[$mode]}" ]]; then
         log_error "Invalid performance mode: $mode"
-        log_info "Available modes: ${!PERFORMANCE_MODES[*]}"
+        log_info "Available modes: ${!PERFORMANCE_MODES[*]} unset"
         exit 1
     fi
     

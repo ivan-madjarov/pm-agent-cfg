@@ -9,6 +9,7 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 
 ### Changed
 - (Docs) Will update Windows guide to reflect unified `--mode unset` usage (pending in this cycle).
+- (Linux) Direct `--mode unset` support added (previously required separate `--unset` flag); `--unset` retained as legacy alias.
 
 
 This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

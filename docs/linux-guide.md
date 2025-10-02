@@ -42,6 +42,8 @@ sudo ./pm-agent-config.sh --status        # Show current settings and service st
 sudo ./pm-agent-config.sh --backup        # Create configuration backup
 sudo ./pm-agent-config.sh --mode high --restart     # Configure and restart service
 sudo ./pm-agent-config.sh --mode low --no-restart   # Configure without restart prompt
+
+# Legacy alias: older versions supported a standalone --unset flag. It still works for backward compatibility but --mode unset is preferred.
 ```
 
 ### Interactive Menu (End Users)
