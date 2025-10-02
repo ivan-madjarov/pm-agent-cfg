@@ -4,6 +4,7 @@ All notable changes to the PM+ Agent Configuration tool are documented here.
 ## [1.6.0] - 2025-10-02
 ### Added
 - (Windows/Linux/PowerShell) Concise performance mode summary line in status output: `Performance Mode (summary): <mode>` for quick identification (low|medium|high|ultra|unset|custom).
+ - (Windows Batch) Refined export filename timestamp format (removed locale comma / fractional seconds to ensure clean filenames).
 
 ### Fixed
 - (Windows Batch) Export option crash: Replaced locale-dependent FOR date/time token parsing (causing ". was unexpected at this time." on some regional formats) with sanitizer-based timestamp generation.

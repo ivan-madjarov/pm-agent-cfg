@@ -929,6 +929,16 @@ REM End of script
     set "TS=%TS:-=%"
     set "TS=%TS:.=%"
     set "TS=%TS::=%"
+    REM Remove locale decimal separator comma if present
+    set "TS=%TS:,=%"
+    REM Split date and time parts at underscore to trim fractional seconds
+    for /f "tokens=1,2 delims=_" %%a in ("%TS%") do (
+        set "DATEPART=%%a"
+        set "TIMEPART=%%b"
+    )
+    REM Keep only first 6 digits of time (HHMMSS)
+    if defined TIMEPART set "TIMEPART=%TIMEPART:~0,6%"
+    if defined DATEPART if defined TIMEPART set "TS=%DATEPART%_%TIMEPART%"
     REM Trim potential trailing characters (like AM/PM) by keeping first 18 chars
     set "TS=%TS:~0,18%"
     set "EXPORT_FILE=%EXPORT_DIR%\pm-agent-dca-%TS%.reg"
