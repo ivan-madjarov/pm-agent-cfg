@@ -15,3 +15,5 @@ Thumbs.db
 **/config/
 **/cnfg/
 **/conf/
+# Exclude vendor examples directory
+**/vendor/
