@@ -1,0 +1,12 @@
+{
+    "STOP_SCHEDULED_SCAN": true,
+    "TIME_WINDOWS": [
+        {
+            "days": [
+                "Wed"
+            ],
+            "start": "15:00",
+            "end": "21:00"
+        }
+    ]
+}
